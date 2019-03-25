@@ -1,0 +1,45 @@
+scalable
+low latency
+distributed
+publish subscribe over topics
+at least once delivery
+offset management for subscribers
+data replication
+
+applications are tenants
+topic, message, throuput and storage scales by just adding more servers
+
+tenants can administer, manage and monitor their domains
+
+made of many clusters
+a cluster is made of brokers, bookkeepers and a zookeeper
+
+broker serves thousands of topics
+topic is assigned to a broker
+broker commits messages to a bookkeeper
+brokers cache data to avoid disk reads
+
+bookkeeper is a distributed write ahead log system
+pulsar creates multiple logs called ledgers
+bookkeeper hosts called bookies handle thousands of ledgers with reads and writes
+scales incapacity and throughtput as more bookies incraease them
+
+bookies use seperate disks
+one for the journal and one for storage
+this isolates latency of ongoing write operations
+read and write decoupled
+a big difference 
+
+managed ledger is a data stream with a single writer and many readers
+each reader has their own cursor, the offset
+managed ledger uses many bookeeper ledgers to store data
+
+uses zookeeper
+for coordinating topic assignments among brokers
+
+load balancer on brokers distributes data among brokers
+
+topics created when needed and deleted when not
+subscriptions persist until deleted
+
+a very low latency

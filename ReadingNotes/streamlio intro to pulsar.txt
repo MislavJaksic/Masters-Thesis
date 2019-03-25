@@ -1,0 +1,17 @@
+producer
+consumer or subscriber
+topic
+
+multi tenancy
+tenent is a property
+properties have namesapces
+namespaces have topics
+
+namespace is an admin unit: permissions, replication, message retention
+all topics inherit namespace settings
+local namespace is visible in a cluster
+global namespace is visible across multiple clusters
+
+
+
+
