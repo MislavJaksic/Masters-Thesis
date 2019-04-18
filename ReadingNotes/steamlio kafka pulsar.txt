@@ -1,0 +1,81 @@
+messaging model
+consumption, acks, retention
+
+consumption
+queue, unordered, many consumers can consume the messages in parallel
+streaming, ordered, one consumer at any time recieves messages
+
+pulsar unifies queing and streaming model
+producer-topic-subscription-consumer model
+topic particion is a distributed log in BookKeeper
+
+consumers are grouped into subscriptions for the purposes of message consumption
+three subscription types
+
+all subscription models are described and picured in greater detail
+no need to change the number of partitions if consumer number changes
+
+shared subscription -> queue
+failover, exclusive -> stream
+
+acks is also known as "updating offset"
+Pulsar uses cursors
+individual or cumulative acks
+
+exclusive or failover subscription -> both acks
+shared -> only individual acks
+no duplicates or msg loss
+
+cursors are in BookKeeper
+storing in Zookeeper will overwhelm Zookeeper if there are 1000 of topics and consumers
+
+msgs not removed when acked
+deleted only after all subscriptions consumed the msg
+can be kept longer after that
+
+msg time to live can be configured
+msg deleted even if no one consumes it
+
+
+
+
+
+pulsar cluster has two layers
+stateless serving layer filled with brokers
+stateful persistance layer filled with bookies used by brokers for durable storage
+
+cannot access zookeeper or bookies directly
+
+brokers are stateless because they don't store messages
+topic partition assigned to a broker
+broker then owns that topic partition
+
+if an owner fails, Pulsar moves the partition
+no data is copied, only ownership moves
+
+bookies are stateful because they sotre msgs
+topic partition is a distributted log
+
+log divided into segments
+segment stored in bookie ledger, distributed and replicated accross many bookies
+
+new segment if time elapsed or previous too large or topic ownership changes
+
+segment analysis
+capacity of a topic partition is not limited by the capacity of the smallest node
+capacity of a topic partition scales up to cluster capacity
+broker ownership change does not copy data, just transfers ownership
+bookies can be added and new msgs will be stored on them
+when a bookie fails a segment is copied to other bookies
+
+
+serving scales independently of storage capacity
+
+kafka has partitions as storage
+pulsar has segment for storage
+segments are smaller and better distributed
+
+
+
+
+

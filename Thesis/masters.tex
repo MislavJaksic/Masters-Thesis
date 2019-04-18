@@ -18,11 +18,24 @@
 \tableofcontents
 
 \chapter{Uvod}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam in convallis nisl. Mauris porttitor dignissim nisi. Nam ut diam vitae leo rhoncus convallis sed sed lectus. Mauris purus nunc, hendrerit ac odio sed, tristique malesuada ipsum. Maecenas ultrices in quam id cursus. Nullam facilisis, dolor ut sollicitudin bibendum, elit lorem mollis diam, in accumsan sapien ipsum ac nisi. Donec maximus eros sem. Aenean nec scelerisque mi. Integer facilisis interdum finibus. Cras aliquet volutpat diam eget volutpat.
 
-Maecenas varius tincidunt massa. Morbi elit sapien, cursus vitae turpis sit amet, vulputate finibus orci. Sed congue metus pharetra, eleifend nibh non, porta sapien. Nullam eleifend tincidunt nisi, vitae cursus odio mollis ut. Nunc imperdiet sed lacus eget pellentesque. Nam augue diam, pellentesque egestas molestie vehicula, ullamcorper quis urna. Nullam a lorem porttitor, accumsan ex quis, elementum est. Aliquam erat volutpat. Donec eu turpis pretium, molestie tellus sit amet, maximus felis. Nunc facilisis nibh ut dolor posuere, sit amet pharetra mi aliquet. Suspendisse vel lorem dictum, facilisis leo sed, rutrum augue. Curabitur eget mi purus. Ut aliquet eu felis ut cursus.
+Raspodijeljeni sustavi su izrazito nepouzdani. Ispad bilo kojeg dijela sustava može izazvati pogreška u sklopovlju, operacijskom sustavu, programu ili mreži. Jedan ispad u raspodijeljenom sustavu lako može ulančati ispade. Ako se ispad ne proširi, sustav će i dalje patiti jer će program u stanju ispada i dalje uzimati računalno vrijeme i memoriju, a s njima neće obavljati koristan posao. U najgorem slučaju ispad može izazvati potpuno zatajenje sustava gdje je jedini lijek iznova pokrenuti sve njegove dijelove. U najboljem slučaju ispad će samo smanjiti učinkovitost sustava. Bez temeljitog nadzora raspodijeljenog sustava teško je otkriti da se dogodio ispad, a još teze otkloniti izvor problema.
 
-Nullam tincidunt justo non maximus blandit. Nam id fringilla ante. Praesent in luctus enim, nec euismod nisi. Donec efficitur justo sed est ullamcorper, et dapibus magna suscipit. In pulvinar est vitae lectus rhoncus, in efficitur nulla venenatis. Nam vitae augue velit. Vestibulum nisi metus, eleifend quis nulla non, elementum maximus purus. Curabitur imperdiet leo non pharetra ullamcorper. Praesent pretium sollicitudin volutpat. Sed ultrices porta dolor, sed convallis ante mattis vel. In ac augue quis velit aliquet consectetur id eu odio. Pellentesque dapibus pharetra arcu ac semper. Pellentesque finibus imperdiet nibh id suscipit. Praesent ipsum dui, pretium ac diam eget, blandit auctor mauris. In lacus neque, venenatis eu metus vitae, imperdiet vulputate est. Nulla maximus neque id metus consequat ultrices.
+Zadatak nadzora je otkriti ispad i njegov uzrok. !RASSUS-KNJIGA dijeli ispade na ispad procesa, pogreške u komunikaciji, vremenske pogreške, pogrešan odgovor i bizantske pogreške. Ako se ispad želi otkriti potrebno je pratiti vrijednosti koje ukazuju na ispad. Korisne vrijednosti mogu biti zauzeće memorije, brzina obrade zahtjeva, sadržaj poruke ili duljina uspostave komunikacijskog kanala. Nadzirani program vrijednosti predaje nadzorniku koji je čovjek ili program. Ako nadzor obavlja program on treba biti pouzdaniji od nadziranog programa inače je problem nadzora programa udvostručen umjesto riješen.
+
+Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade istražene su ideje, sukobljene su arhitekture i pregledana postojeća rješenja. Kako bi naglasak na područjima bio podjednak napravljen je sakupljač za izabrani raspodijeljeni sustav. Da je napravljen svestran sakupljač koji može sakupljati vrijednosti raznolikog sklopovlja, operacijskih sustava i programa misli o arhitekturi bile bi izražene na uštrp onima o izradi programa. Nadzirani sustav je Apache Kafka, popularni sustav za raspodijeljenu obradu tokova podataka.
+
+\chapter{Sustavi za raspodijeljenu obradu tokova podataka}
+
+\chapter{Postojeca rjesenja}
+
+\chapter{Arhitektura rjesenja}
+
+\chapter{Dizajn rjesenja}
+
+\chapter{Izvedba rjesenja}
+
+\chapter{Rezultati}
 
 \chapter{Zaključak}
 Zaključak.

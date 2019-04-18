@@ -1,16 +1,99 @@
+INTRO
+
 producer
 consumer or subscriber
 topic
 
 multi tenancy
-tenent is a property
-properties have namesapces
+property is just another name for tenent
+pulsra has tenents
+tenents have namespaces
 namespaces have topics
 
 namespace is an admin unit: permissions, replication, message retention
 all topics inherit namespace settings
 local namespace is visible in a cluster
 global namespace is visible across multiple clusters
+
+each topic has multiple subscriptions
+Exclusive subscription, single consumer at any given time
+Shared subscription, many consumers share message consumption
+Failover subscription, many consumers but only one can consumer messages; other take over only when it fails
+
+data can be partitioned (sharded) across many machines
+consumers/producers will never notice the change in the number of parititions
+
+pulsar cluster is made up of brokers
+
+routing policy
+Single partitioning, producer routes data to a random parition
+Round robin partitioning, producer routes messages evenly, in a round robin fashion
+Hash partitioning, messages have keys which are computed into hashes to determine the partition; guarantees ordering based on the key
+Custom partitioning, producer has full control over partitioning, he can do whatever he wants
+
+durability
+data is retained even if there is a power failiure thanks to BookKeeper's bookies (nodes)
+write-ahead log and sends ack that it received data
+
+
+
+PART 1
+
+messaging models
+queueing, many consumers share message consumption
+publis-subscribe, messages broadcast to all consumers
+
+pulsar implements this as subscriptions
+there can be more consumers then topic partitions
+
+BookKeeper bookies allow consumers to read from earlier positions
+
+can be deployed in many different modes
+
+can be hosted
+
+can geo replicate
+
+extreme durability
+has acks, but that means the data is never lost
+achieved through bookies write-ahead log
+there are also multiple bookies
+
+
+
+PART 2
+
+consumer lag problem
+a single consumer may slow down other consumers
+he does this by asking for data on th storage medium
+this causes IO thrashing (memory, page miss)
+happens because reads and writes share a single path of execution
+
+IO isolation
+BookKeeper isolates reads and writes
+Pulsar broker server regular reads
+durable writes are serverd by bookies write ahead log
+catch up reads are made from bookies stable storage
+
+scales throughtput 
+sclaes number of topics 
+
+provides security
+
+supports multiple languages
+
+ease of operational managemenet
+
+
+
+
+
+
+
+
+
+
+
 
 
 

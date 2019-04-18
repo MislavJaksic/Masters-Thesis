@@ -18,7 +18,8 @@ online and offline log data consmption
 
 2
 
-messanging systems focus on delivery gatantee
+othermessanging systems
+focus on delivery gatantee
 increased complexity in deesign and implementation
 a few pieces of log data can be lost
 message producers cannot batch messages - each is a full TCP/IP roundtrip
