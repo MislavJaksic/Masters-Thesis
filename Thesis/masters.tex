@@ -1,4 +1,4 @@
-\documentclass[times, utf8, diplomski]{fer}
+\documentclass[times, utf8, diplomski, numeric]{fer}
 \usepackage{booktabs}
 
 \begin{document}
@@ -19,13 +19,60 @@
 
 \chapter{Uvod}
 
-Raspodijeljeni sustavi su izrazito nepouzdani. Ispad bilo kojeg dijela sustava može izazvati pogreška u sklopovlju, operacijskom sustavu, programu ili mreži. Jedan ispad u raspodijeljenom sustavu lako može ulančati ispade. Ako se ispad ne proširi, sustav će i dalje patiti jer će program u stanju ispada i dalje uzimati računalno vrijeme i memoriju, a s njima neće obavljati koristan posao. U najgorem slučaju ispad može izazvati potpuno zatajenje sustava gdje je jedini lijek iznova pokrenuti sve njegove dijelove. U najboljem slučaju ispad će samo smanjiti učinkovitost sustava. Bez temeljitog nadzora raspodijeljenog sustava teško je otkriti da se dogodio ispad, a još teze otkloniti izvor problema.
+Raspodijeljeni sustavi su nepouzdani. Pogreška u sklopovlju, operacijskom sustavu, programu ili mreži može izazvati ispad bilo kojeg dijela sustava. Ispadi u raspodijeljenom sustavu mogu pokrenuti lanac ispada. Ako ispad ne uzrokuje lanac ispada sustav će i dalje patiti jer će program i dalje zahtijevati računalno vrijeme i memoriju, a s njima neće obavljati koristan posao. U najgorem slučaju ispad može izazvati potpuno zatajenje sustava gdje je jedini lijek iznova pokrenuti sve njegove dijelove. U najboljem slučaju ispad će samo smanjiti učinkovitost sustava. Bez pažljivog nadzora raspodijeljenog sustava teško je otkriti ispad, a još teze otkloniti izvor ispada.
 
-Zadatak nadzora je otkriti ispad i njegov uzrok. !RASSUS-KNJIGA dijeli ispade na ispad procesa, pogreške u komunikaciji, vremenske pogreške, pogrešan odgovor i bizantske pogreške. Ako se ispad želi otkriti potrebno je pratiti vrijednosti koje ukazuju na ispad. Korisne vrijednosti mogu biti zauzeće memorije, brzina obrade zahtjeva, sadržaj poruke ili duljina uspostave komunikacijskog kanala. Nadzirani program vrijednosti predaje nadzorniku koji je čovjek ili program. Ako nadzor obavlja program on treba biti pouzdaniji od nadziranog programa inače je problem nadzora programa udvostručen umjesto riješen.
+Zadatak nadzora je otkriti ispad i njegov uzrok. \citep{rassus-manual} ispade dijeli na ispad procesa, pogreške u komunikaciji, vremenske pogreške, pogrešan odgovor i bizantske pogreške. Ako se ispad želi otkriti potrebno je pratiti vrijednosti koje ukazuju da se ispad dogodio. Korisne vrijednosti mogu biti zauzeće memorije, brzina obrade zahtjeva, sadržaj poruke ili duljina uspostave komunikacijskog kanala. Nadzirani program vrijednosti predaje nadzorniku koji je čovjek ili program. Ako nadzor obavlja program on treba biti pouzdaniji od nadziranog programa inače je problem nadzora udvostručen, a ne riješen.
 
-Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade istražene su ideje, sukobljene su arhitekture i pregledana postojeća rješenja. Kako bi naglasak na područjima bio podjednak napravljen je sakupljač za izabrani raspodijeljeni sustav. Da je napravljen svestran sakupljač koji može sakupljati vrijednosti raznolikog sklopovlja, operacijskih sustava i programa misli o arhitekturi bile bi izražene na uštrp onima o izradi programa. Nadzirani sustav je Apache Kafka, popularni sustav za raspodijeljenu obradu tokova podataka.
+Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade istražene su ideje, sukobljene su arhitekture i uspoređena postojeća rješenja. Kako bi naglasak na idejama, arhitekturama i izradi rješenja bio podjednak napravljen je sakupljač za jedan raspodijeljeni sustav. Da je napravljen svestran sakupljač koji može sakupljati vrijednosti raznolikog sklopovlja, operacijskih sustava i programa misli o arhitekturi bile bi izražene na uštrp onima o izradi programa. Nadzirani sustav je Apache Kafka, popularni sustav za raspodijeljenu obradu tokova podataka.
 
 \chapter{Sustavi za raspodijeljenu obradu tokova podataka}
+
+\citep{ilprints535} razlikuje tok podataka (engl. stream) od skupa podataka (engl. batch). Toku podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestat dolaziti i podaci će biti odbačeni nakon što budu pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Samo neki problemi toka podatka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Zato sto su problemi raznovrsni razvijeno je mnoštvo alata za obradu tokova. Alate razlikujemo po mogućnostima proizvođača (engl. producer), potrošača (engl. consumer) i posrednika (engl. broker), po načinu slanja i zapisivanju podatak.
+
+Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za raspodijeljenu obradu podatak. Kako bi usporedba alata i izvedba sakupljača bila jednostavnija u obzir će se uzeti samo besplatni alati. Umjesto da se usporede svi besplatni alati izabran je predstavnik iz svakog važnog skupa alata:
+\begin{itemize}
+  \item Apache Kafka je predstavnik popularnih alata za raspodijeljenu obradu tokova podataka
+  \item Apache Pulsar je predstavnik modernih alata. \citep{yahoo-blogpost} je objavio Pulsara 2016. dok je \citep{kafka-whitepaper} objavio Kafku 2011.
+  \item RabbitMQ je predstavnik alat koji guraju podatke prema korisnicima. Za razliku od RabbitMQ iz Kafke i Pulsara korisnici traže podatke
+\end{itemize}
+
+\chapter{Model objavi/pretplati}
+Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati (engl. publish/subscribe) za razmjenu podataka između procesa. !citat_rassus opisuje, a slika SLIKA prikazuje da se model objavi/pretplati sastoji od objavljivaca (engl. producers) koji salju poruke, pretplatnika (engl. consumers) koji citaju poruke i posrednika (engl broker) koji razmjenjuje poruke izmedu njih. Pretplatnici citaju poruke s teme, a objavljivaci salju poruke na temu. Posrednik zapisuje objavljene poruke i dopusta pretplatnicima da ih citaju. Prednost modela objavi/pretplati nad izravnim slanjem poruka je sto objavljivaci i pretplatnici netrebaju znati da ovi drugi postoje. 
+
+
+\chapter{Objavljivaci}
+Zadaca Kafka objavljivaca je objaviti poruke na temu. Poruke se salje u skupini ne jedna po jedna. Skup poruka se pretvara u standardizirani binarni format prije nego se posalju. Tema je podijeljena na pretince i objavljivac moze odrediti u koji pretinac ce objaviti poruke s kljucem. Ako se dogodi ispad objavljivaca on ce ponovno poslati poruke. Sve poruke biti ce objavljene barem jednom. Moguce je izbjeci uvisestrucavanje poruka s transakcijskim objavljivacem. Prije slanja sljedeceg skupa poruka objavljivac ceka potvrdu da su poruke zapisane u pretinac temu. Objavljivac moze odrediti u koliko zivucih umnozenih pretinaca teme poruka mora biti zapisana prije nego ih on smatra zapisanim.
+Zadaca Kafka objavljivaca je skupinu poruka pretvoriti u binarni format, izabrati pretinac (partition) teme (topic) i Kafka posredniku (broker) poslati poruke. Kafka objavljivaci koriste nacelo prosljedivanja (push model). Kafka objavljivac moze izabrati koliko potvrda umnazanja (replication) ce cekati prije nego nastavi objavljivati poruke. Kafka objavljivaci ce poruku objaviti barem jednom (at least once).
+
+! Proizvodac objavljuje poruke temi.
+! Proizvodaci koriste push model.
+! Proizvodaci mogu objaviti skup poruka odjednom.
+! Proizvodaci salju poruke na nasumicni ili u odredeni pretinac.
+! -Proizvodac moze cekati potvrdu zapisa poruke.
+! +Proizvodaceve poruke ce se isporuciti barem jednom. Duplikate ce Kafka odbaciti.
+! +Proizvodac moze smanjiti zahtjev garancije i ne cekati potvrdu ili reci da zeli cekati samo dok se poruka zapise u particiju vode a ne i slijedbenika. 
+! +Proizvodaci mogu navesti koliki broj ISR replika zele cekati da potvrde pisanje poruke.
+! +Proizvodac moze koristiti kljuc da objavi poruku u odredenu particiju.
+
+Objavljivaci objavljuju poruke na temu. Objavljivaci koriste model prosljedivanja (push model). 
+
+\chapter{Pretplatnici}
+Pretplatnici citaju poruke is pretplacenih tema. Pretplatnici koriste model dohvacanja (pull model).
+
+
+\chapter{Posrednici}
+Posrednik je posluzitelj. Zapisuju poruke koje objavljivaci posalju.
+
+\chapter{Tema}
+Tema je tok podataka.
+
+
+
+\section{Apache Kafka}
+
+\section{Apache Pulsar}
+
+\section{RabbitMQ}
 
 \chapter{Postojeca rjesenja}
 
