@@ -15,3 +15,148 @@ Potrosaci broje procitane poruke i javljaju vrijednost.
 
 
 -Podrzava obradu toka podatak. Kafka Stream.
+
+
+OBJAVLJIVACI
+! Proizvodac objavljuje poruke temi.
+! Proizvodaci koriste push model.
+! Proizvodaci mogu objaviti skup poruka odjednom.
+! Proizvodaci salju poruke na nasumicni ili u odredeni pretinac.
+! -Proizvodac moze cekati potvrdu zapisa poruke.
+! +Proizvodaceve poruke ce se isporuciti barem jednom. Duplikate ce Kafka odbaciti.
+! +Proizvodac moze smanjiti zahtjev garancije i ne cekati potvrdu ili reci da zeli cekati samo dok se poruka zapise u particiju vode a ne i slijedbenika. 
+! +Proizvodaci mogu navesti koliki broj ISR replika zele cekati da potvrde pisanje poruke.
+! +Proizvodac moze koristiti kljuc da objavi poruku u odredenu particiju.
+
+! -Proizvodaci su zaduzeni za objavu poruke u izabrani pretinac. -> imaju na raspolaganju f()
+
+
+
+POSREDNICI
+! Posluzitelji su posrednici.
+! Posrednici zapisuju objavljene poruke.
+
+! +Koristi prirucnu memoriju i tvrdi disk za zapisivanje podataka cim dode poruka, ne radnu memoriju. -> link na rad koji objasnjava vise
+!+Linearno pisanje i citanje na tvrdi disk.
+! +Korsti samo OS pagechache, ne korsti RAM za cache.
+!+Poruke se grupiraju u standardizirani format da se izbjegne cekanje mreze.
+! +Standardizirani format koriste svi: proizvodac, posrednik i potrosac.
+! +Poruke se kopiraju samo iz pagechachea u NIC zahvaljujuci zero-copy i sendfile API.
+!+Podrzava razne formate kompresije podataka.
+
+! Poruke se pamte samo u prirucnom spremniku za stranice.
+! Stranice se pamte cak kada se Kafka restarta.
+! Minimalno sakupljanje smeca znaci ucinkovita izvedba u VM jeziku.
+! Heuristike stranicenja su ucinkovite jer se poruke citaju uzastopno.
+
+! Da se poruka prenese od datoteke do komunikacijske prikljucnice treba dva poziva za umnazanje i jedan poziv operacijskom sustavu.
+! Zahvaljujuci sendfile API.
+
+! Kafka koristi Zookeeper-a, pouzdan pruzatelj usluge koncenzusa.
+! U Zookeeper posrednici i potrosaci biljeze promjene, koji potrosac ima pravo citati poruke iz kojeg pretinca i u njega biljeze odmake. -> to se mozda promjenilo
+! Zookeeper podatke umnaza na vise posluzitelja kako se nebi izgubili.
+
+! -Osigurava da ako se P1 objavi prije P2 da P1je zapisana u dnevnik prije P2.
+! -Osigurava da potrosaci citaju poruke po vremenu kada su zapisane u dnevnik.
+-Osigurava da s replikacijom N moze ispasti N-1 posrednika prije gubitka poruke. <- u donjem paragrafu
+
+
+
+PRETINAC
+! Pretinac je logicki dnevnik.
+! Dnevnik je napravljen kao skup datoteka iste velicine.
+! Posrednik objavljene poruke doda na kraj poslijednje datoteke.
+! Datoteke se spremaju u stalnu memoriju tek nakon odredenog broja dodavanja ili vremena.
+Potrosac moze procitati poruku tek nakon sto je ona spremljena u stalnu memoriju. // replicirana koristeci OS -> pogledaj kafka docs -> NE: samo kada je svi zivuci pratitelji imaju zapisanu u svom dnevniku
+! Oznaka poruke je logicki odmak u dnevniku.
+! Odmaci poruka strogo rastu ali nisu uzastopni.
+! Odmak sljedece poruke je zbroj trenutne oznake i duljine poruke.
+-Svaki pretinac mora stati na server koji je za njega zaduzen. <- implicitno
+! -Pretinci su umnozeni na vise posrednika.
+! -Svaki pretinac ima posrednika vodu dok su svi ostali pratitelji.
+! -Voda pretinca je zaduzen za svako pisanje i citanje pretinca.
+! -U slucaju ispada vode neki pratitelj ce postati novi voda.
+
+! +Pretinci tema mogu biti replicirani.
+! +Pratitelji vode particija imaju isti dnevnik i odmak kao i voda.
+! +Pratitelji imaju potrosaca koji cita poruke s vode particije i zapisuju poruke u svoj dnevnik.
+! +Posrednik je zivuc ako ima vezu s ZK i ako nije predaleko u citanju poruka s vode (in-sync).
++Prepostavlja se da se nece dogoditi bizantski ispad. <- zakaj je vazno?
+! +Poruka je zapisana samo onda kada ju svi pratitelji imaju zapisanu u svojem dnevniku.
+! +Potrosaci mogu procitati samo one poruke koje su zapisane u sve sinkronizirane replike particije.
+
++Svaka particija ima samo jedan odmak kojim prati do kuda je potrosac procitao poruke. 
+! +Poruke zapisane u dnevnik nece biti izgubljene dok god postoji barem jedna ziva replika.
+
+! +SAmo ISR (in sync replica) mogu postati novi vode particije.
+! +Poruka je zapisana samo kada svi pratitelji particije su zapisali poruku.
++Broker moze ponovno postati dio ISR skupa. <- implicitno
+! +Ako sve replike budu unistene prva replika u ISR koja postane ziva ce biti proglasena vodom particije.
+
+
+! +Svaki broker je voda proporcionalnog broja particija.
+! +Kada se dogodi ispad posrednika koji je voda particije umjesto da se glasa za svaku particiju controller posrednik koji ubrza glasanje.
+
+
+
+PRETPLATNICI
+! Potrosaci citaju poruke iz pretplacenih tema.
+Potrosaci koriste pull model.
+! Potrosaci mogu zajedno ili neovisno citati poruke.
+
+! Ako potrosac potvrdi odmak potvrdi sve poruke do odmaka.
+! Potrosac od prosrednika trazi broj poruka jednak kolicini podataka i broju poruka nakon zadanog odmaka.
+Posrednik u indeksu pogleda odmak i nade datoteku s porukama.
+LIJEPA SLIKA DATOTEKA
+
+! Poruka moze biti procitana vise puta.
+! Potrosaci citaju skup poruka odjednom. -> skob s iteracijom, nije!, jedno je na visokoj jedno na niskoj razini
+
+! Posrednik ne pazi koliko je poruka potrosac procitao.
+! Potrosac pamti koje je poruke procitao.
+Jednostavan posrednik ali to uzrokuje probleme s brisanjem poruka.
+! Potrosac se moze vratti unzad i procitati proslu poruku. Zahvaljujuci pull modelu.
+! -Potrosac se brine o odmaku poruka.
+
+! Kafka dostavlja poruke barem jednom.
+Vecinu vremena poruka se dostavi tocno jednom.
+! Poruke u pretincu se dostavljaju po redu.
+! Poruke u razlicitim pretincima se ne dostavljaju u redu.
+! -Ako je potreban potpuni redoslijed svih poruka napravi samo jednu particiju. To znaci da samo jedan potrosac moze citati odjednom.
++Samo jednom dostava je moguce izvesti vlastitim algoritmom, Kafka Connect, Kafka Stream ili transakcijskim nacinom rada potrosaca/proizvodaca.
+
+-Kod stoga poruke zajedno cita vise potrosaca.
+-Kada se poruka procita, ona se brise iz stoga.
+-Objavi-pretplati salje svaku poruku svim pretplacenim potrosacima.
+-Skaliranje je nemoguce zbog obujma.
+-Skup potrosaca omogucuje da svaka tema ima oba dobra svojstva istovremeno.
+-Pretinac omogucuje paralelno citanje i osigurava redoslijed dostave poruka.
+-Samo jedan protrosac u grupi moze citati jednu particiju istovremeno.
+-Broj pretinaca mora biti puno veci od broja potrosaca u najvecem skupu potrosaca. ->kopija
+
+! +Pull model za potrosace podrzava razlicite brzine citanja.
++Pull model omogucuje visoku razinu grupiranja poruka.
+! +Problem je kaj mozda posrednik nema podatak za citanje, ali se potrosac moze blokirati dok ne dode odredena kolicina podataka na posrednika.
+
+! Skup potrosaca sastoji se od barem jednog potrosaca. -> mozda stavi u uvod
+! Potrosaci u skupu zajedno citaju poruke iz pretplacenih tema.
+! Svaku poruku cita samo jedan od potrosaca u skupu. <- implicitno
+! Pretinac je najmanja jedinica paralelizma.
+! Poruke u pretincu istovremeno cita samo jedan potrosac u grupi.
+Broj pretinaca mora biti puno veci od broja potrosaca u najvecem skupu potrosaca. -> ogranicenje
+! -Potrosaci pripadaju najvise jednoj potrosackoj skupini.
+! -Poruka se dostavlja jednom potrosacu u skupini.
+! -Ista poruka se razasilje razlicitim skupinama potrosaca ako su pretplaceni na istu temu.
+-Svaki potrosac u grupi cita podjednak broj pretinaca. <. implicitno
+! +Svaki posrednik moze objaviti metapodatke o tome koji posrednik je voda partcije kome proizvodac mora uputiti zahtjev za pisanje.
+
+
+TEMA
+! Team je tok poruka.
+! Pretplacivanje na temu znaci napraviti barem jedan podtok podataka za izabranu temu.
+! Poruke objavljene temi ce biti jednoliko rasporedene u podtokove.
+! Podtok ima iterator poruka.
+! Ako iterator dode do zadnje poruke on se blokira dok se ne objavi nova poruka.
+! Tema je podijeljena na pretince.
+! Poruke se brisu nakon zadanog vremena.
+! -Kolicina spremljenih podataka ne utjece na ucinkovitost.

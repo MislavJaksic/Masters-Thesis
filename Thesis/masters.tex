@@ -23,178 +23,142 @@ Raspodijeljeni sustavi su nepouzdani. Pogreška u sklopovlju, operacijskom susta
 
 Zadatak nadzora je otkriti ispad i njegov uzrok. \citep{rassus-manual} ispade dijeli na ispad procesa, pogreške u komunikaciji, vremenske pogreške, pogrešan odgovor i bizantske pogreške. Ako se ispad želi otkriti potrebno je pratiti vrijednosti koje ukazuju da se ispad dogodio. Korisne vrijednosti mogu biti zauzeće memorije, brzina obrade zahtjeva, sadržaj poruke ili duljina uspostave komunikacijskog kanala. Nadzirani program vrijednosti predaje nadzorniku koji je čovjek ili program. Ako nadzor obavlja program on treba biti pouzdaniji od nadziranog programa inače je problem nadzora udvostručen, a ne riješen.
 
-Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade istražene su ideje, sukobljene su arhitekture i uspoređena postojeća rješenja. Kako bi naglasak na idejama, arhitekturama i izradi rješenja bio podjednak napravljen je sakupljač za jedan raspodijeljeni sustav. Da je napravljen svestran sakupljač koji može sakupljati vrijednosti raznolikog sklopovlja, operacijskih sustava i programa misli o arhitekturi bile bi izražene na uštrp onima o izradi programa. Nadzirani sustav je Apache Kafka, popularni sustav za raspodijeljenu obradu tokova podataka.
+Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade istražene su ideje, sukobljene su arhitekture i uspoređena postojeća rješenja. Kako bi naglasak na idejama, arhitekturama i izradi rješenja bio podjednak napravljen je sakupljač za jedan raspodijeljeni sustav. Kada bi umjesto njega bio napravljen svestran sakupljač koji može sakupljati vrijednosti raznolikog sklopovlja, operacijskih sustava i programa misli o arhitekturi bile bi izražene na uštrp onima o izradi programa. Nadzirani sustav je Apache Kafka, popularni sustav za raspodijeljenu obradu tokova podataka.
 
 \chapter{Sustavi za raspodijeljenu obradu tokova podataka}
 
-\citep{ilprints535} razlikuje tok podataka od skupa podataka. Toku podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestat dolaziti i podaci će biti odbačeni nakon što budu pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Samo neki problemi toka podatka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Zato sto su problemi raznovrsni razvijeno je mnoštvo alata za obradu tokova. Alate razlikujemo po mogućnostima proizvođača, potrošača i posrednika, po načinu slanja i zapisivanju podatak.
+\citep{ilprints535} razlikuje tok podataka od skupa podataka. Toku podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestat dolaziti i podaci će biti odbačeni nakon što budu pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Samo neki problemi toka podatka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Zato sto su tokovi podatka raznovrsni razvijeno je mnoštvo alata za njihovu obradu. Alate razlikujemo po nacinu sakupljanja podataka, po mogucnostima toka, po arhitekturi i nacinu zapisivanja rezultata.
 
-Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za raspodijeljenu obradu podatak. Kako bi usporedba alata i izvedba sakupljača bila jednostavnija u obzir će se uzeti samo javno dostupni alati. Umjesto da se usporede svi javno dostupni alati izabran je predstavnik iz svakog važnog skupa alata:
+Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za raspodijeljenu obradu podatak. Kako bi usporedba alata i izvedba sakupljača bila jednostavnija u obzir su uzeti samo javno dostupni alati. Vecina njih korsti model objavi/pretplati. Umjesto da se usporede svi javno dostupni alati izabran je predstavnik iz svakog važnog skupa alata:
 \begin{itemize}
   \item Apache Kafka je predstavnik popularnih alata za raspodijeljenu obradu tokova podataka
-  \item Apache Pulsar je predstavnik modernih alata. \citep{yahoo-blogpost} je objavio Pulsara 2016. dok je \citep{kafka-whitepaper} objavio Kafku 2011.
-  \item RabbitMQ je predstavnik alat koji guraju podatke prema korisnicima. Za razliku od RabbitMQ iz Kafke i Pulsara korisnici traže podatke
+  \item Apache Pulsar je predstavnik modernih alata. \citep{yahoo-blogpost} je 2016. objavio da je Pulsar javno dostupan dok je \citep{kafka-whitepaper} napravio istu objavu za Kafku 2011.
+  \item RabbitMQ je predstavnik alat koji potiskuju podatke prema korisnicima. Za razliku od RabbitMQ korisnici Kafke i Pulsara moraju povlaciti podatke
 \end{itemize}
 
 \chapter{Model objavi/pretplati}
-Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati za razmjenu podataka između procesa. \citep{rassus-manual} opisuje, a slika SLIKA prikazuje model objavi/pretplati koji se sastoji od objavljivaca koji salju poruke, pretplatnika koji citaju poruke i posrednika koji razmjenjuje poruke izmedu njih. Pretplatnici citaju poruke s teme, a objavljivaci salju poruke na temu. Posrednik zapisuje objavljene poruke i dopusta pretplatnicima da ih citaju. Prednost modela objavi/pretplati nad izravnim slanjem poruka procesu je sto objavljivaci i pretplatnici netrebaju znati da ovi drugi postoje. 
+Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati za razmjenu podataka između procesa. SLIKA prikazuje nuzne dijelove modela objavi/pretplati. \citep{rassus-manual} tvrdi da se model objavi/pretplati sastoji od objavljivaca koji salju poruke, pretplatnika koji citaju poruke i posrednika koji razmjenjuje poruke izmedu njih. Posrednici poruke razvrstaju po temi, pretplatnici citaju poruke iz izabranih tema, a objavljivaci salju poruke u temu. Posrednik zapisuje objavljene poruke i dopusta pretplatnicima da ih citaju kada oni to pozele. Prednost modela objavi/pretplati nad izravnim razgovorom medu procesima je sto objavljivaci i pretplatnici netrebaju znati jedan za drugoga. 
+
+\chapter{Apache Kafka}
+
 
 
 \chapter{Objavljivaci}
-Kafka objavljivaca je korisnicki program cija je zadaca objaviti poruke na Kafka temu. Poruke se salju u skupini ne pojedinacno. Prije objave poruke se pretvore u binarni oblik. Tema je podijeljena na pretince. Objavljivac moze ili izabrati pretinac teme u koji ce se poruke objaviti ili poruke poslati ravnomjerno. Ako se dogodi ispad objavljivac ce ponovno poslati poruke. Objavljene poruke biti ce dostavljene barem jednom. Ako je uvisestrucavanje poruka nedopustivo, Kafka objavljivac moze koristiti transakcijski nacin rada. Prije slanja sljedeceg skupa poruka objavljivac moze pricekati potvrdu posrednika. Posrednik ce poslati potvrdu kada se poruke zapisu u pretinac vode i u izabrani broj pretinaca zivucih sljedbenika.
+Objavljivac je korisnicki program koji salje poruke u temu. Poruke se salju u skupini ne pojedinacno. Prije objave poruke se pretvore u binarni oblik. Tema je podijeljena na pretince. Objavljivac moze ili izabrati pretinac teme u koji ce se poruke objaviti ili poruke slati u svaki pretinac jednoliko. Ako se dogodi ispad objavljivac ce ponovno poslati poruke. Objavljene poruke biti ce dostavljene posredniku barem jednom. Ako je uvisestrucavanje poruka nedopustivo, objavljivac moze koristiti transakcijski nacin rada. Prije slanja sljedeceg skupa poruka objavljivac moze pricekati potvrdu posrednika. Posrednik ce poslati potvrdu kada se poruke zapisu u pretinac vode i izabrani broj uskladenih sljedbenika.
 
-! Proizvodac objavljuje poruke temi.
-! Proizvodaci koriste push model.
-! Proizvodaci mogu objaviti skup poruka odjednom.
-! Proizvodaci salju poruke na nasumicni ili u odredeni pretinac.
-! -Proizvodac moze cekati potvrdu zapisa poruke.
-! +Proizvodaceve poruke ce se isporuciti barem jednom. Duplikate ce Kafka odbaciti.
-! +Proizvodac moze smanjiti zahtjev garancije i ne cekati potvrdu ili reci da zeli cekati samo dok se poruka zapise u particiju vode a ne i slijedbenika. 
-! +Proizvodaci mogu navesti koliki broj ISR replika zele cekati da potvrde pisanje poruke.
-! +Proizvodac moze koristiti kljuc da objavi poruku u odredenu particiju.
+
+
+\chapter{Tema}
+Tema je tok poruka, apstraktna umotvorina na koju objavljivaci objavljuju poruke, a pretplatnici iz nje citaju poruke. Posrednici su oni koji se brinu da poruke budu primljene, zapisane i proslijedene. Biti pretplacen na temu znaci napraviti podtok poruka. Poruke objavljene u temu se ravnomjerno rasporeduju u podtokove. Svaki podtok ima pokazivac kojim pretplatnik cita poruke. Ako pokazivac dode do kraja podtoka, pretplatnik se blokira dok se ne objavi nova poruka. Poruke u temi se brisu tek nakon odredenog vremena. Kolicina neprocitanih poruka u temi ne utjece na protok teme. Tema je podijeljena na pretince s kojih razliciti posrednici citaju i upisuju poruke. Kako bi poruke u pretincima bile dostupne i ako se dogodi ispad posrednika, pretinci se mogu umnoziti.
 
 
 
 \chapter{Posrednici}
-Kafka posrednik je posluziteljski program cija je zadaca zapisati poruke objavljivaca i posluziti poruke pretplatnicima. Svaki posrednik dio je samo jednog Apache ZooKeeper grozda. Posrednici koriste ZooKeepera za izvrsavanje sporazumnog algoritma, pamcenje tema, njihovih pretinaca i zivucih posrednika. Kada objavljivac poruke objavi na temu posrednik poruke zapise u pretinac teme. 
+Posrednik je posluziteljski program koji zapisuje poruke objavljivaca i posluzuje poruke pretplatnicima. Svaki posrednik dio je samo jednog Apache ZooKeeper grozda. Posrednici koriste ZooKeeper za izvrsavanje sporazumnog algoritma, pamcenje tema, njihovih pretinaca i uskladenih posrednika. Posrednik ce poruke zapisati u pretinac onim redoslijedom kojim je objavljivac poruke poslao, ne onim redoslijedom kojim su poruke dosle do posrednika. Pretplatnici ce s posrednika citati poruke onim redoslijeom kojim su zapisane u pretinac.
 
+Kada objavljivac objavi poruke na temu posrednik ce zapisati poruke u odredeni pretinac. Posrednik koristi sustav stranicenja i tvrdi disk za zapisivanje poruka. Umjesto da posrednik stvori prirucnu memoriju u memoriji procesa on poruke predaje sustavu stranicenja operacijskog sustava. Operacijski sustav ce poruke zapisati u stranice i pohraniti u nedodijeljene dijelove radne memorije. Poruke se zapisuju na tvrdi disk samo kada operacijski sustav zeli osloboditi memoriju sustava stranicenja. Opisano gospodarenje memorijom dopusta posredniku da cuva veliku kolicinu poruka bez gubitka ucinkovitosti.
 
-Posluzitelji su posrednici.
-Posrednici zapisuju objavljene poruke.
+Zato sto pretplatnici cesto citaju uzastopne poruke one ce se dohvatiti iz prirucne memorije umjesto iz tvrdog diska. Zahvaljujuci sustavu stranicenja prirucna memorija u kojoj se pamte poruke postojat ce neko vrijeme nakon ispada posrednika. Koristenjem sustava stranicenja se takoder izbjegava koristenje sakupljaca smeca Java virtualnog stroja sto poboljsava gospodarenje memorijom.
 
-+Koristi prirucnu memoriju i tvrdi disk za zapisivanje podataka cim dode poruka, ne radnu memoriju. -> link na rad koji objasnjava vise
-+Linearno pisanje i citanje na tvrdi disk.
-+Korsti samo OS pagechache, ne korsti RAM za cache.
-+Poruke se grupiraju u standardizirani format da se izbjegne cekanje mreze.
-+Standardizirani format koriste svi: proizvodac, posrednik i potrosac.
-+Poruke se kopiraju samo iz pagechachea u NIC zahvaljujuci zero-copy i sendfile API.
-+Podrzava razne formate kompresije podataka.
-
-Poruke se pamte samo u prirucnom spremniku za stranice.
-Stranice se pamte cak kada se Kafka restarta.
-Minimalno sakupljanje smeca znaci ucinkovita izvedba u VM jeziku.
-Heuristike stranicenja su ucinkovite jer se poruke citaju uzastopno.
-
-Da se poruka prenese od datoteke do komunikacijske prikljucnice treba dva poziva za umnazanje i jedan poziv operacijskom sustavu.
-Zahvaljujuci sendfile API.
-
-Kafka koristi Zookeeper-a, pouzdan pruzatelj usluge koncenzusa.
-U Zookeeper posrednici i potrosaci biljeze promjene, koji potrosac ima pravo citati poruke iz kojeg pretinca i u njega biljeze odmake. -> to se mozda promjenilo
-Zookeeper podatke umnaza na vise posluzitelja kako se nebi izgubili.
-
--Osigurava da ako se P1 objavi prije P2 da P1je zapisana u dnevnik prije P2.
--Osigurava da potrosaci citaju poruke po vremenu kada su zapisane u dnevnik.
--Osigurava da s replikacijom N moze ispasti N-1 posrednika prije gubitka poruke.
+Kada pretplatnik zeli procitati poruke posrednik ce pronaci, procitati i poslati poruke preko mreze. Posrednik s sendfile i zero-copy API poruke cita iz radne memorije i salje u memoriju mrezne kartice u jednom koraku. Kako bi se dodatno ubrzao rad posrednici, objavljivaci i pretplatnici grupe poruka citaju, zapisuju i salju u istom binarnom obliku. Prije slanja poruka pretplatnicima posrednik moze sazeti poruke. !LINK_NA_RAD_O_STRANICENJU_KAFKA 
 
 
 
 \chapter{Pretinac}
-Pretinac je logicki dnevnik.
-Dnevnik je napravljen kao skup datoteka iste velicine.
-Posrednik objavljene poruke doda na kraj poslijednje datoteke.
-Datoteke se spremaju u stalnu memoriju tek nakon odredenog broja dodavanja ili vremena.
-Potrosac moze procitati poruku tek nakon sto je ona spremljena u stalnu memoriju. // replicirana koristeci OS -> pogledaj kafka docs -> NE: samo kada je svi zivuci pratitelji imaju zapisanu u svom dnevniku
-Oznaka poruke je logicki odmak u dnevniku.
-Odmaci poruka strogo rastu ali nisu uzastopni.
-Odmak sljedece poruke je zbroj trenutne oznake i duljine poruke.
--Svaki pretinac mora stati na server koji je za njega zaduzen.
--Pretinci su umnozeni na vise posrednika.
--Svaki pretinac ima posrednika vodu dok su svi ostali pratitelji.
--Voda pretinca je zaduzen za svako pisanje i citanje pretinca.
--U slucaju ispada vode neki pratitelj ce postati novi voda.
+Pretinac je logicki dnevnik i najmanja gradivna jedinica teme. Kada objavljivac objavi poruku na temu posrednik poruke zapise u pretinac teme. Dnevnik je izveden kao skup datoteka iste velicine. Kada posrednik zapise poruke u pretinac on doda poruke na kraj datoteke. Datoteke se predaju sustavu stranicenja operacijskog sustava tek nakon odredenog vremena ili dodavanja poruka. Svaka poruka ima jedinstven identifikator koji je ujedno i odmak unutar datoteke. Odmak sljedece poruke racuna se kao zbroj odmaka i velicine ranije poruke. Zato su identifikatori poruka strogo rastuci ali nisu uzastopni.!SLIKA_ODMAKA_I_FILEOVA
 
-+Pretinci tema mogu biti replicirani.
-+Pratitelji vode particija imaju isti dnevnik i odmak kao i voda.
-+Pratitelji imaju potrosaca koji cita poruke s vode particije i zapisuju poruke u svoj dnevnik.
-+Posrednik je zivuc ako ima vezu s ZK i ako nije predaleko u citanju poruka s vode (in-sync).
-+Prepostavlja se da se nece dogoditi bizantski ispad.
-+Poruka je zapisana samo onda kada ju svi pratitelji imaju zapisanu u svojem dnevniku.
-+Potrosaci mogu procitati samo one poruke koje su zapisane u sve sinkronizirane replike particije.
+Protok poruka kroz temu moze biti toliki da se jedan posrednik preoptereti. Zato je temu moguce podijeliti na vise pretinaca. Ako je B broj posrednika u ZooKeeper grozdu onda tema moze biti podijeljena na najvise B pretinaca. Svaki pretinac teme mora biti dodijeljen razlicitom posredniku kko bi se povecao protok poruka.
 
-+Svaka particija ima samo jedan odmak kojim prati do kuda je potrosac procitao poruke. 
-+Poruke zapisane u dnevnik nece biti izgubljene dok god postoji barem jedna ziva replika.
+Ako se dogodi ispad posrednika, poruke u pretincu postat ce nedostupne. Ako poruke stalno moraju biti dostupne pretinac se mora umnoziti. Svaki pretinac moze biti umnozen najvise B puta ako je B broj posrednika u ZooKeeper grozdu. Svaki umnozeni pretinac biti ce dodijeljen razlicitom posredniku jer dodijela istom ne povecava dostupnost uslijed ispada. Ako se pretinac umnozi B puta onda ce poruke u pretincu postati nedostupne tek ako se dogodi ispad na vise od B-1 posrednika.
 
-+SAmo ISR (in sync replica) mogu postati novi vode particije.
-+Poruka je zapisana samo kada svi pratitelji particije su zapisali poruku.
-+Broker moze ponovno postati dio ISR skupa.
-+Ako sve replike budu unistene prva replika u ISR koja postane ziva ce biti proglasena vodom particije.
+Kada su pretinci umnozeni potrebno je ujednaciti poruke u svakom umozenom pretincu. Zato ce jedan posrednik biti voda pretinca, a ostali posrednici ce biti pratitelji. Svaki posrednik moze biti voda najvice jednog pretinca po temi i biti pratitelj najvise B-1 pretinca po temi. Voda pretinca je jedini posrednik koji smije citati i pisati poruke u pretinac. Zadaca pratitelja je preusmjeriti korisnike na vodu pretinca i uskladiti svoj pretinac s pretincem vode. Pratitelji mogu preusmjeriti korisnike na vodu pretinca tako da pitaju ZooKeepera tko je voda kojeg pretinca. Svaki pratitelj ima pretplatnika koji cita poruke iz pretinca vode i zapisuje poruke u umnozeni pretinac.
 
+Osim sto voda pretinca je jedini posrednik koji moze pisati i citati poruke iz pretinca, on se mora brinuti o pratiteljima. Voda smatra da je pratitelj ziv samo ako je prijavljen u ZooKeeper grozd i ako ne zaostaje s citanjem poruka iz pretinca vode. Ako zaostaje, voda ce pratitelja izbaciti iz skupa uskladenih pratitelja (ISR). Kada voda primi poruke od objavljicava on ce poruke zapisati u svoju particiju i cekat ce potvrde pratitelja. Tek kada svi pratitelji procitaju i zapisu nove poruke u svoj umnozeni pretinac ce voda pretinca poslati potvrdu objavljivacu. Pretplatitelji mogu citati samo one poruke koje su i voda i pratitelji zapisali u svoje pretince.
 
-+Svaki broker je voda proporcionalnog broja particija.
-+Kada se dogodi ispad posrednika koji je voda particije umjesto da se glasa za svaku particiju controller posrednik koji ubrza glasanje.
+Ako se posredniku koji je voda pretinca dogodi ispad, nitko nece moci citati ili pisati poruke u pretinac. Zato ce pratitelji glasati tko ce od pratitelja postati novi voda pretinca. Samo pratitelji koji su u skupu ukladenih pratitelja mogu postati novi voda. U iznimnom slucaju kada ne postoji uskladenih pratitelja pratitelj koji nije uskladen moze postati novi voda pretinca.
 
+Posrednika, tema, pretinaca i umnozenih pretinaca je puno. Kako posrednici nebi glasali za novog vodu pretinca za svaki pretinac zasebno jedan od posrednika je zaduzen da bude nadglednik glasanja. Ako se dogodi ispad posrednika, nadglednik glasanja ce ubrzati glasanje novog vode pretinca.  
 
-\chapter{Tema}
-Kafka tema je tok poruka, apstraktna umotvorina o cijem sadrzaju brinu posrednici. Objavljivaci objavljuju poruke u temu, a pretplatnici ih citaju. Biti pretplacen na temu znaci napraviti podtok poruka. Svaki podtok ima 
-
-Team je tok poruka.
-Pretplacivanje na temu znaci napraviti barem jedan podtok podataka za izabranu temu.
-Poruke objavljene temi ce biti jednoliko rasporedene u podtokove.
-Podtok ima iterator poruka.
-Ako iterator dode do zadnje poruke on se blokira dok se ne objavi nova poruka.
-Tema je podijeljena na pretince.
-Poruke se brisu nakon zadanog vremena.
--Kolicina spremljenih podataka ne utjece na ucinkovitost.
+SLIKA prikazuje tri posrednika u ZooKeeper grozdu. Tema "sales" je podijeljena na najveci moguci broj pretincana, broj posrednika u grozdu. Kako se poruke nebi izgubile zbog ispada jednog posrednika svaki pretinac teme umnozen je dva puta. Voda prvog pretinca nasumicno je postao posrednik broj jedan. Voda pretinca dva ce biti ili posrednik dva ili tri jer se vodstvo i pretinci moraju podijeliti jednoliko. Ako voda pretinca dva postane posrednik tri, onda ce voda pretinca tri postati posrednik dva. Pratitelj pretinca jedan ciji je voda posrednik jedan je posrednik tri. Pratitelj pretinca dva ciji je voda posrednik tri je posrednik dva. Pratitelj pretinca tri ciji je voda posrednik dva je posrednik jedan.
 
 
 
 \chapter{Pretplatnici}
-Potrosaci citaju poruke iz pretplacenih tema.
-Potrosaci koriste pull model.
-Potrosaci mogu zajedno ili neovisno citati poruke.
+Pretplatnik je korisnicki program koji cita poruke iz teme. Svaki pretplatnik je clan samo jedne skupine pretplatnika. Skupina pretplatnika moze se sastojati od samo jednog clana. Skupina pretplatnika zajedno cita poruke iz teme. Svaki pretplatnik u skupini pretplatnika zaduzen za citanje poruka ima barem jedan pretinac iz kojeg jedino on moze citati poruke. Skupina pretplatnika moze istovrmeneno napraviti najvise P citanja ako je P broj pretinaca i u skupini pretplatnika je barem P clanova. Poruke se mogu procitati jedino iz pretinca vode. Ako pretplatnik uputi zahtjev za citanje pratitelju pretinca on ce pretplatnika preusmjeriti na vodu pretinca.
 
-Ako potrosac potvrdi odmak potvrdi sve poruke do odmaka.
-Potrosac od prosrednika trazi broj poruka jednak kolicini podataka i broju poruka nakon zadanog odmaka.
-Posrednik u indeksu pogleda odmak i nade datoteku s porukama.
-LIJEPA SLIKA DATOTEKA
+Pretplatnik u zahtjevu za citanje navodi odmak zadnje procitane poruke i koliko poruka zeli procitati. Posrednik ce dostaviti sve poruke od odmaka do trazene kolicine ili dok ne dode do kraja pretinca. Odmak poruke je i identifikator poruke i mjesto u datoteci posrednika gdje se poruka nalazi. Posrednik ne pazi koje je poruke pretplatnik procitao. Pretplatnik je zaduzen za rukovanje odmakom. Odmak zadnje pocitane poruke pretplatnik salje u posebnu temu posrednika. Ako se dogodi ispad pretplatnika, drugi pretplatnik ce procitati odmak iz teme i nastaviti s citanjem poruka iz pretinca.
 
-Poruka moze biti procitana vise puta.
-Potrosaci citaju skup poruka odjednom. -> skob s iteracijom, nije!, jedno je na visokoj jedno na niskoj razini
+Posrednik ce jednom pretplatniku po skupini pretplatnika dostaviti poruku barem jednom. Ako se dogodi ispad pretplatnika ista poruka se moze dostaviti vise puta. Ako je nedopustivo istu poruku procitati vise puta onda korsnik mora napraviti vlastiti algoritam ili koristiti transakcijskog pretplatnika. Pretplatnik cita poruke onim redoslijedom kojim su poruke zapisne u pretinac. Posrednici vremenski ne ureduju dostavu poruka iz svih pretinaca, ali su poruke vremenski uredeno u svakom pretincu pojedinacno. Ako je potrebno vremenski urediti sve poruke u svim pretincima onda je potrebno razviti vlastiti algortitam ili napraviti temu s samo jednim pretincem.
 
-Posrednik ne pazi koliko je poruka potrosac procitao.
-Potrosac pamti koje je poruke procitao.
-Jednostavan posrednik ali to uzrokuje probleme s brisanjem poruka.
-Potrosac se moze vratti unzad i procitati proslu poruku. Zahvaljujuci pull modelu.
--Potrosac se brine o odmaku poruka.
+Vise skupina pretplatnika moze istovremeno citati poruke iz iste teme i pretinaca. Posrednik ce odaslati istu poruku svim pretplacenim pretplatnicima. Posrednici ce skupu pretplatnika omoguciti citanje poruka samo ako su svi pratitelji u skupu uskladenih pratitelja i voda pretinca zapisali poruke u pretinac. Nakon sto pretplatnik primi poruke on ce u temi odmaka azurirati odmak do kojeg je procitao poruke.
 
-Kafka dostavlja poruke barem jednom.
-Vecinu vremena poruka se dostavi tocno jednom.
-Poruke u pretincu se dostavljaju po redu.
-Poruke u razlicitim pretincima se ne dostavljaju u redu.
--Ako je potreban potpuni redoslijed svih poruka napravi samo jednu particiju. To znaci da samo jedan potrosac moze citati odjednom.
-+Samo jednom dostava je moguce izvesti vlastitim algoritmom, Kafka Connect, Kafka Stream ili transakcijskim nacinom rada potrosaca/proizvodaca.
-
--Kod stoga poruke zajedno cita vise potrosaca.
--Kada se poruka procita, ona se brise iz stoga.
--Objavi-pretplati salje svaku poruku svim pretplacenim potrosacima.
--Skaliranje je nemoguce zbog obujma.
--Skup potrosaca omogucuje da svaka tema ima oba dobra svojstva istovremeno.
--Pretinac omogucuje paralelno citanje i osigurava redoslijed dostave poruka.
--Samo jedan protrosac u grupi moze citati jednu particiju istovremeno.
--Broj pretinaca mora biti puno veci od broja potrosaca u najvecem skupu potrosaca. ->kopija
-
-+Pull model za potrosace podrzava razlicite brzine citanja.
-+Pull model omogucuje visoku razinu grupiranja poruka.
-+Problem je kaj mozda posrednik nema podatak za citanje, ali se potrosac moze blokirati dok ne dode odredena kolicina podataka na posrednika.
-
-Skup potrosaca sastoji se od barem jednog potrosaca. -> mozda stavi u uvod
-Potrosaci u skupu zajedno citaju poruke iz pretplacenih tema.
-Svaku poruku cita samo jedan od potrosaca u skupu.
-Pretinac je najmanja jedinica paralelizma.
-Poruke u pretincu istovremeno cita samo jedan potrosac u grupi.
-Broj pretinaca mora biti puno veci od broja potrosaca u najvecem skupu potrosaca. -> ogranicenje
--Proizvodaci su zaduzeni za objavu poruke u izabrani pretinac. -> imaju na raspolaganju f()
--Potrosaci pripadaju najvise jednoj potrosackoj skupini.
--Poruka se dostavlja jednom potrosacu u skupini.
--Ista poruka se razasilje razlicitim skupinama potrosaca ako su pretplaceni na istu temu.
--Svaki potrosac u grupi cita podjednak broj pretinaca.
-+Svaki posrednik moze objaviti metapodatke o tome koji posrednik je voda partcije kome proizvodac mora uputiti zahtjev za pisanje.
+Model povlacenja poruka pretplatnicima dopusta citanje poruka brzinom koja njima odgovara. Model dopusta i ucinkovito razasiljanje iste poruke na vise pretplatnika. Ako pretplatnik zeli ponovno procitati poruku on se moze vratiti unatrag i poslati odmak procitane poruke. Kako pretplatnik nebi zaglavio u petlji ako u pretincu nema novim poruka on sebe moze blokirati dok ne dodu nove poruke. Posrednik nemoze samostalno pobrisati poruke iz pretinca. To je zato sto posrednik nezna koje poruke su procitali svi pretplatnici. Posrednici su zato napravljeni da s povecanjem neprocitanih poruka njihova ucinkovitost ne opada. Posrednik ce poruke izbrisati nakon zadanog vremena.
 
 
-
-\section{Apache Kafka}
 
 \section{Apache Pulsar}
+
+
+
+\chapter{Objavljivaci}
+Objavljivaci mogu objaviti poruke i cekati odgovor posrednika ili nastaviti s radom. Poruke se mogu slati pojedinacno ili u skupini. Prije slanja, poruke se mogu sazeti.
+
+Poruke sadrze vrijednost, oznaku objavljivaca, identifikator poruke i vrijeme objave.
+
+
+\chapter{Posrednici}
+
+
+
+\chapter{Pretplatnici}
+Pretplatnici se pretplacuju na pretplatu teme. Pretplatnik moze biti blokiran dok ne procita poruke ili koristiti budocnostnicu. Pretplatnik moze skupno ili pojedinacno potvrditi poruke.
+
+\chapter{Tema}
+Teme su sagradene kao poveznice. Tema moze ali i netreba zapisati poruke na racunalo. Teme pripadaju prostoru imena koja je skup tema s istom konfiguracijom. Prostori imena pripadaju stanaru u grozdu. 
+
+\chapter{Tema s pretincima}
+Tema s pretincima je posebna vrsta teme gdje vise posrednika posluzuje poruke. Moguce je napraviti temu s vise pretinaca postoji posrednika u grozdu. 
+
+\chapter{Nacini umsjeravanja}
+Usmjeravanje odlucuje kako se poruke dostavljaju posrednicima i pretincima. Poruke se mogu jednoliko usmjeriti na sve pretince, na jedan nasumicni pretinac ili se pretinac moze odrediti za svaku poruku posebno. 
+
+\chapter{Vremensko uredenje}
+Porukese mogu vremenski urediti po objavljivacu ili po kljucu i pretincu.
+
+\chapter{Teme bez zapisivanja}
+Ako se poruke cuvaju samo u radnoj memoriji, one ce biti potisnute prema pretplatnicima cim ih objavljivac objavi. Ovaj nacin rada je cesto brzi.
+
+\chapter{Prostor imena}
+
+\chapter{Nacini pretplate}
+Pretplate odlucuju kako se poruke dostavljaju pretplatnicima. Iskljuciva pretplata daje pravo citanja poruka samo jednom pretplatniku. Zajednicka pretplata kruzno dostavlja poruke pretplatnicima. Zajednicka pretplata se ne brine oko vremenskog uredenja poruka niti se vise poruka moze potvrdititi odjednom. Sigurnosna pretplata daje pravo citanja samo jednom pretplatniku, ali ako se njemu dogodi ispad sljedeci pretplatnik u redu ce preuzeti citanje poruka.
+
+\chapter{Brisanje poruka}
+Poruke koje pretplatnici potvrde se brisu. Nepotvrdene poruke se brisu nakon prolaska vremena zivota TTL. Potvrdene poruke se zadrzavaju u temi odredeno vrijeme.
+
+\chapter{Unistenje visestrukih poruka}
+Poruka se moze objaviti vise puta. Posrednik nece zapisati poruku koju zna da je vec zapisana.
+
+\chapter{Arhitektura}
+Pulsar grozd sastoji se od barem jednog Pulsar grozda. Pulsar grozdovi mogu umoziti poruke u istom procesu. Pulsar grozd sastoji se od barem jednog posrednika, grozda BookKepera i grozda ZooKeepera. Zdaca posrednika je primiti objavljene poruke i posluziti poruke pretpltnicima, zadac BookKeepra je zapisati poruke, a zadaca ZooKeepra je cuvati podatke o grozdu.
+
+\chapter{Posrednik}
+Posrednik je posluziteljski program bez stanja. Posluzitelj se sastoji od REST sucelja za upravljanje i korisnicko pretrazivanje i otpravnika za prijenos podataka. Posrednici posluzuju poruke iz prirucne memorije upravljane knjige ili BookKeepra.
+
+\chapter{Zapisivac}
+Poruke ne zapisuje posrednik vec Apache BooKKeeper. BookKeeper je raspodijeljeni zapisivac koji sprema poruke u knjige. Svaka tema se moze sastojati od vise knjiga. Poruke se dodaju uzastopno i mogu se umnoziti. Kapacitet memorije poveca se dodavanjem vise BooKeepera. BookKeeper izolira citanje i pisanje. Pokazivaci se spremaju u BooKeepera. 
+
+Knjiga je struktura podatka na ciji kraj proces oddaje poruke. Kada se zatvori, samo se moze citati. Ako se dogodi ispad ustanovi se u kojem je stanju knjiga i stanje se posalje svim BookKeeperima. Upravljana knjiga je umotvorina u koju se upisuju poruke teme. U upravljanu knjigu poruke dodaje jedan pisac i skup pokazivaca koji prate koju su poruke procitali pretplatnici. Upravljana knjiga korsti vise BookKeeper knjiga zbog lakoce brisanja i upisivanja poruka. Prije upisa poruke u knjigu BookKeeper zapisuje radnju u dnevnik. 
+
+\chapter{Posrednik}
+Umjesto da se korisnici spajaju izravno na posrednike.
+
+
+
+
+
+
+
 
 \section{RabbitMQ}
 
