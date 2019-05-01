@@ -44,7 +44,7 @@ Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati za razmjen
 
 
 \chapter{Objavljivac}
-Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruka se nuzno sastoji od sadrzaja, teme na koju se objavljuje, oznake pretinca i odmaka u pretincu. Poruke se salju u skupini nakon sto prode odredeno vrijeme ili se nakupi dovoljno poruka. Prije slanja, poruke se mogu sazeti. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je posluzitelj koji zapisuje poruke u pretinac. Objavljivac moze izabrati pretinac u koji ce se poruke zapisati ili moze slati poruke u svaki pretinac jednoliko. Posrednik ce poslat potvrdu kada se poruke zapisu u pretinac vode i izabrani broj uskladenih sljedbenika. Prije slanja sljedeceg skupa poruka objavljivac moze pricekati potvrdu posrednika. 
+Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruka se nuzno sastoji od sadrzaja, teme na koju se objavljuje, oznake pretinca, odmaka u pretincu i vremena objave. Poruke se salju u skupini nakon sto prode odredeno vrijeme ili se nakupi dovoljno poruka. Prije slanja, poruke se mogu sazeti. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je posluzitelj koji zapisuje poruke u pretinac. Ako objavljivac ne izabere pretinac u koji zeli zapisati poruku ili moze slati poruke u svaki pretinac jednoliko. Posrednik ce poslat potvrdu kada se poruke zapisu u pretinac vode i izabrani broj uskladenih sljedbenika. Prije slanja sljedeceg skupa poruka objavljivac moze pricekati potvrdu posrednika. 
 
 Ako se dogodi ispad objavljivaca ili posrednika, objavljivac ce ponovno poslati poruke. Objavljene poruke bit ce dostavljene posredniku barem jednom. Ako je uvisestrucavanje poruka nedopustivo, objavljivac moze koristiti transakcijski nacin rada. 
 
@@ -110,7 +110,7 @@ Model povlacenja poruka pretplatnicima dopusta citanje poruka brzinom koja njima
 
 
 \chapter{Objavljivaci}
-Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Objavljivaci cekaju potvrdu da su poruke primljene ili nastave s radom i provjeru naprave naknadno. 
+Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Objavljivaci cekaju potvrdu da su poruke primljene ili nastave s radom i provjeru naprave naknadno. 
 
 Usmjeravanje odlucuje kako se poruke dostavljaju posrednicima i pretincima. Poruke se mogu jednoliko usmjeriti na sve pretince, na jedan nasumicni pretinac ili se pretinac moze odrediti za svaku poruku posebno. 
 
