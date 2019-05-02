@@ -44,7 +44,7 @@ Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati za razmjen
 
 
 \chapter{Objavljivac}
-Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruka se nuzno sastoji od sadrzaja, teme na koju se objavljuje, oznake pretinca, odmaka u pretincu i vremena objave. Poruke se salju u skupini nakon sto prode odredeno vrijeme ili se nakupi dovoljno poruka. Prije slanja, poruke se mogu sazeti. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je posluzitelj koji zapisuje poruke u pretinac. Ako objavljivac ne izabere pretinac u koji zeli zapisati poruku ili moze slati poruke u svaki pretinac jednoliko. Posrednik ce poslat potvrdu kada se poruke zapisu u pretinac vode i izabrani broj uskladenih sljedbenika. Prije slanja sljedeceg skupa poruka objavljivac moze pricekati potvrdu posrednika. 
+Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruka se nuzno sastoji od sadrzaja, teme na koju se objavljuje, oznake pretinca, odmaka u pretincu i vremena objave. Poruke se salju u skupini nakon sto prode odredeno vrijeme ili se nakupi dovoljno poruka. Prije slanja, poruke se mogu sazeti. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je posluzitelj koji zapisuje poruke u pretinac. Objavljivac ili kljucem izabere pretinac u koji zeli zapisati poruke ili se poruke salju u svaki pretinac jednoliko. Posrednik ce poslat potvrdu kada se poruke zapisu u pretinac vode i izabrani broj uskladenih sljedbenika. Prije slanja sljedeceg skupa poruka objavljivac moze pricekati potvrdu posrednika. 
 
 Ako se dogodi ispad objavljivaca ili posrednika, objavljivac ce ponovno poslati poruke. Objavljene poruke bit ce dostavljene posredniku barem jednom. Ako je uvisestrucavanje poruka nedopustivo, objavljivac moze koristiti transakcijski nacin rada. 
 
@@ -62,7 +62,7 @@ Tema je tok poruka, apstraktna umotvorina na koju objavljivaci objavljuju poruke
 
 
 
-\chapter{Posrednici}
+\chapter{Posrednik}
 Posrednik je posluziteljski program koji zapisuje poruke objavljivaca i posluzuje poruke pretplatnicima. Svaki posrednik dio je samo jednog Apache ZooKeeper grozda. Posrednici koriste ZooKeeper za izvrsavanje sporazumnog algoritma, pamcenje tema, njihovih pretinaca i uskladenih posrednika. Posrednik ce poruke zapisati u pretinac onim redoslijedom kojim je objavljivac poruke poslao, ne onim redoslijedom kojim su poruke dosle do posrednika. Pretplatnici ce s posrednika citati poruke onim redoslijeom kojim su zapisane u pretinac.
 
 Kada objavljivac objavi poruke na temu posrednik ce zapisati poruke u odredeni pretinac. Posrednik koristi sustav stranicenja i tvrdi disk za zapisivanje poruka. Umjesto da posrednik stvori prirucnu memoriju u memoriji procesa on poruke predaje sustavu stranicenja operacijskog sustava. Operacijski sustav ce poruke zapisati u stranice i pohraniti u nedodijeljene dijelove radne memorije. Poruke se zapisuju na tvrdi disk samo kada operacijski sustav zeli osloboditi memoriju sustava stranicenja. Opisano gospodarenje memorijom dopusta posredniku da cuva veliku kolicinu poruka bez gubitka ucinkovitosti.
@@ -92,7 +92,7 @@ SLIKA prikazuje tri posrednika u ZooKeeper grozdu. Tema "sales" je podijeljena n
 
 
 
-\chapter{Pretplatnici}
+\chapter{Pretplatnik}
 Pretplatnik je korisnicki program koji cita poruke iz teme. Svaki pretplatnik je clan samo jedne skupine pretplatnika. Skupina pretplatnika moze se sastojati od samo jednog clana. Skupina pretplatnika zajedno cita poruke iz teme. Svaki pretplatnik u skupini pretplatnika zaduzen za citanje poruka ima barem jedan pretinac iz kojeg jedino on moze citati poruke. Skupina pretplatnika moze istovrmeneno napraviti najvise P citanja ako je P broj pretinaca i u skupini pretplatnika je barem P clanova. Poruke se mogu procitati jedino iz pretinca vode. Ako pretplatnik uputi zahtjev za citanje pratitelju pretinca on ce pretplatnika preusmjeriti na vodu pretinca.
 
 Pretplatnik u zahtjevu za citanje navodi odmak zadnje procitane poruke i koliko poruka zeli procitati. Posrednik ce dostaviti sve poruke od odmaka do trazene kolicine ili dok ne dode do kraja pretinca. Odmak poruke je i jedinstvena oznaka poruke i mjesto u datoteci posrednika gdje se poruka nalazi. Posrednik ne pazi koje je poruke pretplatnik procitao. Pretplatnik je zaduzen za rukovanje odmakom. Odmak zadnje pocitane poruke pretplatnik salje u posebnu temu posrednika. Ako se dogodi ispad pretplatnika, drugi pretplatnik ce procitati odmak iz teme i nastaviti s citanjem poruka iz pretinca.
@@ -109,10 +109,12 @@ Model povlacenja poruka pretplatnicima dopusta citanje poruka brzinom koja njima
 
 
 
-\chapter{Objavljivaci}
-Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Objavljivaci cekaju potvrdu da su poruke primljene ili nastave s radom i provjeru naprave naknadno. 
+\chapter{Objavljivac}
+Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Objevljivac moze precizno usmjeriti kojim posrednicima i pretincima ce se poruke dostaviti. Poruke se mogu usmjeriti na jedan nasumicni pretinac, na tocno odredene pretince s kljucem ili se mogu slati jednoliko na sve pretince. Objavljivaci ili cekaju potvrdu da je posrednik zapisao poruke ili nastave s radom i nakonadno provjeravaju jel su poruke primljene.
 
-Usmjeravanje odlucuje kako se poruke dostavljaju posrednicima i pretincima. Poruke se mogu jednoliko usmjeriti na sve pretince, na jedan nasumicni pretinac ili se pretinac moze odrediti za svaku poruku posebno. 
+
+\chapter{Tema i pretplata}
+Tema je imenovani tok poruka koji sluzi za prijenos poruka od objavljicava do pretplatnika. Svaka tema je izgradena kao poveznica.   Tema moze ali i netreba zapisati poruke na racunalo. Teme pripadaju prostoru imena koja je skup tema s istom konfiguracijom. Prostori imena pripadaju stanaru u grozdu.
 
 
 
@@ -125,7 +127,7 @@ Usmjeravanje odlucuje kako se poruke dostavljaju posrednicima i pretincima. Poru
 Pretplatnici se pretplacuju na pretplatu teme. Pretplatnik moze biti blokiran dok ne procita poruke ili koristiti budocnostnicu. Pretplatnik moze skupno ili pojedinacno potvrditi poruke.
 
 \chapter{Tema}
-Teme su sagradene kao poveznice. Tema moze ali i netreba zapisati poruke na racunalo. Teme pripadaju prostoru imena koja je skup tema s istom konfiguracijom. Prostori imena pripadaju stanaru u grozdu. 
+ 
 
 \chapter{Tema s pretincima}
 Tema s pretincima je posebna vrsta teme gdje vise posrednika posluzuje poruke. Moguce je napraviti temu s vise pretinaca postoji posrednika u grozdu. 
