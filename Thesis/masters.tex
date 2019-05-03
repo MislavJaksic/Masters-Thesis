@@ -58,7 +58,7 @@ Compression?
 
 
 \chapter{Tema}
-Tema je tok poruka, apstraktna umotvorina na koju objavljivaci objavljuju poruke, a iz koje pretplatnici citaju poruke. Posrednici se brinu da poruke budu zapisane. Biti pretplacen na temu znaci napraviti podtok poruka. Poruke objavljene u temu se ravnomjerno rasporeduju u podtokove. Svaki podtok ima pokazivac kojim pretplatnik cita poruke. Ako pokazivac dode do kraja podtoka, pretplatnik se blokira dok se ne objavi nova poruka. Poruke u temi se brisu tek nakon odredenog vremena. Kolicina neprocitanih poruka u temi ne utjece na protok poruka. Tema je podijeljena na pretince s kojih razliciti posrednici citaju i pisu poruke. Kako bi poruke u pretincima bile dostupne i ako se dogodi ispad posrednika, pretinci se mogu umnoziti.
+Tema je tok poruka, apstraktna umotvorina na koju objavljivaci objavljuju poruke, a iz koje pretplatnici citaju poruke. Posrednici se brinu da poruke budu zapisane. Biti pretplacen na temu znaci napraviti podtok poruka. Poruke objavljene u temu se ravnomjerno rasporeduju u podtokove. Svaki podtok ima pokazivac kojim pretplatnik cita poruke. Ako pokazivac dode do kraja podtoka, pretplatnik se blokira dok se ne objavi nova poruka. Kolicina neprocitanih poruka u temi ne utjece na protok poruka kroz temu. Poruke u temi se brisu tek nakon odredenog vremena. Tema je podijeljena na pretince s kojih razliciti posrednici citaju i pisu poruke. Kako bi poruke u pretincu bile dostupne nakon ispad posrednika, pretinac je moguce umnoziti.
 
 
 
@@ -111,15 +111,26 @@ Model povlacenja poruka pretplatnicima dopusta citanje poruka brzinom koja njima
 
 \chapter{Objavljivac}
 Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Objevljivac moze precizno usmjeriti kojim posrednicima i pretincima ce se poruke dostaviti. Poruke se mogu usmjeriti na jedan nasumicni pretinac, na tocno odredene pretince s kljucem ili se mogu slati jednoliko na sve pretince. Objavljivaci ili cekaju potvrdu da je posrednik zapisao poruke ili nastave s radom i nakonadno provjeravaju jel su poruke primljene.
+SLIKA GROZDA
 
 
 \chapter{Tema i pretplata}
-Tema je imenovani tok poruka koji sluzi za prijenos poruka od objavljicava do pretplatnika. Svaka tema je izgradena kao poveznica.   Tema moze ali i netreba zapisati poruke na racunalo. Teme pripadaju prostoru imena koja je skup tema s istom konfiguracijom. Prostori imena pripadaju stanaru u grozdu.
+Tema je imenovani tok poruka koji sluzi za prijenos poruka od objavljicava do pretplatnika. Svaka tema je izgradena kao poveznica. Svaka tema pripada prostoru imena. Prostor imena je upravna jednika kojom se mijenjaju postavke skupini tema. Svaki prostor imena pripada stanaru. Stanari pripadaju Pulsar grozdu. Moguce je napraviti bezmemorijske teme koje poruke zapisuju samo u radnu memoriju, a ne i tvrdi disk. Bezmemorijske teme objavljene poruke odmah potiskuju prema svim pretplatnicima. Bezmemorijske teme su brze ali nemaju pozeljna svojstva memorijskih tema. Kolicina neprocitanih poruka u temi ne utjece na protok poruka kroz temu. Poruka se brise iz teme kada svi pretplatnici procitaju poruku ili kada je poruka procitana i starija od zadane vrijednosti ili kada je neporcitana i starija od zadane vrijednosti. Tema se moze podijeliti na vise podtema zvanih pretinac. Pretinci su ravnomjerno raspodijeljeni po posrednicima. 
+SLIKA RAPOSIJELE PRETINACA
+
+Kako objavljivaci usmjeravaju dostavu poruka na pretince tako pretplatnici citaju poruka koristeci pretplate. Postoje tri vrste pretplata. Iskljuciva pretplata pravo citanja poruka daje samo jednom pretplatniku. Zajednicka pretplata jednoliko dostavlja poruke pretplatnicima. Sigurnosna pretplata pravo citanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad pomocni pretplatnik ce nastaviti citanje poruka od mjesta ispada. Zajednicka pretplata ne podrzava skupnu potvrdu dostave poruka niti pazi na vremensko uredenje dostave poruka.
+SLIKA PRETPLATA
 
 
 
 
-\chapter{Posrednici}
+Pretinaca moze biti vise nego posrednika. Tada je moguce da vise posrednika posluzuje istu temu.
+
+
+
+
+
+\chapter{Posrednik}
 
 
 
@@ -130,7 +141,6 @@ Pretplatnici se pretplacuju na pretplatu teme. Pretplatnik moze biti blokiran do
  
 
 \chapter{Tema s pretincima}
-Tema s pretincima je posebna vrsta teme gdje vise posrednika posluzuje poruke. Moguce je napraviti temu s vise pretinaca postoji posrednika u grozdu. 
 
 \chapter{Nacini umsjeravanja}
 
@@ -139,15 +149,13 @@ Tema s pretincima je posebna vrsta teme gdje vise posrednika posluzuje poruke. M
 Porukese mogu vremenski urediti po objavljivacu ili po kljucu i pretincu.
 
 \chapter{Teme bez zapisivanja}
-Ako se poruke cuvaju samo u radnoj memoriji, one ce biti potisnute prema pretplatnicima cim ih objavljivac objavi. Ovaj nacin rada je cesto brzi.
 
 \chapter{Prostor imena}
 
 \chapter{Nacini pretplate}
-Pretplate odlucuju kako se poruke dostavljaju pretplatnicima. Iskljuciva pretplata daje pravo citanja poruka samo jednom pretplatniku. Zajednicka pretplata kruzno dostavlja poruke pretplatnicima. Zajednicka pretplata se ne brine oko vremenskog uredenja poruka niti se vise poruka moze potvrdititi odjednom. Sigurnosna pretplata daje pravo citanja samo jednom pretplatniku, ali ako se njemu dogodi ispad sljedeci pretplatnik u redu ce preuzeti citanje poruka.
+
 
 \chapter{Brisanje poruka}
-Poruke koje pretplatnici potvrde se brisu. Nepotvrdene poruke se brisu nakon prolaska vremena zivota TTL. Potvrdene poruke se zadrzavaju u temi odredeno vrijeme.
 
 \chapter{Unistenje visestrukih poruka}
 Poruka se moze objaviti vise puta. Posrednik nece zapisati poruku koju zna da je vec zapisana.
