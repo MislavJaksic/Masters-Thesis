@@ -110,12 +110,12 @@ Model povlacenja poruka pretplatnicima dopusta citanje poruka brzinom koja njima
 
 
 \chapter{Objavljivac}
-Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Objevljivac moze usmjeriti kojim posrednicima i pretincima ce se poruke dostaviti. Poruke se mogu usmjeriti na jedan nasumicni pretinac, na tocno odredene pretince s kljucem ili se mogu slati jednoliko na sve pretince. Objavljivaci ili cekaju potvrdu da je posrednik zapisao poruke ili nastave s radom i nakonadno provjeravaju jel su poruke primljene.
+Objavljivac je korisnicki program koji salje poruke u temu posrednika. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Tema moze biti podijeljena na pretince. Objavljivac moze usmjeriti poruke u odredeni pretinac. Poruke se mogu usmjeriti na jedan nasumicni pretinac, na tocno odredene pretince koristeci kljuc ili se mogu slati jednoliko na sve pretince. Objavljivaci ili cekaju potvrdu da je posrednik zapisao poruke ili nastave s radom i nakonadno provjeravaju jel su poruke primljene. 
 SLIKA GROZDA
 
 
 \chapter{Tema i pretplata}
-Tema je imenovani tok poruka koji sluzi za prijenos poruka od objavljicava do pretplatnika. Svaka tema je izgradena kao poveznica. Svaka tema pripada prostoru imena. Prostor imena je upravna jednika kojom se mijenjaju postavke skupini tema. Svaki prostor imena pripada stanaru. Stanari pripadaju Pulsar grozdu. Moguce je napraviti bezmemorijske teme koje poruke zapisuju samo u radnu memoriju, a ne i tvrdi disk. Bezmemorijske teme objavljene poruke odmah potiskuju prema svim pretplatnicima. Bezmemorijske teme su brze ali nemaju pozeljna svojstva memorijskih tema. Kolicina neprocitanih poruka u temi ne utjece na protok poruka kroz temu. Poruka se brise iz teme kada svi pretplatnici procitaju poruku ili kada je poruka procitana i starija od zadane vrijednosti ili kada je neporcitana i starija od zadane vrijednosti. Tema se moze podijeliti na vise podtema zvanih pretinac. Pretinci su ravnomjerno raspodijeljeni po posrednicima. 
+Tema je imenovani tok poruka koji sluzi za prijenos poruka od objavljicava do pretplatnika. Svaka tema je izgradena kao poveznica. Svaka tema pripada prostoru imena. Prostor imena je upravna jednika kojom se mijenjaju postavke skupini tema. Svaki prostor imena pripada stanaru. Stanari pripadaju Pulsar grozdu. Moguce je napraviti bezmemorijske teme koje poruke cuvaju do slanja pretplatnicima ili ispada posrednika. Bezmemorijske teme objavljene poruke potiskuju prema pretplatnicima. Prednost bezmemorijskih tema je brzina. Kolicina neprocitanih poruka u temi ne utjece na protok poruka kroz temu. Poruka se brise iz teme kada svi pretplatnici procitaju poruku ili kada je poruka procitana i starija od zadane vrijednosti ili kada je neprocitana i starija od zadane vrijednosti. Tema se moze podijeliti na vise podtema zvanih pretinac. Pretinci su ravnomjerno raspodijeljeni po posrednicima. 
 SLIKA RAPOSIJELE PRETINACA
 
 Kako objavljivaci usmjeravaju dostavu poruka na pretince tako pretplatnici citaju poruka koristeci pretplate. Postoje tri vrste pretplata. Iskljuciva pretplata pravo citanja poruka daje samo jednom pretplatniku. Zajednicka pretplata jednoliko dostavlja poruke pretplatnicima. Sigurnosna pretplata pravo citanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad pomocni pretplatnik ce nastaviti citanje poruka od mjesta ispada. Zajednicka pretplata ne podrzava skupnu potvrdu dostave poruka niti pazi na vremensko uredenje dostave poruka.
@@ -123,17 +123,13 @@ SLIKA PRETPLATA
 
 
 
-
-Pretinaca moze biti vise nego posrednika. Tada je moguce da vise posrednika posluzuje istu temu.
-
-
-
-
-
 \chapter{Posrednik}
 Posrednik je program bez stanja koji se sastoji od dva dijela. Prvi dio je posluzitelj s REST suceljem za upravljanje i pretrazivanje tema, a drugi dio je otpravnik za prijenos podataka. Umjesto da objavljivaci i pretplatnici izravno razgovaraju s posrednikom mogu se spojiti na zastupnika koji ce preusmjeriti njihove zahtjeve posrednicima.
 
 Pulsar proces satoji se od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog posrednika, Apache BookKeeper grozda i Apache ZooKeeper grozda. Pulsar grozdovi mogu umoziti poruke ako pripadaju istom procesu. Zadaca posrednik je posluziti poruke pretplatnicima iz upravljane knjige ili BookKeepera, dok je ZooKeeper zaduzen za cuvanje podata o grozdu. BookKeeper se brine o zapisivanju poruka.
+
+Pretinaca moze biti vise nego posrednika. Tada je moguce da vise posrednika posluzuje istu temu.
+
 
 
 \chapter{Upravljana knjiga}
@@ -151,84 +147,18 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on moze koristiti sucelje c
 
 
 
-
-\chapter{Tema}
- 
-
-\chapter{Tema s pretincima}
-
-\chapter{Nacini umsjeravanja}
-
-
-\chapter{Vremensko uredenje}
-Porukese mogu vremenski urediti po objavljivacu ili po kljucu i pretincu.
-
-\chapter{Teme bez zapisivanja}
-
-\chapter{Prostor imena}
-
-\chapter{Nacini pretplate}
-
-
-\chapter{Brisanje poruka}
-
 \chapter{Unistenje visestrukih poruka}
 Poruka se moze objaviti vise puta. Posrednik nece zapisati poruku koju zna da je vec zapisana.
-
-\chapter{Arhitektura}
-
-
-\chapter{Posrednik}
-
-
-\chapter{Zapisivac}
-
-
-\chapter{Zastupnik}
-
-
-\chapter{Otkrivanje usluga}
 
 
 \chapter{Korisnici}
 Korisnik se pitati tko je zaduzen za temu. Nakon sto dobije adresu posrednika, spojt ce se na posrednika.
-
-\chapter{Sucelje citaca}
 
 \chapter{Iznimke}
 Koje f-nalnosti ne rade s kojima. TODO
 
 
 \section{RabbitMQ}
-
-
-
-\begin{table}[]
-\begin{tabular}{lllll}
-                     & Kafka                & Pulsar                                                         & RabbitMQ &  \\
-Brisanje poruka      & nakon vremena isteka & nakon potvrde, nakon vremena zadrzavanja, nakon vremena isteka &          &  \\
-Zapisivanje podataka & Kafka                & BookKeeper                                                     &          &  \\
-Nadziranje grozda    & ZooKeeper            & ZooKeeper                                                      &          & 
-Garancija objave
-Garancija pretplate
-Umotvorine
-Paralelizam
-Zapis odmaka
-ID poruke
-Odmak
-Potvrdivanje poruka
-Pretplate
-Geo-umnozavanje
-Posrednicko spajanje
-Ogranicenje pretinca i pretplatnika
-Gubitak poruka
-Umnozavanje poruka
-Izolacija pisanja i citanja
-Posebitnosti svakog
-Has routing tier?
-Supports batching?
-\end{tabular}
-\end{table}
 
 
 
