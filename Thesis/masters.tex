@@ -110,7 +110,15 @@ Ako se posredniku koji je vođa pretinca dogodi ispad, nitko neće moći čitati
 Posrednika, tema, pretinaca i umnoženih pretinaca je puno. Kako posrednici ne bi glasali za novog vođu pretinca za svaki pretinac zasebno jedan od posrednika je zadužen da bude nadglednik glasanja. Ako se dogodi ispad posrednika, nadglednik glasanja će ubrzati glasanje novog vođe pretinca.
 
 \subsection{Pretplatnik}
-Pretplatnik je korisnički program koji čita poruke iz teme. Svaki pretplatnik je član samo jedne skupine pretplatnika. Skupina pretplatnika može se sastojati od samo jednog člana. Skupina pretplatnika zajedno čita poruke iz teme. Svaki pretplatnik u skupini pretplatnika zadužen za čitanje poruka ima barem jedan pretinac iz kojeg jedino on može čitati poruke. Skupina pretplatnika može istovremeno napraviti najviše P čitanja ako je P broj pretinaca i u skupini pretplatnika je barem P članova. Poruke se mogu pročitati jedino iz pretinca vođe. Ako pretplatnik uputi zahtjev za čitanje pratitelju pretinca on će pretplatnika preusmjeriti na vođu pretinca.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{KafkaConsumerGroups.png}
+    \caption{Kafka pretinci i skup pretplatnika}
+    \label{fig:kafka-consumer-group}
+\end{figure}
+
+Pretplatnik je korisnički program koji čita poruke iz teme. \ref{fig:kafka-consumer-group} prikazuje odnos pretplatnika i teme. Svaki pretplatnik je član samo jedne skupine pretplatnika. Skupina pretplatnika sastojati se od barem jednog člana. Skupina pretplatnika zajedno čita poruke iz teme. Neki pretplatnici u skupu pretplatnika biti će zaduženi za čitanje poruka iz teme. Svaki zaduženi pretplatnik ima barem jedan pretinac iz kojeg jedino on može čitati poruke. Skupina pretplatnika može istovremeno napraviti najviše P čitanja ako je P broj pretinaca i u skupini pretplatnika je barem P članova. Poruke se mogu pročitati jedino iz pretinca vođe. Ako pretplatnik uputi zahtjev za čitanje pratitelju pretinca on će pretplatnika preusmjeriti na vođu pretinca.
 
 Pretplatnik u zahtjevu za čitanje navodi odmak zadnje pročitane poruke i koliko poruka želi pročitati. Posrednik će dostaviti sve poruke od odmaka do tražene količine ili dok ne dođe do kraja pretinca. Odmak poruke je i jedinstvena oznaka poruke i mjesto u datoteci posrednika gdje se poruka nalazi. Posrednik ne pazi koje je poruke pretplatnik pročitao. Pretplatnik je zadužen za rukovanje odmakom. Odmak zadnje pročitane poruke pretplatnik šalje u posebnu temu posrednika. Ako se dogodi ispad pretplatnika, drugi pretplatnik će pročitati odmak iz teme i nastaviti s čitanjem poruka iz pretinca.
 
@@ -122,26 +130,46 @@ Model povlačenja poruka pretplatnicima dopušta čitanje poruka brzinom koja nj
 
 \section{Apache Pulsar}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{PulsarCluster.png}
+    \caption{Apache Pulsar grozd}
+    \label{fig:pulsar-cluster}
+\end{figure}
 
+Apache Pulsar je moderni alat za raspodijeljenu obradu tokova podataka. \ref{fig:pulsar-cluster} prikazuje Pulsar proces koji se sastoji od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog Pulsar posrednika, od barem jednog Apache BookKeeper zapisnicara i Apache ZooKeeper nadzornika. Objavljivači šalju poruke u temu grozda. Posrednici primaju i posluzuju poruke, a zapisnicari ih zapisuju. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. \citep{pulsar-docs} \citep{pulsar-streamlio-1} \citep{pulsar-streamlio-2} \citep{pulsar-streamlio-intro} opisuju primjenu, arhitekturu i izvedbu Pulsar pretplatnika, upravljane knjige, posrednika, teme, pretplate i objavljivača.
 
-\subsection{Objavljivac}
-Objavljivac je korisnicki program koji salje poruke u temu. Poruke se nuzno sastoje od sadrzaja, oznake objavljivaca, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sazeti. Tema moze biti podijeljena na pretince. Objavljivac moze usmjeriti poruke u odredeni pretinac. Poruke se mogu usmjeriti na jedan nasumicni pretinac, na tocno odredene pretince koristeci kljuc ili se mogu slati jednoliko na sve pretince. Objavljivaci ili cekaju potvrdu da je posrednik zapisao poruke ili nastave s radom i nakonadno provjeravaju jel su poruke primljene. 
-SLIKA GROZDA
-
+\subsection{Objavljivač}
+Objavljivač je korisnički program koji šalje poruke u temu. Poruke se nužno sastoje od sadržaja, oznake objavljivača, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sažeti. Tema može biti podijeljena na pretince. Objavljivač može usmjeriti poruke u određeni pretinac. Poruke se mogu usmjeriti na jedan nasumični pretinac, na točno određene pretince koristeći ključ ili se mogu slati jednoliko na sve pretince. Objavljivači ili čekaju potvrdu dok posrednik zapisuje poruke ili nastave s radom i naknadno provjere je li su poruke primljene i zapisane.
 
 \subsection{Tema i pretplata}
-Tema je imenovani tok poruka koji sluzi za prijenos poruka od objavljicava do pretplatnika. Svaka tema je izgradena kao poveznica. Svaka tema pripada prostoru imena. Prostor imena je upravna jednika kojom se mijenjaju postavke skupini tema. Svaki prostor imena pripada stanaru. Stanari pripadaju Pulsar grozdu. Moguce je napraviti bezmemorijske teme koje poruke cuvaju do slanja pretplatnicima ili ispada posrednika. Bezmemorijske teme objavljene poruke potiskuju prema pretplatnicima. Prednost bezmemorijskih tema je brzina. Kolicina neprocitanih poruka u temi ne utjece na protok poruka kroz temu. Poruka se brise iz teme kada svi pretplatnici procitaju poruku ili kada je poruka procitana i starija od zadane vrijednosti ili kada je neprocitana i starija od zadane vrijednosti. Tema se moze podijeliti na vise podtema zvanih pretinac. Pretinci su ravnomjerno raspodijeljeni po posrednicima. 
-SLIKA RAPOSIJELE PRETINACA
 
-Kako objavljivaci usmjeravaju dostavu poruka na pretince tako pretplatnici citaju poruka koristeci pretplate. Postoje tri vrste pretplata. Iskljuciva pretplata pravo citanja poruka daje samo jednom pretplatniku. Zajednicka pretplata jednoliko dostavlja poruke pretplatnicima. Sigurnosna pretplata pravo citanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad pomocni pretplatnik ce nastaviti citanje poruka od mjesta ispada. Zajednicka pretplata ne podrzava skupnu potvrdu dostave poruka niti pazi na vremensko uredenje dostave poruka.
-SLIKA PRETPLATA
+!HIER. PICTURE
 
+Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnika kroz posrednika. Tema je izgrađena kao poveznica. !SLIKA prikazuje stupnjevanje teme, prostora imena i stanara. Svaka tema pripada jednom prostoru imena. Prostor imena je upravna jedinka kojom se mijenjaju postavke skupini tema. Svaki prostor imena pripada stanaru. Stanari pripadaju Pulsar grozdu.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{PulsarPartitions.png}
+    \caption{Pulsar pretinci}
+    \label{fig:pulsar-partitions}
+\end{figure}
+
+Moguće je napraviti bezmemorijske teme koje poruke čuvaju do slanja pretplatnicima ili ispada posrednika. Bezmemorijske teme objavljene poruke potiskuju prema pretplatnicima. Prednost bezmemorijskih tema je brzina. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruka se briše iz teme kada svi pretplatnici pročitaju poruku ili kada je poruka pročitana i starija od zadane vrijednosti ili kada je nepročitana i starija od zadane vrijednosti. Tema se može podijeliti na više podtema zvanih pretinac. \ref{fig:pulsar-partitions} prikazuje odnos objavljivača i pretplatnika prema temi koja je podijeljena na pretince. Pretinci su ravnomjerno raspodijeljeni po posrednicima. Broj istovremenih pretplatnika odnosno čitanja nije ograničeno brojem pretinaca.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{PulsarSubscription.png}
+    \caption{Pulsar pretplate}
+    \label{fig:pulsar-subscription}
+\end{figure}
+
+Kako objavljivači usmjeravaju dostavu poruka na pretince tako pretplatnici čitaju poruka koristeći pretplate. \ref{fig:pulsar-subscription} prikazuje tri vrste pretplata. Isključiva pretplata pravo čitanja poruka daje samo jednom pretplatniku. Ako drugi pretplatnik pokuša čitati iz isključive pretplate on će biti odbijen. Zajednička pretplata jednoliko dostavlja poruke pretplatnicima. Svaka poruka dostavit će se samo jednom pretplatniku. Zajednička pretplata ne podržava skupnu potvrdu dostave poruka niti pazi na vremensko uređenje dostave poruka. Sigurnosna pretplata pravo čitanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad drugotni pretplatnik će nastaviti čitanje poruka od mjesta ispada.
 
 \subsection{Posrednik}
 Posrednik je program bez stanja koji se sastoji od dva dijela. Prvi dio je posluzitelj s REST suceljem za upravljanje i pretrazivanje tema, a drugi dio je otpravnik za prijenos podataka. Umjesto da objavljivaci i pretplatnici izravno razgovaraju s posrednikom mogu se spojiti na zastupnika koji ce preusmjeriti njihove zahtjeve posrednicima.
 
-Pulsar proces satoji se od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog posrednika, Apache BookKeeper grozda i Apache ZooKeeper grozda. Pulsar grozdovi mogu umoziti poruke ako pripadaju istom procesu. Zadaca posrednik je posluziti poruke pretplatnicima iz upravljane knjige ili BookKeepera, dok je ZooKeeper zaduzen za cuvanje podata o grozdu. BookKeeper se brine o zapisivanju poruka.
+Pulsar grozdovi mogu umoziti poruke ako pripadaju istom procesu. Zadaca posrednik je posluziti poruke pretplatnicima iz upravljane knjige ili BookKeeper zapisnicara, dok je ZooKeeper nadzornik zaduzen za cuvanje podata o grozdu. Zapisnicar zapisuje poruke koje su poslane posredniku.
 
 
 
