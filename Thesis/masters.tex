@@ -144,9 +144,14 @@ Objavljivač je korisnički program koji šalje poruke u temu. Poruke se nužno 
 
 \subsection{Tema i pretplata}
 
-!HIER. PICTURE
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{PulsarHierarchy.png}
+    \caption{Pulsar teme, prostori imena i stanari}
+    \label{fig:pulsar-hierarchy}
+\end{figure}
 
-Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnika kroz posrednika. Tema je izgrađena kao poveznica. !SLIKA prikazuje stupnjevanje teme, prostora imena i stanara. Svaka tema pripada jednom prostoru imena. Prostor imena je upravna jedinka kojom se mijenjaju postavke skupini tema. Svaki prostor imena pripada stanaru. Stanari pripadaju Pulsar grozdu.
+Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnika kroz posrednika. Tema je izgrađena kao poveznica. \ref{fig:pulsar-hierarchy} prikazuje stupnjevanje tema, prostor imena i stanara. Svaka tema pripada jednom prostoru imena. Prostor imena je upravna jedinka kojom se mijenjaju postavke tema. Svaki prostor imena pripada jednom stanaru. Stanar određuje način pristupa, korištenje resursa, brisanje poruka i izolaciju prostora imena. Stanari pripadaju Pulsar grozdu.
 
 \begin{figure}[H]
     \centering
@@ -167,37 +172,21 @@ Moguće je napraviti bezmemorijske teme koje poruke čuvaju do slanja pretplatni
 Kako objavljivači usmjeravaju dostavu poruka na pretince tako pretplatnici čitaju poruka koristeći pretplate. \ref{fig:pulsar-subscription} prikazuje tri vrste pretplata. Isključiva pretplata pravo čitanja poruka daje samo jednom pretplatniku. Ako drugi pretplatnik pokuša čitati iz isključive pretplate on će biti odbijen. Zajednička pretplata jednoliko dostavlja poruke pretplatnicima. Svaka poruka dostavit će se samo jednom pretplatniku. Zajednička pretplata ne podržava skupnu potvrdu dostave poruka niti pazi na vremensko uređenje dostave poruka. Sigurnosna pretplata pravo čitanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad drugotni pretplatnik će nastaviti čitanje poruka od mjesta ispada.
 
 \subsection{Posrednik}
-Posrednik je program bez stanja koji se sastoji od dva dijela. Prvi dio je posluzitelj s REST suceljem za upravljanje i pretrazivanje tema, a drugi dio je otpravnik za prijenos podataka. Umjesto da objavljivaci i pretplatnici izravno razgovaraju s posrednikom mogu se spojiti na zastupnika koji ce preusmjeriti njihove zahtjeve posrednicima.
+Posrednik je program bez stanja koji se sastoji od dva dijela. Prvi dio je poslužitelj s REST sučeljem za upravljanje i pretraživanje tema, a drugi dio je otpravnik za prijenos podataka. Umjesto da objavljivači i pretplatnici izravno razgovaraju s posrednikom mogu se spojiti na zastupnika koji će preusmjeriti njihove zahtjeve posrednicima. Posrednik može odbaciti udvostručene poruke tako da ih ne proslijedi zapisničarima.
 
-Pulsar grozdovi mogu umoziti poruke ako pripadaju istom procesu. Zadaca posrednik je posluziti poruke pretplatnicima iz upravljane knjige ili BookKeeper zapisnicara, dok je ZooKeeper nadzornik zaduzen za cuvanje podata o grozdu. Zapisnicar zapisuje poruke koje su poslane posredniku.
-
-
+Pulsar grozdovi mogu umnožiti poruke ako pripadaju istom procesu. Zadaća posrednik je poslužiti poruke pretplatnicima iz upravljane knjige ili BookKeeper zapisničara, dok je ZooKeeper nadzornik zadužen za čuvanje podata o grozdu. Zapisničar zapisuje poruke koje su poslane posredniku.
 
 \subsection{Upravljana knjiga}
-BookKeeper grozd je raspodijeljeni zapisivac koji se sastoji od barem jednog zapisnicara. Zapisnicar zapisuju poruke koje mu posrednici posalju. Poruke se mogu umoziti i zapisati u vise knjiga odjednom. Svaka tema sastoji se od barem jedne knjige. Kapacitet poruka koji se moze zapisati moze se povecati dodavanjem zapisnicara. Zapisnicari mogu istovremeno citati i pisati poruke. 
+BookKeeper grozd je raspodijeljeni zapisivač koji se sastoji od barem jednog zapisničara. Zapisničar zapisuju poruke koje mu posrednici pošalju. Poruke se mogu umnožiti i zapisati u više knjiga odjednom. Svaka tema sastoji se od barem jedne knjige. Kapacitet poruka koji može se povećati dodavanjem zapisničara. Zapisničari mogu istovremeno čitati i pisati poruke.
 
-Knjiga je struktura podatka u koju se poruke mogu dodati samo na kraj. Nakon sto se knjiga zatvori ona se jedino moze citati. Ako se zapisnicaru dogodi ispad, knjiga se zatvori. Kada se ispad otkloni zapisnicar ce ustanovit u kojem je stanju knjiga i ustanovljeno stanje poslati ostalim zapisnicarima u grozdu. 
+Knjiga je struktura podatka u koju se poruke mogu dodati samo na kraj. Nakon što se knjiga zatvori ona se jedino može čitati. Ako se zapisničaru dogodi ispad, knjiga se zatvori. Kada se ispad otkloni zapisničar će ustanoviti u kojem je stanju knjiga i ustanovljeno stanje poslati ostalim zapisničarima u grozdu.
 
-Upravljana knjiga je skup BookKeeper knjiga u koju se upisuju poruke koje pripadaju jednoj temi. Makar se poruke mogu zapisati u samo jednu knjige vise BookKeeper knjiga olaksava brisanje i pisanje poruka. Upravljana knjiga sastoji se skupa tokova podata koji se zapisuju u knjigu s jednim pisacem i skupa pokazivaca koji prate koje poruke su pretplatnici procitali. Zapisivac prije pisanja poruke u upravljanu knjigu poruke zapisuje u dnevnik.
-
+Upravljana knjiga je skup BookKeeper knjiga u koju se upisuju poruke koje pripadaju jednoj temi. Iako se poruke mogu zapisati u samo jednu knjige više BookKeeper knjiga olakšava brisanje i pisanje poruka. Upravljana knjiga sastoji se skupa tokova podata koji se zapisuju u knjigu s jednim pisaćem i skupa pokazivača koji prate koje poruke su pretplatnici pročitali. Zapisivač prije pisanja poruke u upravljanu knjigu poruke zapisuje u dnevnik.
 
 \subsection{Pretplatnik}
-Pretplatnik je korisnicki program koji se pretplacuje na pretplatu teme. Postoje tri vrste pretplate. Svaka pretplata odreduje nacin na koji pretplatnik cita poruke. Pretplatnik moze ili biti blokiran dok posrednik ne dobije poruku ili nastaviti s radom i dobiti buducnostnicu kojom ce citati poruke. Pretplatnik moze pojedinacno ili skupno potvrditi poruke.
+Pretplatnik je korisnički program koji se pretplaćuje na pretplatu teme. Postoje tri vrste pretplate. Svaka pretplata određuje način na koji pretplatnik čita poruke. Pretplatnik može ili biti blokiran dok posrednik ne dobije poruku ili nastaviti s radom i dobiti budućnosnicu kojom će čitati poruke. Pretplatnik može pojedinačno ili skupno potvrditi poruke.
 
-Ako korisnik nije zadovoljan izvedenim pretplatnikom on moze koristiti sucelje citaca. Sucelje citaca je biblioteka koja omogucuje rucno potvrdivanje poruka, ponovno citanje poruke i odbacivanje uvisestrucenih poruka.
-
-
-
-\chapter{Unistenje visestrukih poruka}
-Poruka se moze objaviti vise puta. Posrednik nece zapisati poruku koju zna da je vec zapisana.
-
-
-\chapter{Korisnici}
-Korisnik se pitati tko je zaduzen za temu. Nakon sto dobije adresu posrednika, spojt ce se na posrednika.
-
-\chapter{Iznimke}
-Koje f-nalnosti ne rade s kojima. TODO
-
+Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje čitača. Sučelje čitača je biblioteka koja omogućuje ručno potvrđivanje poruka, ponovno čitanje poruke i odbacivanje umnoženih poruka.
 
 \section{RabbitMQ}
 
