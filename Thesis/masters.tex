@@ -191,8 +191,75 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje
 \section{RabbitMQ}
 
 
+\chapter{Project}
 
-\chapter{Postojeca rjesenja}
+\subsection{Pretpostavke}
+
+Siguran intranet
+Moguci ispadi mreze i programa
+Veliki broj Kafka grozdova i posrednika
+Kafka grozdovi i posrednici nastaju i nestaju u bilo kojem trenutnku
+Kafka Grozdovi i posrednici su udaljeni
+
+
+\subsection{Zahtjevi}
+
+Klijent mora biti neovisan o implementaciji nadzornika (Java/PYthon/Scala/...)
+Bez instalacije treceg sustava
+Šalji metrike u stotinama milisekundi na svakih nekoliko sekundi
+Nadzirane vrijednosti zapisuju se u Kafku
+Novostvoreni groz i posrednik moraju biti nadzirani s najmanjim dodatnim korisnickim promjenama
+--Kafka koristi JMX
+
+
+
+
+
+
+Program se mora napraviti zajedno s procesom i nesta is precoseom
+Vrijednosti su pouzdane i ne dolaze s zakasnjenjem
+
+\chapter{Postojeća rješenja}
+
+U nadi da postoji rješenje koje zadovoljava ili većinu ili sve zahtjeve uspoređena su sljedeća rješenja.
+
+
+Pogrešno nadziranje sustava gore je od ne nadziranog sustava. Pogresno nadziran sustav korisnika ce uvjeriti da sve radi dobro cak i kada nije tako. Zato je potrebno izabrati najbolji nacin nadzora Kafke.
+
+
+
+
+laze da je 
+
+\subsection{Jolokia}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Jolokia.png}
+    \caption{Arhitektura Jolokie}
+    \label{fig:jolokia}
+\end{figure}
+
+Jolokia je u !CITAT opisana kao most izmedu JMX i HTTP. Jolokia se moze pokrenuti kao agent u Javinom virtualnom stroju ili kao samostojeci posluzitelj. \ref{fig:jolokia} prikazuje izvršavanje upita. HTTP upit poslijedi se Jolokiji koja skriva komplicirano dobavljanje vrijednosti iza jednostavnih funkcija. Kada Jolokia pročita izmjerene vrijednosti ona ih korisniku prikaze u JSON obliku.
+
+Ako se Jolokia pokreće kao agent onda je potrebna instalacija koju zahtjevi zabranjuju. Ako se pokrene kao samostojeći poslužitelj onda korisnik na nju salje upit i adresu nadziranog programa s kojeg zeli pročitati vrijednosti. Zato sto je grozdova i posrednika puno, te zato što mogu nastati i nestati nije moguce ocekivati da  mogu nastati i nestati, te zato sto ih je veliki broj nije primjereno da korisnik pamti sve adrese. Jolokia ne podrzava prijavljivanje ili 
+
+
+Zato sto nadzirani programi nastaju i nestaju oni se moraju moci prijaviti na Jolokiju inače Zato što je zabranjeno instalirati treće programe, Jolokia se nemoze pokrenuti kao agent. Ako se pokrene kao samostojeći posluzitelj onda se novonastali nadzirani programi moraju prijaviti na              i dalje ne rijesi problem nastajanja novih 
+
+
+Jer je zabranjeno Agentski nacin rada Jolokia nije primjereno rješenje jer se mora instalirati na računalu na kojem se nalazi Kafka posrednik. Ako se pak pokrene kao samostojeci posluzitelj, onda i dalje ne ispunjuje pretpostavku da se moze stvoriti novi grozdovi i posrednici jer nema mogucnost registracije klijenta nego korisnik mora sam unaprijed znati na koju adresu da Jolokia posalje upit o vrijednostima.
+
+https://jolokia.org/features-nb.html
+
+
+\subsection{Prometheus}
+
+Prometheus je u !CITAT opisan kao potpuno rješenja za nadziranje, s vlastitom 
+
+\subsection{Kafka Connect}
+
+\subsection{Confluent presretać}
 
 \chapter{Arhitektura rjesenja}
 
