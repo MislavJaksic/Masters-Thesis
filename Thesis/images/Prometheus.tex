@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit}
+
+\begin{document}
+
+\begin{tikzpicture}[ % has a lot of options; consult the pgf manual
+bend angle=15,
+long_square/.style={rectangle, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+rounded_square/.style={rectangle, rounded corners, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+empty_circle/.style={rectangle, rounded corners=2mm, draw=black, fill=white, very thick, minimum size=4mm},
+point/.style={circle, inner sep=0mm},
+fit_square/.style={rectangle, rounded corners=2mm, draw=black, very thick, minimum height=0mm, minimum width=60mm},
+both_arrow/.style={<->, very thick},
+out_arrow/.style={->, very thick},
+in_arrow/.style={<-, very thick},
+above_edge_text/.style={above, midway, sloped}
+]
+
+\node[rounded_square](alarm) at (0,0) {Uzbunitelj};
+\node[rounded_square](visualizer) at (3,0) {Crtač};
+
+\node[rounded_square](server) at (1.5,-1.5) {Poslužitelj};
+
+\node[rounded_square](database) at (1.5,-3) {Vremenska baza podataka};
+\node[rounded_square](disk) at (7,-3) {Tvrdi disk};
+
+\node[rounded_square](retriver) at (1.5,-4.5) {Sakupljač};
+\node[rounded_square](discovery) at (7,-4.5) {Otkrivatelj mjerača};
+
+\node[rounded_square](target) at (1.5,-6) {Mjerač};
+
+\node[fit_square, fit=(server) (database) (retriver)] (prometheus) {};
+\node[anchor=north west] at (prometheus.north west) {Prometheus};
+
+
+
+\draw[out_arrow](visualizer) to [] node[auto]{} (prometheus);
+\draw[out_arrow](prometheus) to [] node[auto]{} (alarm);
+
+\draw[out_arrow](server) to [] node[auto]{} (database);
+
+\draw[out_arrow](database) to [] node[auto]{} (disk);
+
+\draw[out_arrow](retriver) to [] node[auto]{} (database);
+
+\draw[out_arrow](retriver) to [] node[auto]{} (discovery);
+
+\draw[out_arrow](retriver) to [] node[auto]{} (target);
+
+\end{tikzpicture}
+
+\end{document}

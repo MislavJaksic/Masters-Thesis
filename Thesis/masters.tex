@@ -195,29 +195,19 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje
 
 \subsection{Pretpostavke}
 
-Siguran intranet
-Moguci ispadi mreze i programa
-Veliki broj Kafka grozdova i posrednika
-Kafka grozdovi i posrednici nastaju i nestaju u bilo kojem trenutnku
-Kafka Grozdovi i posrednici su udaljeni
-
+Nadzire se sustav koji razgovara koristeci siguran intranet
+Mrezi ili programima se moze dogoditi ne bizantski ispad
+Postoji vise od sto Kafka posrednika i vise of deset Kafka grozdova
+Posrednici nisu na istom računalu
+Kafka grozdovi i posrednici mogu se upaliti i ugasiti u bilo kojem trenutku
 
 \subsection{Zahtjevi}
 
-Klijent mora biti neovisan o implementaciji nadzornika (Java/PYthon/Scala/...)
-Bez instalacije treceg sustava
-Šalji metrike u stotinama milisekundi na svakih nekoliko sekundi
-Nadzirane vrijednosti zapisuju se u Kafku
-Novostvoreni groz i posrednik moraju biti nadzirani s najmanjim dodatnim korisnickim promjenama
---Kafka koristi JMX
-
-
-
-
-
-
-Program se mora napraviti zajedno s procesom i nesta is precoseom
-Vrijednosti su pouzdane i ne dolaze s zakasnjenjem
+Nadzornik mora raditi bez instalacije programa
+Nadzornik šalje nadzirane vrijednosti svake sekunde ili češće
+Nadzornik zapisuje nadzirane vrijednosti u Kafka temu
+Nadzornik mora samostalno pronaći novonastale Kafka grozdove i posrednike
+Nadzornik mora dostaviti nadzirane vrijednosti s najmanjim mogućim zakasnjenjem
 
 \chapter{Postojeća rješenja}
 
@@ -240,9 +230,9 @@ laze da je
     \label{fig:jolokia}
 \end{figure}
 
-Jolokia je u !CITAT opisana kao most izmedu JMX i HTTP. Jolokia se moze pokrenuti kao agent u Javinom virtualnom stroju ili kao samostojeci posluzitelj. \ref{fig:jolokia} prikazuje izvršavanje upita. HTTP upit poslijedi se Jolokiji koja skriva komplicirano dobavljanje vrijednosti iza jednostavnih funkcija. Kada Jolokia pročita izmjerene vrijednosti ona ih korisniku prikaze u JSON obliku.
+Jolokia je u !CITAT opisana kao most izmedu JMX i HTTP. Jolokia se pokrece kao agent u Javinom virtualnom stroju ili kao samostojeci posluzitelj. \ref{fig:jolokia} prikazuje izvršavanje upita. HTTP upit poslijedi se Jolokiji koja skriva komplicirano dobavljanje vrijednosti iza jednostavnih funkcija. Kada Jolokia pročita izmjerene vrijednosti ona ih korisniku prikaze u JSON obliku.
 
-Ako se Jolokia pokreće kao agent onda je potrebna instalacija koju zahtjevi zabranjuju. Ako se pokrene kao samostojeći poslužitelj onda korisnik na nju salje upit i adresu nadziranog programa s kojeg zeli pročitati vrijednosti. Zato sto je grozdova i posrednika puno, te zato što mogu nastati i nestati nije moguce ocekivati da  mogu nastati i nestati, te zato sto ih je veliki broj nije primjereno da korisnik pamti sve adrese. Jolokia ne podrzava prijavljivanje ili 
+Ako se Jolokia pokreće kao agent onda je potrebna instalacija koju zahtjevi zabranjuju. Ako se pokrene kao samostojeći poslužitelj onda korisnik na nju salje upit i adresu nadziranog programa s kojeg zeli pročitati vrijednosti. Zato sto je grozdova i posrednika puno, te zato što mogu nastati i nestati kornik će teško zapamtiti sve adrese.
 
 
 Zato sto nadzirani programi nastaju i nestaju oni se moraju moci prijaviti na Jolokiju inače Zato što je zabranjeno instalirati treće programe, Jolokia se nemoze pokrenuti kao agent. Ako se pokrene kao samostojeći posluzitelj onda se novonastali nadzirani programi moraju prijaviti na              i dalje ne rijesi problem nastajanja novih 
