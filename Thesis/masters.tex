@@ -268,9 +268,49 @@ Confluent sakupljač vrijednosti je u \citep{confluent-metrics-reporter} opisan 
 
 Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati jer dolazi u obliku JAR datoteke, pali se i gasi s Kafka grozdom i posrednikom i šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreni program koji se ne može nadograditi, poboljšati ili proširiti.
 
-\chapter{Model sustava}
+\chapter{Arhitektura sustava}
+
+!CITAT !CITAT savjetuju kako oblikovati programe. 
+
+\section{Okolina}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{KafkaEnvironment.png}
+    \caption{Okolina sustava}
+    \label{fig:kafka-environment}
+\end{figure}
+
+\ref{fig:kafka-environment} prikazuje cijeli sustav za koji je rjesenje izvedeno. Postoji veliki broj Kafka grozdova i posrednika u sigurnom intranetu. Napadač ne postoji i nemože izazvati ispad pogrešnim koristenjem programa. Grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Grozd može u svojoj cijelosti biti na jednom računalu ili raspodijeljen na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni groz je otporan na ispade i odvojen od ostalih grozdova.
+
+\section{Arhitektura rješenja}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{KafkaCollectors.png}
+    \caption{Nadzor jednostavnog Kafka grozda}
+    \label{fig:collectors}
+\end{figure}
+
+\ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grzod sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici salju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svog sakupljača vrijednosti. Kada se pokrene Kafka posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri dijela: mjeraca, ZK i JMX. Mjerač od ZK saznaje kojeg posrednika treba nadzirati. Zatim, mjerac od JMX saznaje nadzirana imena i vrijednosti. Svi mjeraci šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
+
+\section{Arhitektura projekt}
+
+\subsection{Arhitektura ZK}
+
+\subsection{Arhitektura JMX}
+
+\subsection{Arhitektura mjerača}
 
 \section{Arhitektura}
+
+Razina okoline
+Razina rješenja
+Razina projekta
+Razina paketa
+Razina klase
+Razina funkcije
+Razina koda
 
 \chapter{Izvedba rjesenja}
 

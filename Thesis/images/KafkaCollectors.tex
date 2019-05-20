@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit}
+
+\usepackage{geometry}
+\geometry{
+margin=10mm,
+}
+
+\begin{document}
+
+\begin{tikzpicture}[ % has a lot of options; consult the pgf manual
+bend angle=15,
+long_square/.style={rectangle, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+rounded_square/.style={rectangle, rounded corners, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+empty_circle/.style={rectangle, rounded corners=2mm, draw=black, fill=white, very thick, minimum size=4mm},
+point/.style={circle, inner sep=0mm},
+fit_square/.style={rectangle, rounded corners=2mm, draw=black, very thick},
+both_arrow/.style={<->, very thick},
+out_arrow/.style={->, very thick},
+in_arrow/.style={<-, very thick},
+dashed_arrow/.style={loosely dashed, very thick},
+above_edge_text/.style={above, midway, sloped},
+]
+
+\node[rounded_square](zookeeper) at (6,0) {Nadzornik};
+
+\node[rounded_square](kafka_1) at (3,-1) {Posrednik};
+\node[rounded_square](kafka_2) at (9,-1) {Posrednik};
+
+\node[rounded_square](jmx_1) at (1,-2.5) {JMX};
+\node[rounded_square](reporter_1) at (3,-2.5) {Mjerač};
+\node[rounded_square](reporter_2) at (9,-2.5) {Mjerač};
+\node[rounded_square](jmx_2) at (11,-2.5) {JMX};
+
+\node[rounded_square](zk_1) at (5,-3.5) {ZK};
+\node[rounded_square](zk_2) at (7,-3.5) {ZK};
+
+\node[rounded_square](metrics_cluster) at (6,-5.5) {Nadzorni Kafka grozd};
+
+\node[fit_square, fit=(jmx_1) (reporter_1) (zk_1)] (collector_1) {};
+\node[anchor=south west] at (collector_1.south west) {Sakupljač vrijednosti};
+
+\node[fit_square, fit=(jmx_2) (reporter_2) (zk_2)] (collector_2) {};
+\node[anchor=south east] at (collector_2.south east) {Sakupljač vrijednosti};
+
+\node[fit_square, fit=(zookeeper) (kafka_1) (kafka_2) (collector_1) (collector_2)] (kafka_cluster) {};
+\node[anchor=north west] at (kafka_cluster.north west) {Kafka grozd};
+
+\node[fit_square, fit=(metrics_cluster) (kafka_cluster) (collector_1) (collector_2)] (intranet) {};
+\node[anchor=south west] at (intranet.south west) {Siguran intranet};
+
+
+
+\draw[both_arrow](zookeeper) to [] node[auto]{} (kafka_1);
+\draw[both_arrow](zookeeper) to [] node[auto]{} (kafka_2);
+
+\draw[dashed_arrow](kafka_1) to [] node[auto]{} (collector_1);
+\draw[dashed_arrow](kafka_2) to [] node[auto]{} (collector_2);
+
+\draw[out_arrow](jmx_1) to [] node[auto]{} (kafka_1);
+\draw[out_arrow](reporter_1) to [] node[auto]{} (jmx_1);
+\draw[out_arrow](reporter_1) to [] node[auto]{} (zk_1);
+\draw[out_arrow](reporter_1) to [] node[auto]{} (metrics_cluster);
+\draw[out_arrow](zk_1) to [] node[auto]{} (zookeeper);
+\draw[out_arrow](zk_2) to [] node[auto]{} (zookeeper);
+\draw[out_arrow](reporter_2) to [] node[auto]{} (metrics_cluster);
+\draw[out_arrow](reporter_2) to [] node[auto]{} (jmx_2);
+\draw[out_arrow](reporter_2) to [] node[auto]{} (zk_2);
+\draw[out_arrow](jmx_2) to [] node[auto]{} (kafka_2);
+
+\end{tikzpicture}
+
+\end{document}
