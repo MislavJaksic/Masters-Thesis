@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, arrows}
+
+\usepackage{geometry}
+\geometry{
+margin=10mm,
+}
+
+\begin{document}
+
+\begin{tikzpicture}[ % has a lot of options; consult the pgf manual
+bend angle=15,
+long_square/.style={rectangle, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+rounded_square/.style={rectangle, rounded corners, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+empty_circle/.style={rectangle, rounded corners=2mm, draw=black, fill=white, very thick, minimum size=4mm},
+point/.style={circle, inner sep=0mm},
+fit_square/.style={rectangle, rounded corners=2mm, draw=black, very thick},
+both_arrow/.style={<->, very thick},
+out_arrow/.style={->, very thick},
+out_hollow_arrow/.style={-open triangle 90, very thick},
+in_arrow/.style={<-, very thick},
+dashed_line/.style={loosely dashed, very thick},
+above_edge_text/.style={above, midway, sloped},
+]
+
+\node[rounded_square](kafka_jmx_metrics_reporter) at (3,0) {Kafka JMX Metrics Reporter};
+
+\node[rounded_square](jmx_polling_reporter) at (1.5,-1.5) {JMX Polling Reporter};
+\node[rounded_square](logger) at (6,-1.5) {Logger};
+
+\node[rounded_square](zookeeper_kafka) at (0,-3) {ZooKeeper Kafka};
+\node[rounded_square](jmx_client) at (3,-3) {JMX Client};
+\node[rounded_square](kafka_producer_facade) at (6,-3) {Kafka Producer Facade};
+
+\node[rounded_square](kafka_producer) at (6,-4.5) {Kafka Producer};
+
+\node[rounded_square](zk) at (0,-6.5) {ZK};
+\node[rounded_square](jmx) at (3,-6.5) {JMX};
+
+
+\node[fit_square, fit=(kafka_jmx_metrics_reporter) (jmx_polling_reporter) (logger) (zookeeper_kafka) (jmx_client) (kafka_producer_facade) (kafka_producer)] (mjerac) {};
+\node[anchor=north west] at (mjerac.north west) {Mjerač};
+
+
+
+\draw[out_hollow_arrow](kafka_jmx_metrics_reporter) to [] node[auto]{} (jmx_polling_reporter);
+\draw[out_hollow_arrow](kafka_jmx_metrics_reporter) to [] node[auto]{} (logger);
+
+\draw[out_hollow_arrow](jmx_polling_reporter) to [] node[auto]{} (zookeeper_kafka);
+\draw[out_hollow_arrow](jmx_polling_reporter) to [] node[auto]{} (jmx_client);
+\draw[out_hollow_arrow](jmx_polling_reporter) to [] node[auto]{} (kafka_producer_facade);
+\draw[out_hollow_arrow](kafka_producer_facade) to [] node[auto]{} (logger);
+
+\draw[out_hollow_arrow](kafka_producer_facade) to [] node[auto]{} (kafka_producer);
+
+\draw[dashed_line](zookeeper_kafka) to [] node[auto]{} (zk);
+\draw[dashed_line](jmx_client) to [] node[auto]{} (jmx);
+
+\end{tikzpicture}
+
+\end{document}

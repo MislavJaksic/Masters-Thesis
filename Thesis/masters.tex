@@ -228,8 +228,8 @@ Apache Kafka živi u okruženju s drugim programima. Okruženje je opisano pretp
     \item Sakupljač vrijednosti šalje nadzirane vrijednosti svake sekunde ili češće
     \item Sakupljač vrijednosti zapisuje nadzirane vrijednosti u Kafka temu
     \item Sakupljač vrijednosti oslobađa računalne resurse kada se nadzirani sustav ugasi
-    \item Nadzirane vrijednosti nose jedinstvenu oznaku nadziranog sustava iz kojeg su pročitane
-    \item Nadzirane vrijednosti nose vremensku oznaku kada su pročitane
+    \item Nadzirane vrijednosti imaju jedinstvenu oznaku nadziranog sustava iz kojeg su pročitane
+    \item Nadzirane vrijednosti imaju vremensku oznaku kada su pročitane
 \end{itemize}
 
 \chapter{Postojeća rješenja}
@@ -266,11 +266,15 @@ Velika prednost i nedostatak Prometheusa je njegov opseg. Problem zahtjeva samo 
 
 Confluent sakupljač vrijednosti je u \citep{confluent-metrics-reporter} opisan kao dodatak na Kafka grozd i posrednika. Sakupljač čita i šalje nadzirane vrijednosti u Kafka temu nadziranog ili nekog drugog grozda. Svi novi Kafka posrednici pokreću se s Confluent sakupljačem.
 
-Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati jer dolazi u obliku JAR datoteke, pali se i gasi s Kafka grozdom i posrednikom i šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreni program koji se ne može nadograditi, poboljšati ili proširiti.
+Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati jer dolazi u obliku JAR datoteke, pali se i gasi s Kafka grozdom i posrednikom i šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreno rješenje koje se ne može nadograditi, poboljšati ili proširiti.
+
+
+
+
 
 \chapter{Arhitektura sustava}
 
-!CITAT !CITAT savjetuju kako oblikovati programe. 
+\citep{clean-code} \citep{code-complete} opisuju kako oblikovati programski sustav. Sustav se oblikuje na razini okoline, rješenja, projekta koji je dio rješenja, paketa odnosno skupine klasa, klase, funkcije i naredbe. Okolina je skup pretpostavka o postojećim sustavima, mreži, operacijskom sustavu i računalu. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava.
 
 \section{Okolina}
 
@@ -281,7 +285,7 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati
     \label{fig:kafka-environment}
 \end{figure}
 
-\ref{fig:kafka-environment} prikazuje cijeli sustav za koji je rjesenje izvedeno. Postoji veliki broj Kafka grozdova i posrednika u sigurnom intranetu. Napadač ne postoji i nemože izazvati ispad pogrešnim koristenjem programa. Grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Grozd može u svojoj cijelosti biti na jednom računalu ili raspodijeljen na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni groz je otporan na ispade i odvojen od ostalih grozdova.
+\ref{fig:kafka-environment} prikazuje mali podskup Kafka grozdova. Postoji veliki broj Kafka grozdova i posrednika. Grozdovi koriste sigurni intranet za međusobni razgovor. Napadač ne postoji i ne može izazvati ispad pogrešnim korištenjem programa. Grozd može iskusiti ispad. Kafka grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Dijelovi grozda raspodijeljeni su na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni grozd je otporan na ispade i fizički odvojen od ostalih grozdova.
 
 \section{Arhitektura rješenja}
 
@@ -292,17 +296,38 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati
     \label{fig:collectors}
 \end{figure}
 
-\ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grzod sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici salju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svog sakupljača vrijednosti. Kada se pokrene Kafka posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri dijela: mjeraca, ZK i JMX. Mjerač od ZK saznaje kojeg posrednika treba nadzirati. Zatim, mjerac od JMX saznaje nadzirana imena i vrijednosti. Svi mjeraci šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
+\ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grozd sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici šalju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svog sakupljača vrijednosti. Kada se pokrene posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri projekta: mjerača, ZK i JMX. Mjerač pita ZK kojeg posrednika treba nadzirati. Zatim mjerač od JMX saznaje nadzirane vrijednosti. Svi mjerači šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
 
 \section{Arhitektura projekt}
 
 \subsection{Arhitektura ZK}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ZooKeeperKafka.png}
+    \caption{}
+    \label{fig:zookeeper-kafka}
+\end{figure}
+
 \subsection{Arhitektura JMX}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{JMXClient.png}
+    \caption{}
+    \label{fig:jmx-client}
+\end{figure}
 
 \subsection{Arhitektura mjerača}
 
-\section{Arhitektura}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{KafkaMetricsReporter.png}
+    \caption{}
+    \label{fig:kafka-metrics-reporter}
+\end{figure}
+
+\chapter{Izvedba rješenja}
 
 Razina okoline
 Razina rješenja
@@ -310,9 +335,7 @@ Razina projekta
 Razina paketa
 Razina klase
 Razina funkcije
-Razina koda
-
-\chapter{Izvedba rjesenja}
+Razina naredbe
 
 \section{Kafka Connect}
 

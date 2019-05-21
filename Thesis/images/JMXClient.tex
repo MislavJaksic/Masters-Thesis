@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, arrows}
+
+\usepackage{geometry}
+\geometry{
+margin=10mm,
+}
+
+\begin{document}
+
+\begin{tikzpicture}[ % has a lot of options; consult the pgf manual
+bend angle=15,
+long_square/.style={rectangle, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+rounded_square/.style={rectangle, rounded corners, draw=black, fill=white, very thick, inner sep=3pt, minimum width=14mm},
+empty_circle/.style={rectangle, rounded corners=2mm, draw=black, fill=white, very thick, minimum size=4mm},
+point/.style={circle, inner sep=0mm},
+fit_square/.style={rectangle, rounded corners=2mm, draw=black, very thick, minimum height=45mm},
+both_arrow/.style={<->, very thick},
+out_arrow/.style={->, very thick},
+out_hollow_arrow/.style={-open triangle 90, very thick},
+in_arrow/.style={<-, very thick},
+dashed_line/.style={loosely dashed, very thick},
+above_edge_text/.style={above, midway, sloped},
+]
+
+\node[point](external) at (0,0) {};
+
+\node[rounded_square](jmx_client) at (0,-1.5) {JMX Client};
+
+\node[rounded_square](jmx_connector_facade) at (0,-3) {JMX Connector Facade};
+\node[rounded_square](mbean_connection_facade) at (4.5,-3) {MBean Connection Facade};
+
+\node[rounded_square](jmx_connector) at (0,-4.5) {JMX Connector};
+\node[rounded_square](logger) at (3,-4.5) {Logger};
+\node[rounded_square](mbean_connection) at (6,-4.5) {MBean Connection};
+
+
+
+\node[fit_square, fit=(jmx_client) (jmx_connector_facade) (mbean_connection_facade) (jmx_connector) (logger) (mbean_connection)] (jmx) {};
+\node[anchor=north east] at (jmx.north east) {JMX};
+
+
+
+\draw[dashed_line](external) to [] node[auto]{} (jmx_client);
+
+\draw[out_hollow_arrow](jmx_client) to [] node[auto]{} (jmx_connector_facade);
+\draw[out_hollow_arrow](jmx_client) to [] node[auto]{} (mbean_connection_facade);
+
+\draw[out_hollow_arrow](jmx_connector_facade) to [] node[auto]{} (jmx_connector);
+\draw[out_hollow_arrow](jmx_connector_facade) to [] node[auto]{} (logger);
+
+\draw[out_hollow_arrow](mbean_connection_facade) to [] node[auto]{} (logger);
+\draw[out_hollow_arrow](mbean_connection_facade) to [] node[auto]{} (mbean_connection);
+
+\end{tikzpicture}
+
+\end{document}

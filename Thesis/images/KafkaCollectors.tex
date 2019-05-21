@@ -21,7 +21,7 @@ fit_square/.style={rectangle, rounded corners=2mm, draw=black, very thick},
 both_arrow/.style={<->, very thick},
 out_arrow/.style={->, very thick},
 in_arrow/.style={<-, very thick},
-dashed_arrow/.style={loosely dashed, very thick},
+dashed_line/.style={loosely dashed, very thick},
 above_edge_text/.style={above, midway, sloped},
 ]
 
@@ -57,8 +57,8 @@ above_edge_text/.style={above, midway, sloped},
 \draw[both_arrow](zookeeper) to [] node[auto]{} (kafka_1);
 \draw[both_arrow](zookeeper) to [] node[auto]{} (kafka_2);
 
-\draw[dashed_arrow](kafka_1) to [] node[auto]{} (collector_1);
-\draw[dashed_arrow](kafka_2) to [] node[auto]{} (collector_2);
+\draw[dashed_line](kafka_1) to [] node[auto]{} (collector_1);
+\draw[dashed_line](kafka_2) to [] node[auto]{} (collector_2);
 
 \draw[out_arrow](jmx_1) to [] node[auto]{} (kafka_1);
 \draw[out_arrow](reporter_1) to [] node[auto]{} (jmx_1);
