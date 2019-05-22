@@ -214,7 +214,7 @@ Apache Kafka živi u okruženju s drugim programima. Okruženje je opisano pretp
 \begin{itemize}
     \item Nadzirani sustav i sakupljač vrijednosti koriste siguran intranet
     \item Postoji više od deset Kafka grozdova i više od sto Kafka posrednika
-    \item Kafka posrednici nalaze se na puno odvojenih računala
+    \item Kafka posrednici raspodijeljeni su na velik broj računala
     \item Kafka grozdovi i posrednici mogu se upaliti i ugasiti u bilo kojem trenutku
     \item Može se dogoditi ispad, ali ne i bizantski
 \end{itemize}
@@ -222,10 +222,10 @@ Apache Kafka živi u okruženju s drugim programima. Okruženje je opisano pretp
 \section{Zahtjevi}
 
 \begin{itemize}
-    \item Sakupljač vrijednosti radi bez instalacije programa
+    \item Sakupljač vrijednosti se lako umnoži i nije pozadinski proces
     \item Sakupljač vrijednosti samostalno pronalazi nove Kafka grozdove i posrednike
-    \item Sakupljač vrijednosti dostavlja nadzirane vrijednosti s malim zakašnjenjem
-    \item Sakupljač vrijednosti šalje nadzirane vrijednosti svake sekunde ili češće
+    \item Sakupljač vrijednosti šalje nadzirane vrijednosti s malim zakašnjenjem od trenutka očitavanja
+    \item Sakupljač vrijednosti očitava nadzirane vrijednosti svake sekunde ili češće
     \item Sakupljač vrijednosti zapisuje nadzirane vrijednosti u Kafka temu
     \item Sakupljač vrijednosti oslobađa računalne resurse kada se nadzirani sustav ugasi
     \item Nadzirane vrijednosti imaju jedinstvenu oznaku nadziranog sustava iz kojeg su pročitane
@@ -247,7 +247,7 @@ Istraživanje postojećih rješenja ima višestruku ulogu: odrediti mane i predn
 
 Jolokia je u \citep{jolokia} opisana kao most između JMX i HTTP. Jolokia se pokreće kao agent u Java VM ili kao samostojeći poslužitelj. \ref{fig:jolokia} prikazuje izvršavanje upita. HTTP upit postavi se Jolokiji koja skriva komplicirano dobavljanje nadziranih vrijednosti iza jednostavne funkcije. Nadzirane vrijednosti Jolokia šalje korisniku u JSON obliku.
 
-Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Nažalost, Jolokia krši zahtjeve instalacije i samostalnog pronalaženja novih Kafka grozdova i posrednika. Ako se Jolokia pokrene kao agent onda se mora instalirati na računalo na kojem se nalazi nadzirani sustav. Ako se pokrene kao samostojeći poslužitelj ona neće znati kada se upalio novi Kafka grozd ili posrednik jer nema načina da Jolokiji dojave da postoje.
+Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Nažalost, Jolokia krši zahtjeve pozadinskog procesa i samostalnog pronalaženja novih Kafka grozdova i posrednika. Ako se Jolokia pokrene kao agent ona se pokrene kao poseban pozadinski proces na računalu na kojem se nalazi nadzirani sustav. Ako se pokrene kao samostojeći poslužitelj ona neće znati kada se upalio novi Kafka grozd ili posrednik jer nema načina da Jolokiji dojave da postoje.
 
 \section{Prometheus}
 
@@ -260,13 +260,13 @@ Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Naž
 
 Prometheus je u \citep{prometheus} opisan kao potpuno rješenja za nadziranje proizvoljnih programa. \ref{fig:prometheus} prikazuje dijelove Prometheusa: poslužitelj, vremenska baza podataka i sakupljač nadziranih vrijednosti. Sakupljač mjerače nalazi samostalno ili koristi otkrivatelja. Kada sakupljač pročita vrijednosti one se pohrane u bazu podataka i u stalnu memoriju. Prije prikazivanja ili stvaranja uzbune korisnici mogu izabrati podskup vrijednosti jezikom PromQL koji je nalik SQLu.
 
-Velika prednost i nedostatak Prometheusa je njegov opseg. Problem zahtjeva samo nadzor ne i predočavanje i obradu i zapisivanje podataka. Prometheus također dugo čeka između čitanja nadziranih vrijednosti. Zahtjev traži čitanje svakih sekundu ili manje, a Prometheus čeka par sekundi.
+Velika prednost i nedostatak Prometheusa je njegov opseg. Problem zahtjeva samo nadzor ne i predočavanje i obradu i zapisivanje podataka. Prometheus također dugo čeka između očitanja nadziranih vrijednosti. Zahtjev traži čitanje svakih sekundu ili manje, a Prometheus čeka par sekundi.
 
 \section{Confluent sakupljač vrijednosti}
 
 Confluent sakupljač vrijednosti je u \citep{confluent-metrics-reporter} opisan kao dodatak na Kafka grozd i posrednika. Sakupljač čita i šalje nadzirane vrijednosti u Kafka temu nadziranog ili nekog drugog grozda. Svi novi Kafka posrednici pokreću se s Confluent sakupljačem.
 
-Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati jer dolazi u obliku JAR datoteke, pali se i gasi s Kafka grozdom i posrednikom i šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreno rješenje koje se ne može nadograditi, poboljšati ili proširiti.
+Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces jer dolazi u obliku JAR datoteke koja se veže na, pali se i gasi s Kafka grozdom i posrednikom i šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreno rješenje koje se ne može nadograditi, poboljšati ili proširiti.
 
 
 
@@ -300,6 +300,8 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati
 
 \section{Arhitektura projekt}
 
+Rješenje je podijeljeno na male projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekte je primjereno rješavati na objektno orijentirani nacin. Svaka klasa zadužena je za jednu domenu problema.
+
 \subsection{Arhitektura ZK}
 
 \begin{figure}[H]
@@ -308,6 +310,14 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati
     \caption{}
     \label{fig:zookeeper-kafka}
 \end{figure}
+
+\begin{itemize}
+    \item Visualizer zadužen za predocavanje podataka zapisanih u ZooKeeper nadzorniku
+    \item ZooKeeper Kafka zadužen za apstrahiranje odnosa Kafka posrednika i ZooKeeper nadzornika
+    \item ZooKeeper Facade zadužen za razgovor s ZooKeeper nadzornikom
+    \item Logger zadužen za ispisivanje događaja
+    \item ZooKeeper zadužen za izvršavanje ZooKeeper naredba
+\end{itemize}
 
 \subsection{Arhitektura JMX}
 
@@ -318,6 +328,15 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati
     \label{fig:jmx-client}
 \end{figure}
 
+\begin{itemize}
+    \item JMX Client zadužen za apstrahiranje JMX sustava
+    \item JMX Connector Facade zadužen za spajanje s JMX uslugama
+    \item MBean Connection Facade zadužen za očitavanje MBean vrijednosti
+    \item JMX Connector zadužen za izvršavanje JMX naredba
+    \item Logger zadužen za ispisivanje događaja
+    \item MBean Connection zadužen za izvršavanje MBean naredba
+\end{itemize}
+
 \subsection{Arhitektura mjerača}
 
 \begin{figure}[H]
@@ -326,6 +345,16 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Ne treba se instalirati
     \caption{}
     \label{fig:kafka-metrics-reporter}
 \end{figure}
+
+\begin{itemize}
+    \item Kafka JMX Metrics Reporter zadužen za pokretanje sakupljača vrijednosti
+    \item JMX Polling Reporter zadužen za očitavanje nadziranih vrijednosti
+    \item Logger zadužen za ispisivanje događaja
+    \item ZooKeeper Kafka zadužen za apstrahiranje odnosa Kafka posrednika i ZooKeeper nadzornika
+    \item JMX Client zadužen za apstrahiranje JMX sustava
+    \item Kafka Producer Facade zadužen za 
+    \item Kafka Producer zadužen za objavu nadziranih vrijednosti u Kafka temu
+\end{itemize}
 
 \chapter{Izvedba rješenja}
 
