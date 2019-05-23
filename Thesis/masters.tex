@@ -3,6 +3,8 @@
 
 \usepackage{float} % "place table exactly here" package
 
+\usepackage{listings}
+
 \begin{document}
 
 \thesisnumber{1954}
@@ -207,7 +209,7 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje
 
 \chapter{Specifikacija sustava}
 
-Apache Kafka živi u okruženju s drugim programima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su poželjna svojstva i mogućnosti programa koji mogu ali ne trebaju biti ispunjeni.
+Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su poželjna svojstva i mogućnosti programa koji mogu ali ne trebaju biti ispunjeni.
 
 \section{Pretpostavke}
 
@@ -234,7 +236,7 @@ Apache Kafka živi u okruženju s drugim programima. Okruženje je opisano pretp
 
 \chapter{Postojeća rješenja}
 
-Istraživanje postojećih rješenja ima višestruku ulogu: odrediti mane i prednosti izvedenog rješenja nad postojećim; naučiti zašto i kako su drugi riješili problem. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve istraženi su mali programi i veliku sustavi.
+Istraživanje postojećih rješenja ima višestruku ulogu: odrediti mane i prednosti izvedenog rješenja nad postojećim; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliku sustavi.
 
 \section{Jolokia}
 
@@ -274,7 +276,7 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces 
 
 \chapter{Arhitektura sustava}
 
-\citep{clean-code} \citep{code-complete} opisuju kako oblikovati programski sustav. Sustav se oblikuje na razini okoline, rješenja, projekta koji je dio rješenja, paketa odnosno skupine klasa, klase, funkcije i naredbe. Okolina je skup pretpostavka o postojećim sustavima, mreži, operacijskom sustavu i računalu. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava.
+\citep{clean-code} \citep{code-complete} opisuju kako oblikovati programski sustav. Sustav se oblikuje na razini okoline, rješenja, projekta, klase, funkcije i naredbe. Okolina je skup pretpostavka o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Klasa je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
 
 \section{Okolina}
 
@@ -285,7 +287,7 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces 
     \label{fig:kafka-environment}
 \end{figure}
 
-\ref{fig:kafka-environment} prikazuje mali podskup Kafka grozdova. Postoji veliki broj Kafka grozdova i posrednika. Grozdovi koriste sigurni intranet za međusobni razgovor. Napadač ne postoji i ne može izazvati ispad pogrešnim korištenjem programa. Grozd može iskusiti ispad. Kafka grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Dijelovi grozda raspodijeljeni su na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni grozd je otporan na ispade i fizički odvojen od ostalih grozdova.
+\ref{fig:kafka-environment} prikazuje mali podskup Kafka grozdova. Grozdovi koriste sigurni intranet za međusobni razgovor. Napadač ne postoji i ne može izazvati ispad pogrešnim korištenjem programa. Grozd može iskusiti ispad. Kafka grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Dijelovi grozda raspodijeljeni su na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni grozd je otporan na ispade i fizički odvojen od ostalih grozdova.
 
 \section{Arhitektura rješenja}
 
@@ -300,7 +302,7 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces 
 
 \section{Arhitektura projekt}
 
-Rješenje je podijeljeno na male projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekte je primjereno rješavati na objektno orijentirani nacin. Svaka klasa zadužena je za jednu domenu problema.
+Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i ispraviti bez utjecaja na druge projekte. U projektu od nekoliko klasa je lakse naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani nacin. Svaka klasa zadužena je za jednu domenu problema.
 
 \subsection{Arhitektura ZK}
 
@@ -356,7 +358,31 @@ Rješenje je podijeljeno na male projekte gdje svaki ispunjuje disjunktni podsku
     \item Kafka Producer zadužen za objavu nadziranih vrijednosti u Kafka temu
 \end{itemize}
 
-\chapter{Izvedba rješenja}
+\chapter{Izvedba}
+
+\section{Izvebda rješenja}
+
+Rješenje je izvedeno u programskom jeziku Java 8 za programske alate Apache Kafka 2.1 i Apache ZooKeeper x.x. Za projektno upravljanje koristi se Apache Maven, a programska okolina je ostvarena s Eclipse X. Rješenje se pakira u .jar datoteku koristeci Maven. Koriste se X i Y Maven plugin.  .jar se mora stviti u datoteku /libs u Kafki. Potrebno je pazljivo pakirati pomocne biblioteke jer se mogu sukobiti ovisnosti. Upute kako koristiti i postaviti program su dane u prilogu.
+
+Stil pisanja i nacin imenovanja je definiran u Google Java Style. 
+
+Funkcje su vrlo kratke, samo nekoliko redova dugacke. Srednji broj redova je X. Super super detalji slijede!
+
+\section{Izvebda projekta}
+
+\section{Izvebda paketa}
+
+\section{Izvebda klase}
+
+\section{Izvebda funkcije}
+
+\section{Izvebda naredbe}
+
+Programske naredbe dijele se na izraze i izjave. Izjave ne vraćaju vrijednost, dok izrazi vraćaju. 
+
+Varijable se mogu imenovati ili iz rijecnika domene problema ili iz rijecnika racunalne znanosti. !CITAT tvrdi da ..., dok !CITAT tvrdi da ....
+
+
 
 Razina okoline
 Razina rješenja
@@ -383,6 +409,220 @@ Kafka Connect nemoze otkriti nove Kafka grozdove i posrednike jer ne sustava za 
 
 \chapter{Zaključak}
 Zaključak.
+
+\chapter{Prilog}
+
+\section{Priručnik za korištenje}
+\begin{lstlisting}[breaklines]
+## Kafka Metrics User Guide
+
+This guide will go through all the steps necessary to configure and run KaSta Pull and Push projects.  
+
+All examples and commands assume you are working with CentOS 7 operating system.
+
+
+
+### Preparing Kafka environment
+
+You need to configure your environment at the hardware, operating system and application level.  
+
+#### [Hardware](https://kafka.apache.org/documentation/#hwandos)
+
+Your machine needs to have sufficient memory to run Kafka.  
+I advise at least 4GB of RAM.  
+
+#### [OS](https://kafka.apache.org/documentation/#os)
+
+Kafka should work well on any Unix system and is tested on both Linux and Solaris.  
+Avoid running Kafka on Windows.  
+
+#### [Java version](https://kafka.apache.org/documentation/#java)
+
+Kafka requires Java Development Kit (JDK) 1.8 or better to run.  
+```
+$: sudo yum install java
+```
+
+
+
+### Installing Kafka
+
+After preparing the environment you are ready to install Kafka.  
+I strongly advised you install Kafka in the [/opt directory](https://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/opt.html).  
+
+Download Kafka:  
+```
+$: sudo curl "https://www.apache.org/dist/kafka/2.1.1/kafka_2.11-2.1.1.tgz" -o /opt/kafka.tgz
+```
+
+Install Kafka:  
+```
+$: cd /opt/kafka
+$: sudo mkdir kafka
+$: sudo tar -xvzf /opt/kafka.tgz --strip 1
+```
+
+Uncomment a property in Kafka's server.properties:  
+```
+listeners=PLAINTEXT://:9092
+```
+
+
+
+### Running Kafka
+
+Start Zookeeper:  
+```
+$: sudo bin/zookeeper-server-start.sh config/zookeeper.properties
+```
+
+Start Kafka and open the JMX port:  
+```
+$: sudo JMX_PORT=Any-Free-Port bin/kafka-server-start.sh config/server.properties
+```
+
+
+
+### Preparing KaSta environment
+
+#### [Git](https://git-scm.com/)
+
+Install Git:  
+```
+sudo yum install git
+```
+
+#### [Maven](http://maven.apache.org/)
+
+Install Maven:  
+```
+sudo yum install maven
+```
+
+#### Supporting projects
+
+Download JMX Client:
+```
+$: cd /opt/projects
+$: sudo git clone JMX-Client-Project-URL jmx-client
+```
+
+Download Zookeeper Client:
+```
+$: cd /opt/projects
+$: sudo git clone ZK-Client-Project-URL zk-client
+```
+
+Install both projects with Maven:
+```
+$: cd /opt/projects/jmx-client
+$: sudo mvn install
+
+$: cd /opt/projects/zk-client
+$: sudo mvn install
+```
+
+
+
+### Installing KaSta
+
+Download KaSta Pull Connect:  
+```
+$: cd /opt/projects
+$: sudo git clone KaSta-Pull-Project-URL kasta-pull
+```
+
+Download KaSta Push Reporter:  
+```
+$: cd /opt/projects
+$: sudo git clone KaSta-Push-Project-URL kasta-push
+```
+
+Package KaSta Pull Connect into a JAR:  
+```
+$: cd /opt/projects/kasta-pull
+$: sudo mvn package
+```
+
+Package KaSta Push Reporter into a JAR:  
+```
+$: cd /opt/projects/kasta-push
+$: sudo mvn package
+```
+
+KaSta Push will make a JAR that will contain only dependencies on JMXClient and Zookeeper Client.
+
+```
+<artifactId>maven-shade-plugin</artifactId>
+  <version>3.2.1</version>
+    <configuration>
+      <artifactSet>
+        <includes>
+          <include>mjaksic:zookeeper-client</include>
+          <include>mjaksic:jmx-client</include>
+        </includes>
+      </artifactSet>
+    </configuration>
+...
+```
+
+Otherwise, if a fully fat JAR is made, it will crash because of dependency conflict with other JARs in Kafka's `libs/` dir
+
+### Configuring KaSta Pull Connect
+
+KaSta Pull Connect JAR must be placed into /opt/connectors folder.
+```
+$: sudo cp /opt/projects/kasta-pull/target/kafka-jmx-connect.jar /opt/connectors/
+```
+
+Optionally, review Connector properties in /opt/projects/kasta-pull/target.
+
+
+
+### Configuring KaSta Push Reporter
+
+KaSta Push Reporter JAR must be placed into Kafka's /libs folder.
+```
+$: sudo cp /opt/projects/kasta-push/target/kafka-jmx-reporter.jar /opt/kafka/libs/
+```
+
+Append to Kafka's server.properties:
+```
+kafka.metrics.reporters=mjaksic.kafka_jmx_reporter.broker.KafkaJMXMetricsReporter
+```
+
+Optionally, these properties may be appended as well:
+```
+reporter.delay.milliseconds=5000
+reporter.interval.milliseconds=1000
+metrics.kafka=localhost:9092
+kafka.metrics.topic=jmx-metrics
+```
+
+
+
+### Running KaSta Pull Connect
+
+After starting Kafka run:  
+```
+sudo /opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/projects/kasta-pull/target/connector-config.properties
+```
+
+
+
+### Running KaSta Push Reporter
+
+The Reporter is run when you run Kafka. That's it!  
+
+
+
+### Supplementary guides
+
+* [Official Kafka Quickstart](https://kafka.apache.org/quickstart)
+
+* [DigitalOcean: Install Kafka on CentOS 7](https://www.digitalocean.com/community/tutorials/how-to-install-apache-kafka-on-centos-7)
+
+\end{lstlisting}
 
 \bibliography{literatura}
 \bibliographystyle{fer}
