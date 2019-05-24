@@ -209,7 +209,7 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje
 
 \chapter{Specifikacija sustava}
 
-Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su poželjna svojstva i mogućnosti programa koji mogu ali ne trebaju biti ispunjeni.
+Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su svojstva i mogućnosti programa koje je poželjno ali nije potrebno ispuniti.
 
 \section{Pretpostavke}
 
@@ -236,7 +236,7 @@ Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpo
 
 \chapter{Postojeća rješenja}
 
-Istraživanje postojećih rješenja ima višestruku ulogu: odrediti mane i prednosti izvedenog rješenja nad postojećim; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliku sustavi.
+Istraživanje postojećih rješenja ima višestruku ulogu: usporediti mane i prednosti izvedenog rješenja; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje za rješvanje novog problema. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliku sustavi.
 
 \section{Jolokia}
 
@@ -302,7 +302,7 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces 
 
 \section{Arhitektura projekt}
 
-Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i ispraviti bez utjecaja na druge projekte. U projektu od nekoliko klasa je lakse naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani nacin. Svaka klasa zadužena je za jednu domenu problema.
+Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i ispraviti bez utjecaja na druge projekte. U malom projektu od nekoliko klasa je lakse naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani nacin jer su funkcije nad podacima poznate, a strukture podataka nisu. Svaka klasa zadužena je za jednu domenu problema.
 
 \subsection{Arhitektura ZK}
 
@@ -380,9 +380,41 @@ Funkcje su vrlo kratke, samo nekoliko redova dugacke. Srednji broj redova je X. 
 
 Programske naredbe dijele se na izraze i izjave. Izjave ne vraćaju vrijednost, dok izrazi vraćaju. 
 
-Varijable se mogu imenovati ili iz rijecnika domene problema ili iz rijecnika racunalne znanosti. !CITAT tvrdi da ..., dok !CITAT tvrdi da ....
 
 
+Imena varijabli dolaze iz domene problema, a ne rješenja. Korisnici koriste riječi iz domene problema, a programeri iz domene rješenja. Zato što je manje programera od korisnika izabran je rijecnik problema kao izvor imena varijabli.
+
+Varijable su definirane sto je kasnije moguce. Opseg varijabli je tada najmanji moguc. Mali opseg povečava čitkost funkcije.
+
+Čudesni brojevi izdvojeni su u posebne klase koje brinu o konstantama. Ako je primjereno, vrijednost se izdvoji u varijablu i njoj se da opisno ime.
+
+Svaki redak sastoji se od jedne narebde. Ako je vise naredbe u jednom retku, onda su naredbe trivijalne: promjena primitivnog tipa podataka, citanje konstante ili poziv funkcije. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene u retke.
+
+Svaka funkcija radi samo jednu stvar. Naziv funkcije definira sto je to "jedna stvar". Funkcije koje pozivaju druge funckije rade jednu stvar na visokoj razini, dok izvršne funkcije rade jednu stvar na niskoj razini izvedbe.
+
+Osim ako funkcija stvara objekt iz klase, ona treba prima ne više od dva parametra. Vecina funkcija prima samo jedna ili niti jedan parametar. Ako funkcija prima dva parametra i oni su uređeni, onda naziv funkcije odreduje redoslijed parametara.
+
+Funkcija treba biti kratka, od najviše pet redaka. Kratke funkcije je lakse izmjeniti, pročitati i ponovno iskoristiti.
+
+Redoslijed funkcija u klasi je odreden njihovom apstraktnosti. Najapstrktnija klasa koja poziva puno funkcije iste klase je na vrhu. Ispod nje slijede u redoslijedu pozivanja, ostale funkcije.
+
+Klase su imenice gdje svaka ima samo jednu disjunktnu dužnost. Nasljeđivanje se izbjegava i upotreblava se kompozicija.
+
+Klase znaju što manje moguce o funkcijama drugih klasa.
+
+Funkcije izbjegavaju vremensku ovisnost. Vremenska ovisnost je kada kornik treba pozvati funkcije jedne klase u odredenom redoslijedu.
+
+Skracenice su napisane malim slovima.
+
+
+
+Najjednostavnije i najpromjenjivije.
+
+Lakoca promjene -> ponovna upotreba
+Izvedi promjeu samo na jednom mjestu.
+Koristiti oblikovne obrasce samo tamo gdje je to potrebno.
+Nemoj se ponavljati.
+Napravi najjednostavnijemoguce rjesenje samo za prolbme koji je pred tobom.
 
 Razina okoline
 Razina rješenja
@@ -416,15 +448,15 @@ Zaključak.
 \begin{lstlisting}[breaklines]
 ## Kafka Metrics User Guide
 
-This guide will go through all the steps necessary to configure and run KaSta Pull and Push projects.  
+The guide will lead you through all the necessary steps in order to configure and run KaSta Connect, KaSta Metrics Reporter and KaMan projects.  
 
-All examples and commands assume you are working with CentOS 7 operating system.
+This guide assumes KaSta projects will be run on the CentOS 7 operating system.
 
 
 
 ### Preparing Kafka environment
 
-You need to configure your environment at the hardware, operating system and application level.  
+You need to configure the environment at the hardware, operating system and application level.  
 
 #### [Hardware](https://kafka.apache.org/documentation/#hwandos)
 
@@ -471,7 +503,7 @@ listeners=PLAINTEXT://:9092
 
 ### Running Kafka
 
-Start Zookeeper:  
+Start ZooKeeper:  
 ```
 $: sudo bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
@@ -480,10 +512,13 @@ Start Kafka and open the JMX port:
 ```
 $: sudo JMX_PORT=Any-Free-Port bin/kafka-server-start.sh config/server.properties
 ```
+There are many other methods of opening Kafka's JMX port. You can use whatever method you like.  
+
+How do you know if you have opened Kafka's JMX port? Check ZooKeeper node /brokers/ids.  
 
 
 
-### Preparing KaSta environment
+### Preparing both KaSta and KaMan environment
 
 #### [Git](https://git-scm.com/)
 
@@ -499,7 +534,11 @@ Install Maven:
 sudo yum install maven
 ```
 
-#### Supporting projects
+
+
+### Preparing KaSta environment
+
+#### Support projects
 
 Download JMX Client:
 ```
@@ -507,7 +546,7 @@ $: cd /opt/projects
 $: sudo git clone JMX-Client-Project-URL jmx-client
 ```
 
-Download Zookeeper Client:
+Download ZooKeeper Client:
 ```
 $: cd /opt/projects
 $: sudo git clone ZK-Client-Project-URL zk-client
@@ -526,64 +565,95 @@ $: sudo mvn install
 
 ### Installing KaSta
 
-Download KaSta Pull Connect:  
+Download KaSta Connect:  
 ```
 $: cd /opt/projects
-$: sudo git clone KaSta-Pull-Project-URL kasta-pull
+$: sudo git clone KaSta-Connect-Project-URL kasta-connect
 ```
 
-Download KaSta Push Reporter:  
+Download KaSta Metrics Reporter:  
 ```
 $: cd /opt/projects
-$: sudo git clone KaSta-Push-Project-URL kasta-push
+$: sudo git clone KaSta-Metrics-Reporter-Project-URL kasta-reporter
 ```
 
-Package KaSta Pull Connect into a JAR:  
+Package KaSta Connect into a JAR:  
 ```
-$: cd /opt/projects/kasta-pull
+$: cd /opt/projects/kasta-connect
 $: sudo mvn package
 ```
 
-Package KaSta Push Reporter into a JAR:  
+Package KaSta Metrics Reporter into a JAR:  
 ```
-$: cd /opt/projects/kasta-push
+$: cd /opt/projects/kasta-reporter
 $: sudo mvn package
 ```
 
-KaSta Push will make a JAR that will contain only dependencies on JMXClient and Zookeeper Client.
 
+
+### Installing KaMan
+
+Download KaMan:  
 ```
-<artifactId>maven-shade-plugin</artifactId>
-  <version>3.2.1</version>
-    <configuration>
-      <artifactSet>
-        <includes>
-          <include>mjaksic:zookeeper-client</include>
-          <include>mjaksic:jmx-client</include>
-        </includes>
-      </artifactSet>
-    </configuration>
-...
+$: cd /opt/projects
+$: sudo git clone KaMan-Project-URL kaman
 ```
 
-Otherwise, if a fully fat JAR is made, it will crash because of dependency conflict with other JARs in Kafka's `libs/` dir
 
-### Configuring KaSta Pull Connect
 
-KaSta Pull Connect JAR must be placed into /opt/connectors folder.
+### Architectural notes
+
+Upon packaging KaSta Connect, Maven will create a "fat" JAR with only JMX Client and ZooKeeper Client as dependencies. This behaviour is configured in Maven's pom.xml. Not doing so will crash Kafka due to a dependency conflict in Kafka's /libs.  
+
+Example pom.xml:
 ```
-$: sudo cp /opt/projects/kasta-pull/target/kafka-jmx-connect.jar /opt/connectors/
+<build>
+  <plugins>
+    ...
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.2.1</version>
+      <configuration>
+        <artifactSet>
+          <includes>
+            <include>mjaksic:zookeeper-client</include>
+            <include>mjaksic:jmx-client</include>
+          </includes>
+        </artifactSet>
+      </configuration>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    ...
+  </plugins>
+</build>
 ```
 
-Optionally, review Connector properties in /opt/projects/kasta-pull/target.
 
 
+### Configuring KaSta Connect
 
-### Configuring KaSta Push Reporter
-
-KaSta Push Reporter JAR must be placed into Kafka's /libs folder.
+KaSta Connect JAR must be placed into /opt/connectors folder.
 ```
-$: sudo cp /opt/projects/kasta-push/target/kafka-jmx-reporter.jar /opt/kafka/libs/
+$: sudo cp /opt/projects/kasta-connect/target/kafka-jmx-connect.jar /opt/connectors/
+```
+
+Optionally, you may also review the Connector properties in /opt/projects/kasta-connect/target.
+
+
+
+### Configuring KaSta Metrics Reporter
+
+KaSta Metrics Reporter JAR must be placed into Kafka's /libs folder.
+```
+$: sudo cp /opt/projects/kasta-reporter/target/kafka-jmx-reporter.jar /opt/kafka/libs/
 ```
 
 Append to Kafka's server.properties:
@@ -601,18 +671,43 @@ kafka.metrics.topic=jmx-metrics
 
 
 
-### Running KaSta Pull Connect
+### Configuring KaMan
+
+Optionally, you may change properties in /opt/projects/kaman/target:
+```
+# Kafka AdminClient configuration
+kaman.admin-timeout=2000
+# Kafka future configuration
+kaman.future-timeout=5000
+```
+
+
+
+### Running KaSta Connect
 
 After starting Kafka run:  
 ```
-sudo /opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/projects/kasta-pull/target/connector-config.properties
+$: sudo /opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/projects/kasta-connect/target/connector-config.properties
 ```
 
 
 
-### Running KaSta Push Reporter
+### Running KaSta Metrics Reporter
 
-The Reporter is run when you run Kafka. That's it!  
+The Reporter is ran when you run a Kafka broker. That's it!  
+
+
+
+### Running KaMan
+
+Run KaMan by executing:  
+```
+$: pwd
+  /opt/projects/kaman
+$: sudo mvn exec:java
+```
+
+Visit {machine_ip_host}:8080/swagger-ui.html or {machine_ip_host}:8080/kafka/{broker_ip_port} to start using KaMan.
 
 
 
@@ -621,7 +716,6 @@ The Reporter is run when you run Kafka. That's it!
 * [Official Kafka Quickstart](https://kafka.apache.org/quickstart)
 
 * [DigitalOcean: Install Kafka on CentOS 7](https://www.digitalocean.com/community/tutorials/how-to-install-apache-kafka-on-centos-7)
-
 \end{lstlisting}
 
 \bibliography{literatura}
