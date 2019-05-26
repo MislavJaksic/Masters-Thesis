@@ -360,6 +360,16 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
 
 \chapter{Izvedba}
 
+\section{Izvebda okoline}
+
+\begin{itemize}
+    \item Apache ZooKeeper, inačica 3.14
+    \item Apache Kafka, inačica 2.1
+    \item Apache Maven, inačica 3.6
+    \item Eclipse IDE, inačica 2018-2019 (4.9.0)
+    \item Java, inačica 1.8, openjdk 10.0.2
+\end{itemize}
+
 \section{Izvebda rješenja}
 
 Rješenje je izvedeno u programskom jeziku Java 8 za programske alate Apache Kafka 2.1 i Apache ZooKeeper x.x. Za projektno upravljanje koristi se Apache Maven, a programska okolina je ostvarena s Eclipse X. Rješenje se pakira u .jar datoteku koristeci Maven. Koriste se X i Y Maven plugin.  .jar se mora stviti u datoteku /libs u Kafki. Potrebno je pazljivo pakirati pomocne biblioteke jer se mogu sukobiti ovisnosti. Upute kako koristiti i postaviti program su dane u prilogu.
@@ -370,31 +380,42 @@ Funkcje su vrlo kratke, samo nekoliko redova dugacke. Srednji broj redova je X. 
 
 \section{Izvebda projekta}
 
-\section{Izvebda paketa}
+Ne pisu se skracenice osim ako nisu izrazito poznate. IP, JMX, MBean, ...
+
+Skracenice su napisane malim slovima.
+
+
+
+Pazi na sukob ovisnosti u Kafki.
+
+
+
+
+
+Posudi se jedna dretva od Kafka procesa. Dretva se otpusti pri zatvaranju.
+
+Vremenski odmak dok se Kafka ne uplai.
+
+Vrijednosti postavka su pretpostavljene.
+
+Kafki se treba reci gdje se nalazi klasa reporter.
+
+.jar se treba staviti u /libs.
+
+Budi glasan kada se dogodi greska.
+
+Uijek nesto reci kako bi korisnik znao da je sve u redu.
+
+Uvijek iza sebe oslobodi reseurse.
+
+Koristi biblioteke koje koristi Kafka.
+
+Napravi prototip da vise saznas o projektu.
+
+maven-compiler-plugin
+maven-shade-plugin
 
 \section{Izvebda klase}
-
-\section{Izvebda funkcije}
-
-\section{Izvebda naredbe}
-
-Programske naredbe dijele se na izraze i izjave. Izjave ne vraćaju vrijednost, dok izrazi vraćaju. 
-
-
-
-Imena varijabli dolaze iz domene problema, a ne rješenja. Korisnici koriste riječi iz domene problema, a programeri iz domene rješenja. Zato što je manje programera od korisnika izabran je rijecnik problema kao izvor imena varijabli.
-
-Varijable su definirane sto je kasnije moguce. Opseg varijabli je tada najmanji moguc. Mali opseg povečava čitkost funkcije.
-
-Čudesni brojevi izdvojeni su u posebne klase koje brinu o konstantama. Ako je primjereno, vrijednost se izdvoji u varijablu i njoj se da opisno ime.
-
-Svaki redak sastoji se od jedne narebde. Ako je vise naredbe u jednom retku, onda su naredbe trivijalne: promjena primitivnog tipa podataka, citanje konstante ili poziv funkcije. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene u retke.
-
-Svaka funkcija radi samo jednu stvar. Naziv funkcije definira sto je to "jedna stvar". Funkcije koje pozivaju druge funckije rade jednu stvar na visokoj razini, dok izvršne funkcije rade jednu stvar na niskoj razini izvedbe.
-
-Osim ako funkcija stvara objekt iz klase, ona treba prima ne više od dva parametra. Vecina funkcija prima samo jedna ili niti jedan parametar. Ako funkcija prima dva parametra i oni su uređeni, onda naziv funkcije odreduje redoslijed parametara.
-
-Funkcija treba biti kratka, od najviše pet redaka. Kratke funkcije je lakse izmjeniti, pročitati i ponovno iskoristiti.
 
 Redoslijed funkcija u klasi je odreden njihovom apstraktnosti. Najapstrktnija klasa koja poziva puno funkcije iste klase je na vrhu. Ispod nje slijede u redoslijedu pozivanja, ostale funkcije.
 
@@ -404,7 +425,56 @@ Klase znaju što manje moguce o funkcijama drugih klasa.
 
 Funkcije izbjegavaju vremensku ovisnost. Vremenska ovisnost je kada kornik treba pozvati funkcije jedne klase u odredenom redoslijedu.
 
-Skracenice su napisane malim slovima.
+Pazi na vremenske ovisnosti. Zatvori nakon koristenja. Automatski.
+
+Izgradene su klase koje pojednostavljuju koristenje sustava iza njih. One takoder izoliraju izradeni sustav od promjena u funkcijama koristenih biblioteka.
+
+Ne vracaju se null vrijednosti vec pretpostavljene vrijednosti vrijednosti. Rade vrati nesto nego nista.
+
+
+
+
+
+
+
+
+
+
+\section{Izvebda funkcije}
+
+Funkcije rade samo jednu stvar. Naziv funkcije definira sto je "jedna stvar". Korisnicke funkcije koje pozivaju više izvršnih funckija rade jednu stvar na visokoj razini apstrakcije, dok izvršne funkcije rade jednu stvar na razini izvedbe.
+
+Funkcije trebaju biti kratka, ne više od pet redaka. Kratke funkcije je lako pročitati, izmjeniti i ponovno iskoristiti.
+
+Neke funkcije su omotac za funkcije iz stranih biblioteka. Ako se funkcija omotač koristi na puno mjesta i strana biblioteka se promijeni, tada se samo treba promijeniti omotač funkcije da bi program nastavio raditi.
+
+Funkcije imaju manje od dva parametra. Vecina funkcija prima jedna ili nijedan parametar. Ako funkcija prima dva parametra, redoslijed parametara mora biti jasan iz naziva funkcije.
+
+Ako postoji vise od dva parametra, parametri se omotaju u strukturu podataka.
+
+Funkcije imaju samo jednu naredbu za kraj izvođenja. 
+
+Ime predikatnih, booleovih funkcija prefiksiran je s riječi "is".
+
+
+
+\section{Izvebda naredbe}
+
+Naredbe dijele se na izraze koje vraćaju i izjave koje ne vraćaju vrijednosti. Konstante, varijable, operatori i funkcije grade izraze.
+
+Svaki redak sastoji se od jedne narebde. Ako je vise naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili citanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
+
+Konstante su imenovane i izdvojene u posebnu klasu. Kada nebi bile izdvojene bilo bi teško odrediti sva mjesta na kojima se ista konstanta koristi. Još teže bi bilo odrediti kako je izabrana vrijednosti konstante.
+
+Imena varijabli dolaze iz domene problema, ne rješenja. Kada korisnici prijave problem, oni će koristiti riječi iz domene problema. Zbog ovakvog imenovanja jaz izmedu korisnika i programera je manji.
+
+Varijable su definirane što kasnije da se smanji opseg varijable. Mali opseg povečava čitkost funkcije.
+
+
+
+
+
+
 
 
 
@@ -419,7 +489,6 @@ Napravi najjednostavnijemoguce rjesenje samo za prolbme koji je pred tobom.
 Razina okoline
 Razina rješenja
 Razina projekta
-Razina paketa
 Razina klase
 Razina funkcije
 Razina naredbe
