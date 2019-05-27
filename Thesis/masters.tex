@@ -366,7 +366,7 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
     \item Apache ZooKeeper, inačica 3.14
     \item Apache Kafka, inačica 2.1
     \item Apache Maven, inačica 3.6
-    \item Eclipse IDE, inačica 2018-2019 (4.9.0)
+    \item Eclipse IDE, inačica 2018-2019, 4.9.0
     \item Java, inačica 1.8, openjdk 10.0.2
 \end{itemize}
 
@@ -376,27 +376,11 @@ Rješenje je izvedeno u programskom jeziku Java 8 za programske alate Apache Kaf
 
 Stil pisanja i nacin imenovanja je definiran u Google Java Style. 
 
-Funkcje su vrlo kratke, samo nekoliko redova dugacke. Srednji broj redova je X. Super super detalji slijede!
-
-\section{Izvebda projekta}
-
-Ne pisu se skracenice osim ako nisu izrazito poznate. IP, JMX, MBean, ...
-
-Skracenice su napisane malim slovima.
 
 
+Napravi prototip da vise saznas o projektu.
 
-Pazi na sukob ovisnosti u Kafki.
-
-
-
-
-
-Posudi se jedna dretva od Kafka procesa. Dretva se otpusti pri zatvaranju.
-
-Vremenski odmak dok se Kafka ne uplai.
-
-Vrijednosti postavka su pretpostavljene.
+Uijek nesto reci kako bi korisnik znao da je sve u redu.
 
 Kafki se treba reci gdje se nalazi klasa reporter.
 
@@ -404,30 +388,30 @@ Kafki se treba reci gdje se nalazi klasa reporter.
 
 Budi glasan kada se dogodi greska.
 
-Uijek nesto reci kako bi korisnik znao da je sve u redu.
+Vremenski odmak dok se Kafka ne uplai.
+
+
+
+
+
+\section{Izvebda projekta}
+
+Ne pisu se skracenice osim ako nisu izrazito poznate. IP, JMX, MBean, ...
+
+Skracenice su napisane malim slovima.
+
+Pazi na sukob ovisnosti u Kafki.
+
+Posudi se jedna dretva od Kafka procesa. Dretva se otpusti pri zatvaranju.
+
+Vrijednosti postavka su pretpostavljene.
 
 Uvijek iza sebe oslobodi reseurse.
 
 Koristi biblioteke koje koristi Kafka.
 
-Napravi prototip da vise saznas o projektu.
-
 maven-compiler-plugin
 maven-shade-plugin
-
-\section{Izvebda klase}
-
-Redoslijed funkcija u klasi je odreden njihovom apstraktnosti. Najapstrktnija klasa koja poziva puno funkcije iste klase je na vrhu. Ispod nje slijede u redoslijedu pozivanja, ostale funkcije.
-
-Klase su imenice gdje svaka ima samo jednu disjunktnu dužnost. Nasljeđivanje se izbjegava i upotreblava se kompozicija.
-
-Klase znaju što manje moguce o funkcijama drugih klasa.
-
-Funkcije izbjegavaju vremensku ovisnost. Vremenska ovisnost je kada kornik treba pozvati funkcije jedne klase u odredenom redoslijedu.
-
-Pazi na vremenske ovisnosti. Zatvori nakon koristenja. Automatski.
-
-Izgradene su klase koje pojednostavljuju koristenje sustava iza njih. One takoder izoliraju izradeni sustav od promjena u funkcijama koristenih biblioteka.
 
 Ne vracaju se null vrijednosti vec pretpostavljene vrijednosti vrijednosti. Rade vrati nesto nego nista.
 
@@ -436,47 +420,57 @@ Ne vracaju se null vrijednosti vec pretpostavljene vrijednosti vrijednosti. Rade
 
 
 
+\section{Izvebda klase}
 
+Klase su imenice gdje svaka ima samo jednu disjunktnu dužnost.
 
+Umjesto nasljeđivanja klase koriste kompoziciju. Duge lance naslijeđenih klasa teško je promijeniti zbog strogih ovisnosti. Prednost kompozicije nad nasljeđivanjem je lakoća promijene.
 
+Klase fasade pojednostavljuju korištenje stranih biblioteka. Strane biblioteke imaju klase od kojih rješenje koristi samo mali podskup svih funkcija. Fasade omotaju funkcije zbog lakoće korištenja, izmjena i izolacije od promjena strane biblioteke.
+
+Klase izbjegavaju vremensku ovisnost. Vremenska ovisnost nastaje kada klasa očekuje da će korisnik pozvati funkcije određenim redoslijedom. Ovisnost se izbjegne izvedbom klasa s malim brojem funkcija koje je moguće pozvati bilo kojim redoslijedom.
+
+Klase pozivaju samo vlastite funkcije i funkcije objekata koje su stvorile. Na ovaj način klase znaju vrlo male o izvedbi drugih klasa.
+
+Klase koje koriste računalne resurse oslobađaju iste neposredno nakon zadnjeg poziva funkcije.
+
+Redoslijed funkcija u klasi određen je njihovom apstraktnosti. Najapstraktnija korisnička klasa koja poziva više izvršnih funkcija je na vrhu klase. Ispod nje slijede, u redoslijedu pozivanja, ostale korisničke i izvršne funkcije.
 
 \section{Izvebda funkcije}
 
-Funkcije rade samo jednu stvar. Naziv funkcije definira sto je "jedna stvar". Korisnicke funkcije koje pozivaju više izvršnih funckija rade jednu stvar na visokoj razini apstrakcije, dok izvršne funkcije rade jednu stvar na razini izvedbe.
+Funkcije rade samo jednu stvar. Naziv funkcije definira sto je "jedna stvar". Korisničke funkcije koje pozivaju više izvršnih funkcija rade jednu stvar na visokoj razini apstrakcije, dok izvršne funkcije rade jednu stvar na razini izvedbe.
 
-Funkcije trebaju biti kratka, ne više od pet redaka. Kratke funkcije je lako pročitati, izmjeniti i ponovno iskoristiti.
+Funkcije trebaju biti kratka, ne više od pet redaka. Kratke funkcije je lako pročitati, izmijeniti i ponovno iskoristiti.
 
-Neke funkcije su omotac za funkcije iz stranih biblioteka. Ako se funkcija omotač koristi na puno mjesta i strana biblioteka se promijeni, tada se samo treba promijeniti omotač funkcije da bi program nastavio raditi.
+Neke funkcije su omotač za funkcije iz stranih biblioteka. Ako se funkcija omotač koristi na puno mjesta i strana biblioteka se promijeni, tada se samo treba promijeniti funkcije omotač kako bi program nastavio raditi.
 
-Funkcije imaju manje od dva parametra. Vecina funkcija prima jedna ili nijedan parametar. Ako funkcija prima dva parametra, redoslijed parametara mora biti jasan iz naziva funkcije.
+Funkcije imaju manje od dva parametra. Većina funkcija prima jedna ili nijedan parametar. Ako funkcija prima dva parametra, redoslijed parametara mora biti jasan iz naziva funkcije.
 
-Ako postoji vise od dva parametra, parametri se omotaju u strukturu podataka.
+Ako funkcija prima više od dva parametra, parametri se omotaju u strukturu podataka.
 
-Funkcije imaju samo jednu naredbu za kraj izvođenja. 
+Funkcije imaju samo jednu naredbu za kraj izvođenja.
 
-Ime predikatnih, booleovih funkcija prefiksiran je s riječi "is".
-
-
+Ime predikatnih, booleovih funkcija ima prefiks "is".
 
 \section{Izvebda naredbe}
 
-Naredbe dijele se na izraze koje vraćaju i izjave koje ne vraćaju vrijednosti. Konstante, varijable, operatori i funkcije grade izraze.
+Naredbe se dijele na izraze koje vraćaju i izjave koje ne vraćaju vrijednosti. Konstante, varijable, operatori i funkcije grade izraze.
 
-Svaki redak sastoji se od jedne narebde. Ako je vise naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili citanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
+Svaki redak sastoji se od jedne naredbe. Ako je više naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili čitanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
 
-Konstante su imenovane i izdvojene u posebnu klasu. Kada nebi bile izdvojene bilo bi teško odrediti sva mjesta na kojima se ista konstanta koristi. Još teže bi bilo odrediti kako je izabrana vrijednosti konstante.
+Konstante su imenovane i izdvojene u posebnu klasu. Teško je odrediti sva mjesta na kojima se ista konstanta koristi ako ona nije izdvojena. Još teže je odrediti kako je izabrana vrijednosti konstante. 
 
-Imena varijabli dolaze iz domene problema, ne rješenja. Kada korisnici prijave problem, oni će koristiti riječi iz domene problema. Zbog ovakvog imenovanja jaz izmedu korisnika i programera je manji.
+Imena varijabli dolaze iz domene problema, ne rješenja. Kada korisnici žele izmjenu ili opisati problem, oni će koristiti riječi iz domene problema, dok će programeri koristiti riječi iz domene rješenja. Zbog ovakvog imenovanja jaz između korisnika i programera je manji.
 
-Varijable su definirane što kasnije da se smanji opseg varijable. Mali opseg povečava čitkost funkcije.
-
-
+Varijable su definirane što kasnije kako bi opseg varijable bio što manji. Mali opseg povećava čitkost funkcije.
 
 
 
 
 
 
+
+\section{Unsorted}
 
 Najjednostavnije i najpromjenjivije.
 
