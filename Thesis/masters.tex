@@ -5,6 +5,9 @@
 
 \usepackage{listings}
 
+\usepackage[dvipsnames]{xcolor}
+\definecolor{backcolour}{rgb}{0.90,0.90,0.90}
+
 \begin{document}
 
 \thesisnumber{1954}
@@ -29,9 +32,7 @@ Raspodijeljeni sustavi su nepouzdani. Pogreška u sklopovlju, operacijskom susta
 
 Zadatak nadzora je otkriti ispad i njegov uzrok. Ispadi se dijele na ispad procesa, pogreške u komunikaciji, vremenske pogreške, pogrešan odgovor i bizantske pogreške \citep{rassus-manual}. Ako se ispad želi otkriti potrebno je pratiti vrijednosti koje ukazuju da se ispad dogodio. Korisne vrijednosti mogu biti zauzeće memorije, brzina obrade zahtjeva, sadržaj poruke ili duljina uspostave komunikacijskog kanala. Nadzirani program vrijednosti predaje nadzorniku koji je čovjek ili program. Ako nadzor obavlja program on treba biti pouzdaniji od nadziranog programa inače je problem nadzora udvostručen, a ne riješen.
 
-Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade istražene su ideje, sukobljene su arhitekture i uspoređena postojeća rješenja. Kako bi naglasak na idejama, arhitekturama i izradi rješenja bio podjednak napravljen je sakupljač za jedan raspodijeljeni sustav. Kada bi umjesto njega bio napravljen svestran sakupljač koji može sakupljati vrijednosti raznolikog sklopovlja, operacijskih sustava i programa misli o arhitekturi bile bi izražene na uštrp onima o izradi programa. Nadzirani sustav je Apache Kafka, popularni sustav za raspodijeljenu obradu tokova podataka.
-
-Poglavlje 2 uspoređuje predstavnike sustava za raspodijeljenu obradu podataka, poglavlje 3 opisuje zahtjeve i pretpostavke, poglavlje 4 uspoređuje postojeća rješenja s specifikacijom problema, poglavlje 5 opisuje arhitekturu i poglavlje 6 opisuje izvedbu.
+Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade u poglavlju 2 uspoređeni su predstavnici sustava za raspodijeljenu obradu podataka. Nakon usporedbe slijedi opis pretpostavka i zahtjeva u poglavlju 3, dok poglavlje 4 sukobljuje postojeće sakupljače vrijednosti sa specifikacijom problema. U poglavlju 5 opisana je arhitektura, a u poglavlju 6 programska izvedba sakupljača vrijednosti za programski alat Apache Kafka koji potiskuje pročitane vrijednosti prema udaljenom nadzornom sustavu.
 
 
 
@@ -288,7 +289,7 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces 
 
 \chapter{Arhitektura sakupljača vrijednosti}
 
-Kako oblikovati programski sustav je velika rasprava \citep{clean-code} \citep{code-complete}. Sustav se oblikuje na razini okoline, rješenja, projekta, klase, funkcije i naredbe. Okolina je skup pretpostavka o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Klasa je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
+Kako oblikovati programski sustav je velika rasprava \citep{clean-code} \citep{code-complete}. Sustav se oblikuje na razini okoline, rješenja, projekta, razreda, funkcije i naredbe. Okolina je skup pretpostavka o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Razred je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
 
 \section{Okolina}
 
@@ -314,7 +315,7 @@ Kako oblikovati programski sustav je velika rasprava \citep{clean-code} \citep{c
 
 \section{Arhitektura projekt}
 
-Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i ispraviti bez utjecaja na druge projekte. U malom projektu od nekoliko klasa je lakse naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani nacin jer su funkcije nad podacima poznate, a strukture podataka nisu. Svaka klasa zadužena je za jednu domenu problema.
+Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i ispraviti bez utjecaja na druge projekte. U malom projektu od nekoliko razreda je lakse naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani nacin jer su funkcije nad podacima poznate, a strukture podataka nisu. Svaki razred zadužen je za jednu domenu problema.
 
 \subsection{Arhitektura ZK}
 
@@ -372,19 +373,33 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
 
 \chapter{Izvedba sakupljača vrijednosti}
 
-\section{Izvedba okoline}
-
-\begin{itemize}
-    \item Apache ZooKeeper, inačica 3.14
-    \item Apache Kafka, inačica 2.1
-    \item Apache Maven, inačica 3.6
-    \item Eclipse IDE, inačica 2018-2019, 4.9.0
-    \item Java, inačica 1.8, openjdk 10.0.2
-\end{itemize}
-
 \section{Izvedba rješenja}
 
-Rješenje je izvedeno u programskom jeziku Java 8 za programske alate Apache Kafka 2.1 i Apache ZooKeeper x.x. Za projektno upravljanje koristi se Apache Maven, a programska okolina je ostvarena s Eclipse X. Rješenje se pakira u .jar datoteku koristeci Maven. Koriste se X i Y Maven plugin.  .jar se mora stviti u datoteku /libs u Kafki. Potrebno je pazljivo pakirati pomocne biblioteke jer se mogu sukobiti ovisnosti. Upute kako koristiti i postaviti program su dane u prilogu.
+\begin{itemize}
+    \item Java, inačica 1.8, openjdk 10.0.2
+    \item Eclipse IDE, inačica 2018-2019, 4.9.0
+    \item Apache Maven, inačica 3.6
+    \item Apache Kafka, inačica 2.1
+    \item Apache ZooKeeper, inačica 3.14
+\end{itemize}
+
+Rješenje je izvedeno u programskom jeziku Java uz pomoć razvojnog okruženje Eclipse. Apache Maven je sustav za upravljanje Java projektima: izgradnjom, upravljanje ovisnostima i dokumentacijom. Apache Kafka je nadzirani sustav za kojeg je izgrađen sakupljač vrijednosti, dok Apache ZooKeeper je pomoćni sustav kojim se Kafka koristi za nadzor Kafka grozda.
+
+Projekti koriste Apache Maven dodatke. Izvršni projekt mjerača koristi "Maven Shade Plugin" za pakiranje rješenja u "debelu" JAR datoteku: rješenje koje sa sobom nosi strane biblioteke, ovisnosti. Svi projekti, ZK, JMX i mjerač, koriste "Maven Compiler Plugin" za ograničavanje Java inačice.
+
+
+
+
+
+
+
+
+
+
+
+Rješenje se pakira u JAR datoteku koristeci Maven. Koriste se X i Y Maven plugin.  .jar se mora stviti u datoteku /libs u Kafki. Potrebno je pazljivo pakirati pomocne biblioteke jer se mogu sukobiti ovisnosti. Upute kako koristiti i postaviti program su dane u prilogu.
+
+
 
 Stil pisanja i nacin imenovanja je definiran u Google Java Style. 
 
@@ -394,7 +409,7 @@ Napravi prototip da vise saznas o projektu.
 
 Uijek nesto reci kako bi korisnik znao da je sve u redu.
 
-Kafki se treba reci gdje se nalazi klasa reporter.
+Kafki se treba reci gdje se nalazi razred reporter.
 
 .jar se treba staviti u /libs.
 
@@ -432,59 +447,97 @@ Ne vracaju se null vrijednosti vec pretpostavljene vrijednosti vrijednosti. Rade
 
 
 
-\section{Izvedba klase}
+\section{Izvedba razreda}
 
-Klase su imenice gdje svaka ima samo jednu disjunktnu dužnost.
+\begin{lstlisting}[language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
 
-Umjesto nasljeđivanja klase koriste kompoziciju. Duge lance naslijeđenih klasa teško je promijeniti zbog strogih ovisnosti. Prednost kompozicije nad nasljeđivanjem je lakoća promijene.
+\end{lstlisting}
 
-Klase fasade pojednostavljuju korištenje stranih biblioteka. Strane biblioteke imaju klase od kojih rješenje koristi samo mali podskup svih funkcija. Fasade omotaju funkcije zbog lakoće korištenja, izmjena i izolacije od promjena strane biblioteke.
+Razredi su imenice gdje svaka ima samo jednu disjunktnu dužnost.
 
-Klase izbjegavaju vremensku ovisnost. Vremenska ovisnost nastaje kada klasa očekuje da će korisnik pozvati funkcije određenim redoslijedom. Ovisnost se izbjegne izvedbom klasa s malim brojem funkcija koje je moguće pozvati bilo kojim redoslijedom.
+Umjesto nasljeđivanja razredi koriste kompoziciju. Duge lance naslijeđenih razreda teško je promijeniti zbog strogih ovisnosti. Prednost kompozicije nad nasljeđivanjem je lakoća promijene.
 
-Klase pozivaju samo vlastite funkcije i funkcije objekata koje su stvorile. Na ovaj način klase znaju vrlo male o izvedbi drugih klasa.
+Razredi fasade pojednostavljuju korištenje stranih biblioteka. Strane biblioteke imaju razrede od kojih rješenje koristi samo mali podskup svih funkcija. Fasade omotaju funkcije zbog lakoće korištenja, izmjena i izolacije od promjena strane biblioteke.
 
-Klase koje koriste računalne resurse oslobađaju iste neposredno nakon zadnjeg poziva funkcije.
+Razredi izbjegavaju vremensku ovisnost. Vremenska ovisnost nastaje kada razred očekuje da će korisnik pozvati funkcije određenim redoslijedom. Ovisnost se izbjegne izvedbom razreda s malim brojem funkcija koje je moguće pozvati bilo kojim redoslijedom.
 
-Redoslijed funkcija u klasi određen je njihovom apstraktnosti. Najapstraktnija korisnička klasa koja poziva više izvršnih funkcija je na vrhu klase. Ispod nje slijede, u redoslijedu pozivanja, ostale korisničke i izvršne funkcije.
+Razredi pozivaju samo vlastite funkcije i funkcije objekata koje su stvorile. Na ovaj način razredi znaju vrlo male o izvedbi drugih razreda.
+
+Razredi koji koriste računalne resurse oslobađaju iste neposredno nakon zadnjeg poziva funkcije.
+
+Redoslijed funkcija u razredu određen je njihovom apstraktnosti. Najapstraktnija korisnički razred koji poziva više izvršnih funkcija je na vrhu razreda. Ispod nje slijede, u redoslijedu pozivanja, ostale korisničke i izvršne funkcije.
 
 \section{Izvedba funkcije}
 
-Funkcije rade samo jednu stvar. Naziv funkcije definira sto je "jedna stvar". Korisničke funkcije koje pozivaju više izvršnih funkcija rade jednu stvar na visokoj razini apstrakcije, dok izvršne funkcije rade jednu stvar na razini izvedbe.
+\begin{lstlisting}[language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+private void connect() {
+ boolean is_not_connected = true;
+ while (is_not_connected) {
+  try {
+   this.connector.connect(this.config.jmx_config);
+   is_not_connected = false;
+  } catch (IOException e) {
+   e.printStackTrace();
+      
+   this.sleepBeforeConnecting();
+  }
+ }
+}
+\end{lstlisting}
 
-Funkcije trebaju biti kratka, ne više od pet redaka. Kratke funkcije je lako pročitati, izmijeniti i ponovno iskoristiti.
+\begin{itemize}
+    \item Funkcija je omotač funkcije iz strane biblioteke u retku 5. Ako se funkcija omota, koristi na mnogo mjesta i strana biblioteka se promijeni, tada se promjena treba izvršiti samo u funkciji omotaču.
+    \item Ako funkcija prima više od dva parametra, parametri se omotaju u strukturu podataka i pozivaju kao u retku 5. Ovako je funkcija kraća i lakše se pročita.
+\end{itemize}
 
-Neke funkcije su omotač za funkcije iz stranih biblioteka. Ako se funkcija omotač koristi na puno mjesta i strana biblioteka se promijeni, tada se samo treba promijeniti funkcije omotač kako bi program nastavio raditi.
+\begin{lstlisting}[language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+public static boolean isBrokerJmxPortOpen(String jmx_port) {
+ boolean is_open = true;
+ if (jmx_port.equals(BadValues.JMX_PORT)) {
+  is_open = false;
+ }
+ return is_open;
+}
+\end{lstlisting}
 
-Funkcije imaju manje od dva parametra. Većina funkcija prima jedna ili nijedan parametar. Ako funkcija prima dva parametra, redoslijed parametara mora biti jasan iz naziva funkcije.
+\begin{itemize}
+    \item Ime predikatnih, booleovih funkcija i varijabli imaju prefiks "is" kao u retku 1.
+    \item Redak 6 je jedina naredba za kraj izvođenja. Lakše je analizirati funkciju ako postoji samo jedna točka gdje funkcija završava.
+    \item Funkcija radi samo jednu stvar. Naziv funkcije definira što je "jedna stvar". Korisničke funkcije koje pozivaju više izvršnih funkcija rade jednu stvar na visokoj razini apstrakcije, dok izvršne funkcije rade jednu stvar na razini izvedbe.
+    \item Funkcije trebaju biti kratka, ne više od pet redaka. Kratke funkcije je lakše pročitati, izmijeniti i ponovno iskoristiti.
+    \item Većina funkcija prima jedan ili nijedan parametar. Ako funkcija prima dva parametra, redoslijed parametara mora biti jasan iz naziva funkcije. Samodokumentirajuće funkcije je lakše koristiti bez čitanja dokumentacije.
+\end{itemize}
 
-Ako funkcija prima više od dva parametra, parametri se omotaju u strukturu podataka.
 
-Funkcije imaju samo jednu naredbu za kraj izvođenja.
-
-Ime predikatnih, booleovih funkcija ima prefiks "is".
 
 \section{Izvedba naredbe}
 
-Naredbe se dijele na izraze koje vraćaju i izjave koje ne vraćaju vrijednosti. Konstante, varijable, operatori i funkcije grade izraze.
+\begin{lstlisting}[language=Java, caption={Izvadak funkcije iz razreda}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+public List<String> getNodeChildren(String node_path) {
+ List<String> node_children = NeutralValues.LIST;
+ 
+ boolean is_watched = false;
+ try {
+  node_children = this.zookeeper.getChildren(node_path,is_watched);
+ } catch (KeeperException | InterruptedException e) {
+  e.printStackTrace();
+ }
 
-Svaki redak sastoji se od jedne naredbe. Ako je više naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili čitanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
+ return node_children;
+}
+\end{lstlisting}
 
-Konstante su imenovane i izdvojene u posebnu klasu. Teško je odrediti sva mjesta na kojima se ista konstanta koristi ako ona nije izdvojena. Još teže je odrediti kako je izabrana vrijednosti konstante. 
-
-Imena varijabli dolaze iz domene problema, ne rješenja. Kada korisnici žele izmjenu ili opisati problem, oni će koristiti riječi iz domene problema, dok će programeri koristiti riječi iz domene rješenja. Zbog ovakvog imenovanja jaz između korisnika i programera je manji.
-
-Varijable su definirane što kasnije kako bi opseg varijable bio što manji. Mali opseg povećava čitkost funkcije.
-
-
-
-
+\begin{itemize}
+    \item Retci 1-12 sastoje se od jedne naredbe. Ako je više naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili čitanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
+    \item Imena varijabli u retcima 1-12 dolaze iz domene problema, ne rješenja. Kada korisnici žele izmjeniti ili opisati problem, oni koriste riječi iz domene problema, dok programer koristi riječi iz domene rješenja. Zbog ovakvog imenovanja jaz između korisnika i programera je manji.
+    \item U retku 2 koristi se konstanta. Konstante su imenovane i izdvojene u posebne razrede. Teško je odrediti sva mjesta na kojima se koristi ista konstanta ako ona nije izdvojena. Još teže je odrediti kako je izabrana vrijednosti konstante.
+    \item U retku 4 varijabla je definirane što kasnije kako bi opseg varijable bio što manji. Mali opseg povećava čitkost funkcije.
+\end{itemize}
 
 
 
 \section{Unsorted}
 
-Izvedba: pokazi na primjeru u svom programu gdje je to istina
 Arh: sto opcenitije to bolje
 Mozda: stopi specifikacije i pretpostavke; objasni svaku
 Dovrsi RabbitMQ
@@ -500,7 +553,7 @@ Napravi najjednostavnijemoguce rjesenje samo za prolbme koji je pred tobom.
 Razina okoline
 Razina rješenja
 Razina projekta
-Razina klase
+Razina razreda
 Razina funkcije
 Razina naredbe
 
