@@ -29,7 +29,7 @@ above_edge_text/.style={above, midway, sloped},
 \node[point](external) at (3,1.5) {};
 
 \node[rounded_square](visualizer) at (0,0) {Visualizer};
-\node[rounded_square](zk_kafka) at (3,0) {ZooKeeper Kafka};
+\node[rounded_square](zk_kafka) at (3,0) {Kafka ZooKeeper};
 
 \node[rounded_square](zk_facade) at (1.5,-1.5) {ZooKeeper Facade};
 
@@ -37,7 +37,7 @@ above_edge_text/.style={above, midway, sloped},
 \node[rounded_square](zk) at (3,-3) {ZooKeeper};
 
 \node[fit_square, fit=(zk_kafka) (visualizer) (zk_facade) (logger) (zk)] (zookeeper_client) {};
-\node[anchor=north west] at (zookeeper_client.north west) {ZK};
+\node[anchor=north west] at (zookeeper_client.north west) {Zook};
 
 
 

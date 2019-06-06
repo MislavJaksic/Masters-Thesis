@@ -31,18 +31,18 @@ above_edge_text/.style={above, midway, sloped},
 \node[rounded_square](jmx_polling_reporter) at (1.5,-1.5) {JMX Polling Reporter};
 \node[rounded_square](logger) at (6,-1.5) {Logger};
 
-\node[rounded_square](zookeeper_kafka) at (0,-3) {ZooKeeper Kafka};
-\node[rounded_square](jmx_client) at (3,-3) {JMX Client};
+\node[rounded_square](zookeeper_kafka) at (0,-3) {Kafka ZooKeeper};
+\node[rounded_square](jmx_client) at (3,-3) {JMX Facade};
 \node[rounded_square](kafka_producer_facade) at (6,-3) {Kafka Producer Facade};
 
 \node[rounded_square](kafka_producer) at (6,-4.5) {Kafka Producer};
 
-\node[rounded_square](zk) at (0,-6.5) {ZK};
-\node[rounded_square](jmx) at (3,-6.5) {JMX};
+\node[rounded_square](zk) at (0,-5.5) {Zook};
+\node[rounded_square](jmx) at (3,-5.5) {JMXMan};
 
 
 \node[fit_square, fit=(kafka_jmx_metrics_reporter) (jmx_polling_reporter) (logger) (zookeeper_kafka) (jmx_client) (kafka_producer_facade) (kafka_producer)] (mjerac) {};
-\node[anchor=north west] at (mjerac.north west) {Mjerač};
+\node[anchor=north west] at (mjerac.north west) {KaSta};
 
 
 

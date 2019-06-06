@@ -3,10 +3,14 @@
 
 \usepackage{float} % "place table exactly here" package
 
+\usepackage[export]{adjustbox}
+
 \usepackage{listings}
 
 \usepackage[dvipsnames]{xcolor}
 \definecolor{backcolour}{rgb}{0.90,0.90,0.90}
+
+
 
 \begin{document}
 
@@ -38,7 +42,7 @@ Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vr
 
 \chapter{Sustavi za raspodijeljenu obradu tokova podataka}
 
-Tok podataka nije isto što i skup podataka \citep{ilprints535}. Toku podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestat i bit će odbačeni nakon što su pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Primjer problema toka podatka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Svi navedeni problemi imaju mnogo izvora i ponora podataka. Kako sakupiti, zabilježiti, te dostaviti podatke na ponor gdje će se obraditi su problemi za koje sustavi za raspodijeljenu obradu tokova podataka nude rješenje. Zato što su tokovi podatka raznovrsni razvijeno je mnoštvo alata za njihovu obradu. Alate razlikujemo po načinu sakupljanja podataka, po mogućnostima toka, po arhitekturi i načinu zapisivanja podataka.
+Tok podataka nije isto što i skup podataka \citep{ilprints535}. Toku podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestati i bit će odbačeni nakon što su pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Primjer problema toka podatka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Svi navedeni problemi imaju mnogo izvora i ponora podataka. Kako sakupiti, zabilježiti, te dostaviti podatke na ponor gdje će se obraditi su problemi za koje sustavi za raspodijeljenu obradu tokova podataka nude rješenje. Zato što su tokovi podatka raznovrsni razvijeno je mnoštvo alata za njihovu obradu. Alate razlikujemo po načinu sakupljanja podataka, po mogućnostima toka, po arhitekturi i načinu zapisivanja podataka.
 
 Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za raspodijeljenu obradu podataka. Kako bi usporedba alata i izvedba sakupljača bila jednostavnija u obzir su uzeti samo javno dostupni alati. Većina takvih alata koristi model objavi/pretplati. Umjesto da se usporede svi javno dostupni alati izabran je predstavnik iz svakog važnog skupa alata:
 \begin{itemize}
@@ -48,12 +52,11 @@ Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za 
 \end{itemize}
 
 
-
 \section{Model objavi/pretplati}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{PublishSubscribe.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{PublishSubscribe.png}
     \caption{Model objavi/pretplati}
     \label{fig:publish-subscribe}
 \end{figure}
@@ -61,12 +64,11 @@ Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za 
 Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati za razmjenu podataka između procesa. \ref{fig:publish-subscribe} prikazuje nužne dijelove modela objavi/pretplati. Model objavi/pretplati sastoji od objavljivača koji šalju poruke, pretplatnika koji čitaju poruke i posrednika koji razmjenjuje poruke između njih \citep{rassus-manual}. Posrednik zapisuje objavljene poruke i dopušta pretplatnicima da ih čitaju. Prednost modela objavi/pretplati nad izravnim razgovorom među procesima je što objavljivači i pretplatnici ne trebaju znati jedan za drugoga.
 
 
-
 \section{Apache Kafka}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaCluster.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KafkaCluster.png}
     \caption{Apache Kafka grozd}
     \label{fig:kafka-cluster}
 \end{figure}
@@ -76,7 +78,7 @@ Apache Kafka je popularni alat za raspodijeljenu obradu tokova podataka. \ref{fi
 \subsection{Objavljivač}
 Objavljivač je korisnički program koji šalje poruke u temu grozda. Poruka se nužno sastoji od sadržaja, teme na koju se objavljuje, oznake pretinca, odmaka u pretincu i vremena objave. Poruke se šalju u skupini nakon sto prođe određeno vrijeme ili se nakupi dovoljno poruka. Poruke se mogu sažeti prije slanja \citep{kafka-compression}. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je poslužitelj koji zapisuje poruke u pretinac. Objavljivač ili ključem izabere pretinac u koji želi zapisati poruke ili se poruke šalju u svaki pretinac jednoliko. Posrednik će poslati potvrdu kada se poruke zapišu u pretinac vođe i izabrani broj usklađenih sljedbenika. Prije slanja sljedećeg skupa poruka objavljivač može pričekati potvrdu posrednika.
 
-Ako se dogodi ispad objavljivača ili posrednika, objavljivač će ponovno poslati poruke. Objavljene poruke biti će dostavljene posredniku barem jednom. Ako je uvišestručavanje poruka nedopustivo, objavljivač može koristiti transakcijski način rada.
+Ako se dogodi ispad objavljivača ili posrednika, objavljivač će ponovno poslati poruke. Objavljene poruke bit će dostavljene posredniku barem jednom. Ako je uvišestručavanje poruka nedopustivo, objavljivač može koristiti transakcijski način rada.
 
 \subsection{Tema}
 Tema je tok poruka, apstraktna umotvorina u koju objavljivači šalju poruke, a iz koje pretplatnici čitaju poruke. Posrednici se brinu da poruke budu zapisane. Biti pretplaćen na temu znači napraviti podtok poruka. Poruke objavljene u temu se ravnomjerno raspoređuju u podtokove. Svaki podtok ima pokazivač kojim pretplatnik čita poruke. Ako pokazivač dođe do kraja podtoka, pretplatnik se blokira dok se ne objavi nova poruka. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruke u temi se brišu tek nakon određenog vremena. Tema je podijeljena na pretince s kojih posrednici čitaju i u koje pišu poruke. Kako bi poruke u pretincu bile dostupne nakon ispad posrednika, pretinac je moguće umnožiti.
@@ -94,7 +96,7 @@ Kada pretplatnik želi pročitati poruke posrednik će pronaći, pročitati i po
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaLog.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KafkaLog.png}
     \caption{Kafka dnevnik}
     \label{fig:kafka-log}
 \end{figure}
@@ -109,12 +111,12 @@ Kada su pretinci umnoženi potrebno je ujednačiti poruke u svakom umnoženom pr
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaPartitions.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KafkaPartitions.png}
     \caption{Pretinci vođe i pretinci sljedbenici}
     \label{fig:kafka-leader-follower}
 \end{figure}
 
-\ref{fig:kafka-leader-follower} prikazuje tri posrednika u grozdu. Tema "računi" je podijeljena na najveći mogući broj pretinaca: broj posrednika u grozdu. Kako se poruke ne bi izgubile zbog ispada posrednika svaki pretinac teme je umnožen jednom. Vođa žutog pretinca je nasumično posrednik jedan. Vođa crvenog pretinca će biti ili posrednik dva ili tri jer se vodstvo pretinaca mora jednoliko raspodijeliti. Ako vođa crvenog pretinca postane posrednik tri, onda će vođa narančastog pretinca postati posrednik dva. Pretinac pratitelji se ravnomjerno rasporede po posrednicima tako da pratitelji nikad nisu zajedno s vođom u istom posredniku.
+\ref{fig:kafka-leader-follower} prikazuje tri posrednika u grozdu. Tema "računi" je podijeljena na najveći mogući broj pretinaca: broj posrednika u grozdu. Kako se poruke ne bi izgubile zbog ispada posrednika svaki pretinac teme je umnožen jednom. Vođa žutog pretinca je nasumično posrednik jedan. Vođa crvenog pretinca će biti ili posrednik dva ili tri jer se vodstvo pretinaca mora jednoliko raspodijeliti. Ako vođa crvenog pretinca postane posrednik tri, onda će vođa narančastog pretinca postati posrednik dva. Pretinac pratitelji se ravnomjerno rasporede po posrednicima tako da pratitelji nikad nisu s vođom u istom posredniku.
 
 Osim sto vođa pretinca je jedini posrednik koji može čitati ili pisati poruke iz pretinca, on se mora brinuti o pratiteljima. Vođa smatra da je pratitelj živ samo ako je prijavljen u Kafka grozd i ako ne zaostaje s čitanjem poruka iz pretinca vode. Ako zaostaje, vođa će pratitelja izbaciti iz skupa usklađenih pratitelja (ISR). Kada vođa primi poruke od objavljivača on će poruke zapisati u svoju particiju i čekat će potvrde pratitelja. Tek kada svi pratitelji pročitaju i zapišu poruke u svoj pretinac će vođa pretinca poslati potvrdu objavljivaču. Pretplatitelji mogu čitati samo one poruke koje su i vođa i pratitelji zapisali u svoje pretince.
 
@@ -126,12 +128,12 @@ Posrednika, tema, pretinaca i umnoženih pretinaca je puno. Kako posrednici ne b
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaConsumerGroups.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KafkaConsumerGroups.png}
     \caption{Kafka pretinci i skup pretplatnika}
     \label{fig:kafka-consumer-group}
 \end{figure}
 
-Pretplatnik je korisnički program koji čita poruke iz teme. \ref{fig:kafka-consumer-group} prikazuje odnos pretplatnika i teme. Svaki pretplatnik je član samo jedne skupine pretplatnika. Skupina pretplatnika sastojati se od barem jednog člana. Skupina pretplatnika zajedno čita poruke iz teme. Neki pretplatnici u skupu pretplatnika biti će zaduženi za čitanje poruka iz teme. Svaki zaduženi pretplatnik ima barem jedan pretinac iz kojeg jedino on može čitati poruke. Skupina pretplatnika može istovremeno napraviti najviše P čitanja ako je P broj pretinaca i u skupini pretplatnika je barem P članova. Poruke se mogu pročitati jedino iz pretinca vođe. Ako pretplatnik uputi zahtjev za čitanje pratitelju pretinca on će pretplatnika preusmjeriti na vođu pretinca.
+Pretplatnik je korisnički program koji čita poruke iz teme. \ref{fig:kafka-consumer-group} prikazuje odnos pretplatnika i teme. Svaki pretplatnik je član samo jedne skupine pretplatnika. Skupina pretplatnika sastojati se od barem jednog člana. Skupina pretplatnika zajedno čita poruke iz teme. Neki pretplatnici u skupu pretplatnika bit će zaduženi za čitanje poruka iz teme. Svaki zaduženi pretplatnik ima barem jedan pretinac iz kojeg jedino on može čitati poruke. Skupina pretplatnika može istovremeno napraviti najviše P čitanja ako je P broj pretinaca i u skupini pretplatnika je barem P članova. Poruke se mogu pročitati jedino iz pretinca vođe. Ako pretplatnik uputi zahtjev za čitanje pratitelju pretinca on će pretplatnika preusmjeriti na vođu pretinca.
 
 Pretplatnik u zahtjevu za čitanje navodi odmak zadnje pročitane poruke i koliko poruka želi pročitati. Posrednik će dostaviti sve poruke od odmaka do tražene količine ili dok ne dođe do kraja pretinca. Odmak poruke je i jedinstvena oznaka poruke i mjesto u datoteci posrednika gdje se poruka nalazi. Posrednik ne pazi koje je poruke pretplatnik pročitao. Pretplatnik je zadužen za rukovanje odmakom. Odmak zadnje pročitane poruke pretplatnik šalje u posebnu temu posrednika. Ako se dogodi ispad pretplatnika, drugi pretplatnik će pročitati odmak iz teme i nastaviti s čitanjem poruka iz pretinca.
 
@@ -142,17 +144,16 @@ Više skupina pretplatnika može istovremeno citati poruke iz iste teme i pretin
 Model povlačenja poruka pretplatnicima dopušta čitanje poruka brzinom koja njima odgovara. Model dopušta i učinkovito razašiljanje iste poruke na više pretplatnika. Ako pretplatnik želi ponovno pročitati poruku on samo treba poslati odmak pročitane poruke. Kako pretplatnik ne bi zaglavio u petlji ako u pretincu nema novim poruka on sebe može blokirati dok ne dođu nove poruke. Posrednik nikad ne zna kada su svi pretplatnici pročitali poruke i zato ih ne može obrisati nakon čitanja. Posrednici su zato napravljeni da s povećanjem nepročitanih poruka njihova učinkovitost ne opada. Posrednik će poruke izbrisati nakon zadanog vremena.
 
 
-
 \section{Apache Pulsar}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{PulsarCluster.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{PulsarCluster.png}
     \caption{Apache Pulsar grozd}
     \label{fig:pulsar-cluster}
 \end{figure}
 
-Apache Pulsar je moderni alat za raspodijeljenu obradu tokova podataka. \ref{fig:pulsar-cluster} prikazuje Pulsar proces koji se sastoji od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog Pulsar posrednika, od barem jednog Apache BookKeeper zapisnicara i Apache ZooKeeper nadzornika. Objavljivači šalju poruke u temu grozda. Posrednici primaju i posluzuju poruke, a zapisnicari ih zapisuju. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. Primjena, arhitektura i izvedba Pulsar pretplatnika, upravljane knjige, posrednika, teme, pretplate i objavljivača opisana je u sljedećim poglavljima \citep{pulsar-docs} \citep{pulsar-streamlio-1} \citep{pulsar-streamlio-2} \citep{pulsar-streamlio-intro}.
+Apache Pulsar je moderni alat za raspodijeljenu obradu tokova podataka. \ref{fig:pulsar-cluster} prikazuje Pulsar proces koji se sastoji od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog Pulsar posrednika, od barem jednog Apache BookKeeper zapisničara i Apache ZooKeeper nadzornika. Objavljivači šalju poruke u temu grozda. Posrednici primaju i poslužuju poruke, a zapisničari ih zapisuju. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. Primjena, arhitektura i izvedba Pulsar pretplatnika, upravljane knjige, posrednika, teme, pretplate i objavljivača opisana je u sljedećim poglavljima \citep{pulsar-docs} \citep{pulsar-streamlio-1} \citep{pulsar-streamlio-2} \citep{pulsar-streamlio-intro}.
 
 \subsection{Objavljivač}
 Objavljivač je korisnički program koji šalje poruke u temu. Poruke se nužno sastoje od sadržaja, oznake objavljivača, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sažeti. Tema može biti podijeljena na pretince. Objavljivač može usmjeriti poruke u određeni pretinac. Poruke se mogu usmjeriti na jedan nasumični pretinac, na točno određene pretince koristeći ključ ili se mogu slati jednoliko na sve pretince. Objavljivači ili čekaju potvrdu dok posrednik zapisuje poruke ili nastave s radom i naknadno provjere je li su poruke primljene i zapisane.
@@ -161,7 +162,7 @@ Objavljivač je korisnički program koji šalje poruke u temu. Poruke se nužno 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{PulsarHierarchy.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{PulsarHierarchy.png}
     \caption{Pulsar teme, prostori imena i stanari}
     \label{fig:pulsar-hierarchy}
 \end{figure}
@@ -170,16 +171,16 @@ Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnik
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{PulsarPartitions.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{PulsarPartitions.png}
     \caption{Pulsar pretinci}
     \label{fig:pulsar-partitions}
 \end{figure}
 
-Moguće je napraviti bezmemorijske teme koje poruke čuvaju do slanja pretplatnicima ili ispada posrednika. Bezmemorijske teme objavljene poruke potiskuju prema pretplatnicima. Prednost bezmemorijskih tema je brzina. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruka se briše iz teme kada svi pretplatnici pročitaju poruku ili kada je poruka pročitana i starija od zadane vrijednosti ili kada je nepročitana i starija od zadane vrijednosti. Tema se može podijeliti na više podtema zvanih pretinac. \ref{fig:pulsar-partitions} prikazuje odnos objavljivača i pretplatnika prema temi koja je podijeljena na pretince. Pretinci su ravnomjerno raspodijeljeni po posrednicima. Broj istovremenih pretplatnika odnosno čitanja nije ograničeno brojem pretinaca.
+Moguće je napraviti nepostojane teme koje poruke čuvaju do slanja pretplatnicima ili ispada posrednika. Nepostojane teme objavljene poruke potiskuju prema pretplatnicima. Prednost nepostojanih tema je brzina. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruka se briše iz teme kada svi pretplatnici pročitaju poruku ili kada je poruka pročitana i starija od zadane vrijednosti ili kada je nepročitana i starija od zadane vrijednosti. Tema se može podijeliti na više podtema zvanih pretinac. \ref{fig:pulsar-partitions} prikazuje odnos objavljivača i pretplatnika prema temi koja je podijeljena na pretince. Pretinci su ravnomjerno raspodijeljeni po posrednicima. Broj istovremenih pretplatnika odnosno čitanja nije ograničeno brojem pretinaca.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{PulsarSubscription.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{PulsarSubscription.png}
     \caption{Pulsar pretplate}
     \label{fig:pulsar-subscription}
 \end{figure}
@@ -199,15 +200,17 @@ Knjiga je struktura podatka u koju se poruke mogu dodati samo na kraj. Nakon št
 Upravljana knjiga je skup BookKeeper knjiga u koju se upisuju poruke koje pripadaju jednoj temi. Iako se poruke mogu zapisati u samo jednu knjige više BookKeeper knjiga olakšava brisanje i pisanje poruka. Upravljana knjiga sastoji se skupa tokova podata koji se zapisuju u knjigu s jednim pisaćem i skupa pokazivača koji prate koje poruke su pretplatnici pročitali. Zapisivač prije pisanja poruke u upravljanu knjigu poruke zapisuje u dnevnik.
 
 \subsection{Pretplatnik}
-Pretplatnik je korisnički program koji se pretplaćuje na pretplatu teme. Postoje tri vrste pretplate. Svaka pretplata određuje način na koji pretplatnik čita poruke. Pretplatnik može ili biti blokiran dok posrednik ne dobije poruku ili nastaviti s radom i dobiti budućnosnicu kojom će čitati poruke. Pretplatnik može pojedinačno ili skupno potvrditi poruke.
+Pretplatnik je korisnički program koji se pretplaćuje na pretplatu teme. Postoje tri vrste pretplate. Svaka pretplata određuje način na koji pretplatnik čita poruke. Pretplatnik može ili biti blokiran dok posrednik ne dobije poruku ili nastaviti s radom i dobiti budućnostnicu kojom će čitati poruke. Pretplatnik može pojedinačno ili skupno potvrditi poruke.
 
 Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje čitača. Sučelje čitača je biblioteka koja omogućuje ručno potvrđivanje poruka, ponovno čitanje poruke i odbacivanje umnoženih poruka.
 
+
 \section{RabbitMQ}
+
 
 \section{Usporedba}
 
-\begin{table}[]
+\begin{table}[H]
 \begin{tabular}{lllll}
  &  &  &  &  \\
  &  &  &  &  \\
@@ -226,6 +229,7 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje
 
 Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su svojstva i mogućnosti programa koje je poželjno ali nije potrebno ispuniti.
 
+
 \section{Pretpostavke}
 
 \begin{itemize}
@@ -235,6 +239,7 @@ Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpo
     \item Kafka grozdovi i posrednici mogu se upaliti i ugasiti u bilo kojem trenutku
     \item Može se dogoditi ispad, ali ne i bizantski
 \end{itemize}
+
 
 \section{Zahtjevi}
 
@@ -249,15 +254,18 @@ Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpo
     \item Nadzirane vrijednosti imaju vremensku oznaku kada su pročitane
 \end{itemize}
 
+
+
 \chapter{Postojeći sakupljači vrijednosti}
 
-Istraživanje postojećih rješenja ima višestruku ulogu: usporediti mane i prednosti izvedenog rješenja; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje za rješvanje novog problema. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliku sustavi.
+Istraživanje postojećih rješenja ima višestruku ulogu: usporediti mane i prednosti izvedenog rješenja; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje za rješavanje novog problema. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliku sustavi.
+
 
 \section{Jolokia}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Jolokia.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{Jolokia.png}
     \caption{Arhitektura Jolokie}
     \label{fig:jolokia}
 \end{figure}
@@ -266,11 +274,12 @@ Jolokia \citep{jolokia} je most između JMX i HTTP. Jolokia se pokreće kao agen
 
 Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Nažalost, Jolokia krši zahtjeve pozadinskog procesa i samostalnog pronalaženja novih Kafka grozdova i posrednika. Ako se Jolokia pokrene kao agent ona se pokrene kao poseban pozadinski proces na računalu na kojem se nalazi nadzirani sustav. Ako se pokrene kao samostojeći poslužitelj ona neće znati kada se upalio novi Kafka grozd ili posrednik jer nema načina da Jolokiji dojave da postoje.
 
+
 \section{Prometheus}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Prometheus.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{Prometheus.png}
     \caption{Arhitektura Prometheusa}
     \label{fig:prometheus}
 \end{figure}
@@ -278,6 +287,7 @@ Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Naž
 Prometheus \citep{prometheus} je potpuno rješenja za nadziranje proizvoljnih programa. \ref{fig:prometheus} prikazuje dijelove Prometheusa: poslužitelj, vremenska baza podataka i sakupljač nadziranih vrijednosti. Sakupljač mjerače nalazi samostalno ili koristi otkrivatelja. Kada sakupljač pročita vrijednosti one se pohrane u bazu podataka i u stalnu memoriju. Prije prikazivanja ili stvaranja uzbune korisnici mogu izabrati podskup vrijednosti jezikom PromQL koji je nalik SQLu.
 
 Velika prednost i nedostatak Prometheusa je njegov opseg. Problem zahtjeva samo nadzor ne i predočavanje i obradu i zapisivanje podataka. Prometheus također dugo čeka između očitanja nadziranih vrijednosti. Zahtjev traži čitanje svakih sekundu ili manje, a Prometheus čeka par sekundi.
+
 
 \section{Confluent sakupljač vrijednosti}
 
@@ -289,89 +299,95 @@ Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces 
 
 \chapter{Arhitektura sakupljača vrijednosti}
 
-Kako oblikovati programski sustav je velika rasprava \citep{clean-code} \citep{code-complete}. Sustav se oblikuje na razini okoline, rješenja, projekta, razreda, funkcije i naredbe. Okolina je skup pretpostavka o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Razred je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
+Postoji velika rasprava kako oblikovati programski sustav \citep{clean-code} \citep{code-complete}. Sustav se oblikuje na razini okoline, rješenja, projekta, razreda, funkcije i naredbe. Okolina je skup pretpostavka o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Razred je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
+
 
 \section{Okolina}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaEnvironment.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KafkaEnvironment.png}
     \caption{Okolina sustava}
     \label{fig:kafka-environment}
 \end{figure}
 
 \ref{fig:kafka-environment} prikazuje mali podskup Kafka grozdova. Grozdovi koriste sigurni intranet za međusobni razgovor. Napadač ne postoji i ne može izazvati ispad pogrešnim korištenjem programa. Grozd može iskusiti ispad. Kafka grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Dijelovi grozda raspodijeljeni su na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni grozd je otporan na ispade i fizički odvojen od ostalih grozdova.
 
+
 \section{Arhitektura rješenja}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaCollectors.png}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KafkaCollectors.png}
     \caption{Nadzor jednostavnog Kafka grozda}
     \label{fig:collectors}
 \end{figure}
 
-\ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grozd sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici šalju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svog sakupljača vrijednosti. Kada se pokrene posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri projekta: mjerača, ZK i JMX. Mjerač pita ZK kojeg posrednika treba nadzirati. Zatim mjerač od JMX saznaje nadzirane vrijednosti. Svi mjerači šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
+\ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grozd sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici šalju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svoj sakupljač vrijednosti. Kada se pokrene posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri projekta: KaSta, Zook i JMXMan. KaSta pita Zook kojeg posrednika treba nadzirati. Zatim KaSta od JMXMan saznaje nadzirane vrijednosti. Svi KaStae šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
+
 
 \section{Arhitektura projekt}
 
-Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i ispraviti bez utjecaja na druge projekte. U malom projektu od nekoliko razreda je lakse naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani nacin jer su funkcije nad podacima poznate, a strukture podataka nisu. Svaki razred zadužen je za jednu domenu problema.
+Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zahtjeva sustava. Projekti se mogu nadograditi i promijeniti bez utjecaja na druge projekte. U malom projektu od nekoliko razreda lakše je naći grešku nego u velikom projektu. Projekte je primjereno izvesti na objektno orijentirani način jer su njihove strukture podataka poznate, a funkcije nisu. Svaki razred zadužen je za jednu domenu problema.
 
-\subsection{Arhitektura ZK}
+\subsection{Arhitektura Zook}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{ZooKeeperKafka.png}
-    \caption{}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{Zook.png}
+    \caption{Odnosi Zook razreda}
     \label{fig:zookeeper-kafka}
 \end{figure}
 
 \begin{itemize}
-    \item Visualizer zadužen za predocavanje podataka zapisanih u ZooKeeper nadzorniku
-    \item ZooKeeper Kafka zadužen za apstrahiranje odnosa Kafka posrednika i ZooKeeper nadzornika
-    \item ZooKeeper Facade zadužen za razgovor s ZooKeeper nadzornikom
-    \item Logger zadužen za ispisivanje događaja
-    \item ZooKeeper zadužen za izvršavanje ZooKeeper naredba
+    \item Visualizer - zadužen za predočavanje podataka u ZooKeeper čvorovima
+    \item Kafka ZooKeeper - zadužen za pojednostavljenje odnosa između Kafka posrednika i ZooKeeper nadzornika
+    \item ZooKeeper Facade - zadužen za pojednostavljenje razgovor s ZooKeeper nadzornikom
+    \item Logger - zadužen za ispisivanje događaja
+    \item ZooKeeper - zadužen za izvršavanje ZooKeeper naredba
 \end{itemize}
 
-\subsection{Arhitektura JMX}
+\subsection{Arhitektura JMXMan}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{JMXClient.png}
-    \caption{}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{JMXMan.png}
+    \caption{Odnosi JMXMan razreda}
     \label{fig:jmx-client}
 \end{figure}
 
 \begin{itemize}
-    \item JMX Client zadužen za apstrahiranje JMX sustava
-    \item JMX Connector Facade zadužen za spajanje s JMX uslugama
-    \item MBean Connection Facade zadužen za očitavanje MBean vrijednosti
-    \item JMX Connector zadužen za izvršavanje JMX naredba
-    \item Logger zadužen za ispisivanje događaja
-    \item MBean Connection zadužen za izvršavanje MBean naredba
+    \item JMX Facade - zadužen za pojednostavljenje Java Management Extensions (JMX) sustava
+    \item JMX Connector Facade - zadužen za pojednostavljenje JMX priključka
+    \item MBean Connection Facade - zadužen za pojednostavljenje korištenja Managed Beans (MBean)
+    \item JMX Connector - zadužen za izvršavanje JMX naredbi
+    \item Logger - zadužen za ispisivanje događaja
+    \item MBean Connection - zadužen za izvršavanje MBean naredba
 \end{itemize}
 
-\subsection{Arhitektura mjerača}
+\subsection{Arhitektura KaSta}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{KafkaMetricsReporter.png}
-    \caption{}
+    \includegraphics[max width=0.8\textwidth, max height=0.6\textwidth]{KaSta.png}
+    \caption{Odnosi KaSta razreda}
     \label{fig:kafka-metrics-reporter}
 \end{figure}
 
 \begin{itemize}
-    \item Kafka JMX Metrics Reporter zadužen za pokretanje sakupljača vrijednosti
-    \item JMX Polling Reporter zadužen za očitavanje nadziranih vrijednosti
-    \item Logger zadužen za ispisivanje događaja
-    \item ZooKeeper Kafka zadužen za apstrahiranje odnosa Kafka posrednika i ZooKeeper nadzornika
-    \item JMX Client zadužen za apstrahiranje JMX sustava
-    \item Kafka Producer Facade zadužen za 
-    \item Kafka Producer zadužen za objavu nadziranih vrijednosti u Kafka temu
+    \item Kafka JMX Metrics Reporter - zadužen za pokretanje sakupljača vrijednosti
+    \item JMX Polling Reporter - zadužen za očitavanje nadziranih vrijednosti
+    \item Logger - zadužen za ispisivanje događaja
+    \item Kafka ZooKeeper - zadužen za pojednostavljenje odnosa između Kafka posrednika i ZooKeeper nadzornika
+    \item JMX Facade - zadužen za pojednostavljenje Java Management Extensions (JMX) sustava
+    \item Kafka Producer Facade - zadužen za pojednostavljenje slanja poruka u Kafku
+    \item Kafka Producer - zadužen za izvršavanje naredba objavljivača
 \end{itemize}
 
+
+
 \chapter{Izvedba sakupljača vrijednosti}
+
 
 \section{Izvedba rješenja}
 
@@ -383,93 +399,94 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
     \item Apache ZooKeeper, inačica 3.14
 \end{itemize}
 
-Rješenje je izvedeno u programskom jeziku Java uz pomoć razvojnog okruženje Eclipse. Apache Maven je sustav za upravljanje Java projektima: izgradnjom, upravljanje ovisnostima i dokumentacijom. Apache Kafka je nadzirani sustav za kojeg je izgrađen sakupljač vrijednosti, dok Apache ZooKeeper je pomoćni sustav kojim se Kafka koristi za nadzor Kafka grozda.
+Rješenje je izvedeno u programskom jeziku Java uz pomoć razvojnog okruženje Eclipse. Apache Maven je sustav za upravljanje Java projektima: izgradnja, upravljanje ovisnosti i izrada dokumentacije. Apache Kafka je nadzirani sustav za kojeg je izgrađen sakupljač vrijednosti, dok je Apache ZooKeeper pomoćni sustav kojim se Kafka koristi za nadzor Kafka grozda.
 
-Projekti koriste Apache Maven dodatke. Izvršni projekt mjerača koristi "Maven Shade Plugin" za pakiranje rješenja u "debelu" JAR datoteku: rješenje koje sa sobom nosi strane biblioteke, ovisnosti. Svi projekti, ZK, JMX i mjerač, koriste "Maven Compiler Plugin" za ograničavanje Java inačice.
+Projekti koriste Apache Maven dodatke. Izvršni projekt mjerača koristi "Maven Shade Plugin" za pakiranje rješenja u "debelu" JAR datoteku: rješenje koje sa sobom nosi strane biblioteke, ovisnosti. Dodatku se navodi koje inačice stranih biblioteka treba pakirati s rješenjem. Izabrane biblioteke i inačice su one koje koristi Kafka. Ako se koriste pogrešne biblioteke ili inačice sakupljač vrijednosti izazvat će grešku prilikom pokretanja Kafka. Svi projekti, ZK, JMX i mjerač, koriste "Maven Compiler Plugin" za ograničavanje Java inačice. Ako se Java inačica ne ograniči može nastati greška prilikom izgradnje ili pokretanja projekta.
 
+Stil pisanja Java projekata prati "Google Java Style Guide" osim ako nije drugačije navedeno.
 
+Prije izvedbe konačnog rješenja sagrađen je prototip. Prototip je program koji se odbaci nakon što izvođača nauči koristiti prototipirani sustav.
 
+Projekt trguje robusnost za ispravnost. Robusnost mjeri koliko program dobro radi ako nastane greška. Ispravnost je svojstvo programa da radi točno kako je navedeno u zahtjevima. Za sakupljača vrijednosti je važnije da radi točno nego da nastavi raditi ako iskusi grešku.
 
+Kada se dogodi greška rješenje nju "glasno" obradi da korisniku privuče pažnju. 
 
-
-
-
-
-
-
-Rješenje se pakira u JAR datoteku koristeci Maven. Koriste se X i Y Maven plugin.  .jar se mora stviti u datoteku /libs u Kafki. Potrebno je pazljivo pakirati pomocne biblioteke jer se mogu sukobiti ovisnosti. Upute kako koristiti i postaviti program su dane u prilogu.
+Zbog načina izvedbe, Kafka će pokrenuti sakupljača vrijednosti prije nego završi pokretanje same sebe. Zato sakupljač vrijednosti čeka zadano vrijeme prije početka sakupljanja vrijednosti.
 
 
+\section{Izvedba projekata}
 
-Stil pisanja i nacin imenovanja je definiran u Google Java Style. 
+\begin{lstlisting}[floatplacement=H]
+:kasta
+\--- :broker
+|    \--- :JMXPollingReporter
+|    \--- :KafkaJMXMetricsReporter
+|    \--- :KafkaJMXMetricsReporterMBean
+\--- :error
+|    \--- :NeutralValues
+|    \--- :Validator
+\--- :external
+|    \--- :ConfigNames
+|    \--- :ConfigParser
+|    \--- :DefaultValues
+\--- :json
+|    \--- :JacksonFacade
+\--- :logging
+|    \--- :LoggingFacade
+\--- :producer
+     \--- :KafkaProducerFacade
+     \--- :KafkaProducerFacadeConfig
+     \--- :Metric
+     \--- :ProducerRecordFacade
+\end{lstlisting}
 
-
-
-Napravi prototip da vise saznas o projektu.
-
-Uijek nesto reci kako bi korisnik znao da je sve u redu.
-
-Kafki se treba reci gdje se nalazi razred reporter.
-
-.jar se treba staviti u /libs.
-
-Budi glasan kada se dogodi greska.
-
-Vremenski odmak dok se Kafka ne uplai.
-
-
-
-
-
-\section{Izvedba projekta}
-
-Ne pisu se skracenice osim ako nisu izrazito poznate. IP, JMX, MBean, ...
-
-Skracenice su napisane malim slovima.
-
-Pazi na sukob ovisnosti u Kafki.
-
-Posudi se jedna dretva od Kafka procesa. Dretva se otpusti pri zatvaranju.
-
-Vrijednosti postavka su pretpostavljene.
-
-Uvijek iza sebe oslobodi reseurse.
-
-Koristi biblioteke koje koristi Kafka.
-
-maven-compiler-plugin
-maven-shade-plugin
-
-Ne vracaju se null vrijednosti vec pretpostavljene vrijednosti vrijednosti. Rade vrati nesto nego nista.
-
-
-
-
+\begin{itemize}
+    \item Razred KafkaJMXMetricsReporter pokreće Apache Kafka. Kafka živi u procesu iz kojeg se stvara dretva za razred. Dretva razreda otpustit će se pri gašenju Kafka procesa.
+    \item Uslijed greške funkcija ne vraća NULL vrijednost već neutralnu vrijednost pretpostavljenu u razredu NeutralValues. Vraćanje neutralne vrijednosti je preciznije od vraćanja NULL vrijednosti.
+    \item Vrijednosti postavka su pretpostavljene u razredu DefaultValues. Pretpostavljene vrijednosti olakšavaju korištenje projekta.
+    \item Projekti ne koristi skraćenice osim ako nisu opće poznate i rasprostranjene poput: IP, JMX ili MBean.
+\end{itemize}
 
 
 \section{Izvedba razreda}
 
-\begin{lstlisting}[language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+\begin{lstlisting}[floatplacement=H, language=Java, caption={Izvadak iz projekta JMXMan}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{blue}, breaklines]
+/**
+ * Responsible for simplifying JMX interactions.
+ */
+public class JMXFacade implements AutoCloseable, IMBeanConnectionFacade {
+ private JMXConnectorFacade connector;
+ private MBeanConnectionFacade mbean_connection;
 
+ public JMXFacade(JMXConnectorFacadeConfig config) {...}
+ private JMXConnectorFacade createConnector(JMXConnectorFacadeConfig config) {...}
+ private MBeanConnectionFacade createMBeanConnection() {...}
+  
+ public List<JMXMetric> getMetrics(Set<ObjectName> mbean_names) {...}
+  
+ public Set<ObjectName> getAllMBeanNames() {...}
+ public List<String> getMBeanAttributeNames(ObjectName mbean_name) {...}
+ public Map<String,String> getMBeanAttributeValueMap(ObjectName mbean_name, List<String> attributes) {...}
+ 
+ @Override
+ public void close() {...}
+}
 \end{lstlisting}
 
-Razredi su imenice gdje svaka ima samo jednu disjunktnu dužnost.
+\begin{itemize}
+    \item Razredi su imenice gdje svaka ima samo jednu disjunktnu dužnost. Redci 1-4 opisuju dužnost razreda.
+    \item Redci 5-6 prikazuju kako razred koristi kompoziciju umjesto nasljeđivanja. Duge lance naslijeđenih razreda teško je promijeniti jer su razredi strogo ovisni. Prednost kompozicije nad nasljeđivanjem je lakoća promijene.
+    \item Razredi pozivaju samo vlastite funkcije u redcima 9, 10, 12 i funkcije objekata koje su stvorile u redcima 14, 15, 16. Na ovaj način razredi znaju vrlo male o izvedbi drugih razreda.
+    \item Razredi koji koriste računalne resurse oslobađaju iste neposredno nakon zadnjeg poziva funkcije u retku 19.
+    \item Razredi pročelja pojednostavljuju korištenje stranih biblioteka. Strane biblioteke imaju razrede od kojih rješenje koristi samo mali podskup svih funkcija. Fasade omotaju funkcije zbog lakoće korištenja, izmjena i izolacije od promjena strane biblioteke.
+    \item Razredi izbjegavaju vremensku ovisnost. Vremenska ovisnost nastaje kada razred očekuje da će korisnik pozvati funkcije određenim redoslijedom. Ovisnost se izbjegne izvedbom razreda s malim brojem funkcija koje je moguće pozvati bilo kojim redoslijedom.
+    \item Redoslijed funkcija u razredu određen je njihovom apstraktnosti. Najapstraktnija korisnički razred koji poziva više izvršnih funkcija je na vrhu razreda. Ispod nje slijede, u redoslijedu pozivanja, ostale korisničke i izvršne funkcije.
+\end{itemize}
 
-Umjesto nasljeđivanja razredi koriste kompoziciju. Duge lance naslijeđenih razreda teško je promijeniti zbog strogih ovisnosti. Prednost kompozicije nad nasljeđivanjem je lakoća promijene.
 
-Razredi fasade pojednostavljuju korištenje stranih biblioteka. Strane biblioteke imaju razrede od kojih rješenje koristi samo mali podskup svih funkcija. Fasade omotaju funkcije zbog lakoće korištenja, izmjena i izolacije od promjena strane biblioteke.
+\section{Izvedba funkcija}
 
-Razredi izbjegavaju vremensku ovisnost. Vremenska ovisnost nastaje kada razred očekuje da će korisnik pozvati funkcije određenim redoslijedom. Ovisnost se izbjegne izvedbom razreda s malim brojem funkcija koje je moguće pozvati bilo kojim redoslijedom.
-
-Razredi pozivaju samo vlastite funkcije i funkcije objekata koje su stvorile. Na ovaj način razredi znaju vrlo male o izvedbi drugih razreda.
-
-Razredi koji koriste računalne resurse oslobađaju iste neposredno nakon zadnjeg poziva funkcije.
-
-Redoslijed funkcija u razredu određen je njihovom apstraktnosti. Najapstraktnija korisnički razred koji poziva više izvršnih funkcija je na vrhu razreda. Ispod nje slijede, u redoslijedu pozivanja, ostale korisničke i izvršne funkcije.
-
-\section{Izvedba funkcije}
-
-\begin{lstlisting}[language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+\begin{lstlisting}[floatplacement=H, language=Java, caption={Izvadak iz razreda JMX Connector Facade}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{blue}]
 private void connect() {
  boolean is_not_connected = true;
  while (is_not_connected) {
@@ -487,10 +504,10 @@ private void connect() {
 
 \begin{itemize}
     \item Funkcija je omotač funkcije iz strane biblioteke u retku 5. Ako se funkcija omota, koristi na mnogo mjesta i strana biblioteka se promijeni, tada se promjena treba izvršiti samo u funkciji omotaču.
-    \item Ako funkcija prima više od dva parametra, parametri se omotaju u strukturu podataka i pozivaju kao u retku 5. Ovako je funkcija kraća i lakše se pročita.
+    \item Ako funkcija prima više od dva parametra, parametri se omotaju u strukturu podataka i pozivaju kao u retku 5. Ovako je funkcija kraća i čitljivija.
 \end{itemize}
 
-\begin{lstlisting}[language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+\begin{lstlisting}[floatplacement=H, language=Java, caption={Predikatna funkcija}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{blue}]
 public static boolean isBrokerJmxPortOpen(String jmx_port) {
  boolean is_open = true;
  if (jmx_port.equals(BadValues.JMX_PORT)) {
@@ -509,10 +526,9 @@ public static boolean isBrokerJmxPortOpen(String jmx_port) {
 \end{itemize}
 
 
+\section{Izvedba naredba}
 
-\section{Izvedba naredbe}
-
-\begin{lstlisting}[language=Java, caption={Izvadak funkcije iz razreda}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{PineGreen}]
+\begin{lstlisting}[floatplacement=H, language=Java, caption={Izvadak iz razreda Kafka ZooKeeper}, captionpos=b, basicstyle=\footnotesize, numbers=left, stepnumber=1, backgroundcolor=\color{backcolour}, keywordstyle=\color{blue}]
 public List<String> getNodeChildren(String node_path) {
  List<String> node_children = NeutralValues.LIST;
  
@@ -528,60 +544,30 @@ public List<String> getNodeChildren(String node_path) {
 \end{lstlisting}
 
 \begin{itemize}
-    \item Retci 1-12 sastoje se od jedne naredbe. Ako je više naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili čitanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
-    \item Imena varijabli u retcima 1-12 dolaze iz domene problema, ne rješenja. Kada korisnici žele izmjeniti ili opisati problem, oni koriste riječi iz domene problema, dok programer koristi riječi iz domene rješenja. Zbog ovakvog imenovanja jaz između korisnika i programera je manji.
+    \item Redci 1-12 sastoje se od jedne naredbe. Ako je više naredba u jednom retku, onda su naredbe jednostavne: promjena primitivnog tipa podataka ili čitanje konstante. Kada se traže greške ili poboljšava funkcija, izmjenu je lakše napraviti ako su naredbe kratke i odvojene.
+    \item Imena varijabli u redcima 1-12 dolaze iz domene problema, ne rješenja. Kada korisnici žele izmijeniti ili opisati problem, oni koriste riječi iz domene problema, dok programer koristi riječi iz domene rješenja. Zbog ovakvog imenovanja jaz između korisnika i programera je manji.
     \item U retku 2 koristi se konstanta. Konstante su imenovane i izdvojene u posebne razrede. Teško je odrediti sva mjesta na kojima se koristi ista konstanta ako ona nije izdvojena. Još teže je odrediti kako je izabrana vrijednosti konstante.
     \item U retku 4 varijabla je definirane što kasnije kako bi opseg varijable bio što manji. Mali opseg povećava čitkost funkcije.
 \end{itemize}
 
 
 
-\section{Unsorted}
-
-Arh: sto opcenitije to bolje
-Mozda: stopi specifikacije i pretpostavke; objasni svaku
-Dovrsi RabbitMQ
-
-Najjednostavnije i najpromjenjivije.
-
-Lakoca promjene -> ponovna upotreba
-Izvedi promjeu samo na jednom mjestu.
-Koristiti oblikovne obrasce samo tamo gdje je to potrebno.
-Nemoj se ponavljati.
-Napravi najjednostavnijemoguce rjesenje samo za prolbme koji je pred tobom.
-
-Razina okoline
-Razina rješenja
-Razina projekta
-Razina razreda
-Razina funkcije
-Razina naredbe
-
-\section{Kafka Connect}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{KafkaConnect.png}
-    \caption{Arhitektura Kafka Connect sakupljača vrijednosti}
-    \label{fig:kafka-connect}
-\end{figure}
-
-Kafka Connect je u !CITAT opisana kao alat za razmjenu podataka izmedu Apache Kafke i vanjskog sustava. Kafka Connect sastoji se od priključka koji stvara odredeni broj paralelnih zadataka. Kafka Connect dijeli se na Source Connect koji upisuje poruke u Kafku i Sink Connect koji cita poruke iz Kafke.
-
-Kafka Connect nemoze otkriti nove Kafka grozdove i posrednike jer ne sustava za prijavu.
-
 \chapter{Zaključak}
 Zaključak.
 
-\chapter{Prilog}
 
-\section{Priručnik za korištenje}
+
+\chapter{Dodaci}
+
+
+\section{Priručnik za korištenje sakupljača vrijednosti}
+
 \begin{lstlisting}[breaklines]
-## Kafka Metrics User Guide
+## KaSta and KaMan User Guide
 
-The guide will lead you through all the necessary steps in order to configure and run KaSta Connect, KaSta Metrics Reporter and KaMan projects.  
+The guide will lead you through all the necessary steps in order to configure and run KaStaPull, KaSta and KaMan projects.  
 
-This guide assumes KaSta projects will be run on the CentOS 7 operating system.
+This guide assumes KaSta and KaMan projects will be run on the CentOS 7 operating system.
 
 
 
@@ -645,11 +631,11 @@ $: sudo JMX_PORT=Any-Free-Port bin/kafka-server-start.sh config/server.propertie
 ```
 There are many other methods of opening Kafka's JMX port. You can use whatever method you like.  
 
-How do you know if you have opened Kafka's JMX port? Check ZooKeeper node /brokers/ids.  
+How do you know if you have opened Kafka's JMX port? Check ZooKeeper znode /brokers/ids.  
 
 
 
-### Preparing both KaSta and KaMan environment
+### Preparing KaSta and KaMan environment
 
 #### [Git](https://git-scm.com/)
 
@@ -671,24 +657,24 @@ sudo yum install maven
 
 #### Support projects
 
-Download JMX Client:
+Download JMXMan:
 ```
 $: cd /opt/projects
-$: sudo git clone JMX-Client-Project-URL jmx-client
+$: sudo git clone JMXMan-Project-URL jmxman
 ```
 
-Download ZooKeeper Client:
+Download Zook:
 ```
 $: cd /opt/projects
-$: sudo git clone ZK-Client-Project-URL zk-client
+$: sudo git clone Zook-Project-URL zook
 ```
 
 Install both projects with Maven:
 ```
-$: cd /opt/projects/jmx-client
+$: cd /opt/projects/jmxman
 $: sudo mvn install
 
-$: cd /opt/projects/zk-client
+$: cd /opt/projects/zook
 $: sudo mvn install
 ```
 
@@ -696,27 +682,27 @@ $: sudo mvn install
 
 ### Installing KaSta
 
-Download KaSta Connect:  
+Download KaStaPull:  
 ```
 $: cd /opt/projects
-$: sudo git clone KaSta-Connect-Project-URL kasta-connect
+$: sudo git clone KaStaPull-Project-URL kastapull
 ```
 
-Download KaSta Metrics Reporter:  
+Download KaSta:  
 ```
 $: cd /opt/projects
-$: sudo git clone KaSta-Metrics-Reporter-Project-URL kasta-reporter
+$: sudo git clone KaSta-Project-URL kasta
 ```
 
-Package KaSta Connect into a JAR:  
+Package KaStaPull into a JAR:  
 ```
-$: cd /opt/projects/kasta-connect
+$: cd /opt/projects/kastapull
 $: sudo mvn package
 ```
 
-Package KaSta Metrics Reporter into a JAR:  
+Package KaSta into a JAR:  
 ```
-$: cd /opt/projects/kasta-reporter
+$: cd /opt/projects/kasta
 $: sudo mvn package
 ```
 
@@ -734,9 +720,9 @@ $: sudo git clone KaMan-Project-URL kaman
 
 ### Architectural notes
 
-Upon packaging KaSta Connect, Maven will create a "fat" JAR with only JMX Client and ZooKeeper Client as dependencies. This behaviour is configured in Maven's pom.xml. Not doing so will crash Kafka due to a dependency conflict in Kafka's /libs.  
+Upon packaging KaStaPull, Maven will create a "fat" JAR with only JMXMan and Zook as dependencies. This behaviour is configured in Maven's pom.xml. Not doing so will crash Kafka due to a dependency conflict in Kafka's /libs.  
 
-Example pom.xml:
+Example [pom.xml](https://gitlab.com/dataflux_group/backend/kasta-push/blob/master/pom.xml):
 ```
 <build>
   <plugins>
@@ -748,8 +734,8 @@ Example pom.xml:
       <configuration>
         <artifactSet>
           <includes>
-            <include>mjaksic:zookeeper-client</include>
-            <include>mjaksic:jmx-client</include>
+            <include>aisoft:zook</include>
+            <include>aisoft:jmxman</include>
           </includes>
         </artifactSet>
       </configuration>
@@ -769,27 +755,27 @@ Example pom.xml:
 
 
 
-### Configuring KaSta Connect
+### Configuring KaStaPull
 
 KaSta Connect JAR must be placed into /opt/connectors folder.
 ```
-$: sudo cp /opt/projects/kasta-connect/target/kafka-jmx-connect.jar /opt/connectors/
+$: sudo cp /opt/projects/kastapull/target/kafkapull.jar /opt/connectors/
 ```
 
-Optionally, you may also review the Connector properties in /opt/projects/kasta-connect/target.
+Optionally, you may also review the Connector properties in /opt/projects/kafkapull/target.
 
 
 
-### Configuring KaSta Metrics Reporter
+### Configuring KaSta
 
-KaSta Metrics Reporter JAR must be placed into Kafka's /libs folder.
+KaSta JAR must be placed into Kafka's /libs folder.
 ```
-$: sudo cp /opt/projects/kasta-reporter/target/kafka-jmx-reporter.jar /opt/kafka/libs/
+$: sudo cp /opt/projects/kasta/target/kasta.jar /opt/kafka/libs/
 ```
 
 Append to Kafka's server.properties:
 ```
-kafka.metrics.reporters=mjaksic.kafka_jmx_reporter.broker.KafkaJMXMetricsReporter
+kafka.metrics.reporters=aisoft.kasta.broker.KafkaJMXMetricsReporter
 ```
 
 Optionally, these properties may be appended as well:
@@ -814,18 +800,18 @@ kaman.future-timeout=5000
 
 
 
-### Running KaSta Connect
+### Running KaStaPull
 
 After starting Kafka run:  
 ```
-$: sudo /opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/projects/kasta-connect/target/connector-config.properties
+$: sudo /opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties /opt/projects/kastapull/target/connector-config.properties
 ```
 
 
 
-### Running KaSta Metrics Reporter
+### Running KaSta
 
-The Reporter is ran when you run a Kafka broker. That's it!  
+KaSta is ran when you run a Kafka broker. That's it!  
 
 
 
@@ -847,9 +833,11 @@ Visit {machine_ip_host}:8080/swagger-ui.html or {machine_ip_host}:8080/kafka/{br
 * [Official Kafka Quickstart](https://kafka.apache.org/quickstart)
 
 * [DigitalOcean: Install Kafka on CentOS 7](https://www.digitalocean.com/community/tutorials/how-to-install-apache-kafka-on-centos-7)
+
 \end{lstlisting}
 
-\section{ZooKeeper Kafka drvo podataka}
+
+\section{Kafka drvo podataka u ZooKeeperu}
 
 \begin{lstlisting}
 :cluster
@@ -894,11 +882,15 @@ Visit {machine_ip_host}:8080/swagger-ui.html or {machine_ip_host}:8080/kafka/{br
 \bibliography{literatura}
 \bibliographystyle{fer}
 
+
+
 \begin{sazetak}
 Sažetak na hrvatskom jeziku.
 
 \kljucnerijeci{Ključne riječi, odvojene zarezima.}
 \end{sazetak}
+
+
 
 \engtitle{Real-Time Health Monitoring in Distributed Data Stream Processing System}
 \begin{abstract}

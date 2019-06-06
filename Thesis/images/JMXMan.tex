@@ -28,7 +28,7 @@ above_edge_text/.style={above, midway, sloped},
 
 \node[point](external) at (0,0) {};
 
-\node[rounded_square](jmx_client) at (0,-1.5) {JMX Client};
+\node[rounded_square](jmx_client) at (0,-1.5) {JMX Facade};
 
 \node[rounded_square](jmx_connector_facade) at (0,-3) {JMX Connector Facade};
 \node[rounded_square](mbean_connection_facade) at (4.5,-3) {MBean Connection Facade};
@@ -40,7 +40,7 @@ above_edge_text/.style={above, midway, sloped},
 
 
 \node[fit_square, fit=(jmx_client) (jmx_connector_facade) (mbean_connection_facade) (jmx_connector) (logger) (mbean_connection)] (jmx) {};
-\node[anchor=north east] at (jmx.north east) {JMX};
+\node[anchor=north east] at (jmx.north east) {JMXMan};
 
 
 
