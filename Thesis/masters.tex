@@ -48,7 +48,6 @@ Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za 
 \begin{itemize}
     \item Apache Kafka je predstavnik popularnih alata za raspodijeljenu obradu tokova podataka
     \item Apache Pulsar \citep{yahoo-blogpost} je predstavnik modernih alata objavljen 2016. dok je Kafka \citep{kafka-whitepaper} objavljena 2011. godine
-    \item RabbitMQ je predstavnik alat koji potiskuju podatke prema korisnicima. Za razliku od RabbitMQ korisnici Kafke i Pulsara moraju povlačiti podatke
 \end{itemize}
 
 
@@ -205,21 +204,43 @@ Pretplatnik je korisnički program koji se pretplaćuje na pretplatu teme. Posto
 Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje čitača. Sučelje čitača je biblioteka koja omogućuje ručno potvrđivanje poruka, ponovno čitanje poruke i odbacivanje umnoženih poruka.
 
 
-\section{RabbitMQ}
-
-
 \section{Usporedba}
 
 \begin{table}[H]
-\begin{tabular}{lllll}
- &  &  &  &  \\
- &  &  &  &  \\
- &  &  &  &  \\
- &  &  &  & 
+
+\centering
+
+\begin{tabular}{|l|l|l|}
+\hline
+                            & Kafka                         & Pulsar                                         \\ \hline
+Jezik                       & Scala/Java                    & Java                                           \\ \hline
+Nadziranje grozda           & ZooKeeper                     & ZooKeeper                                      \\ \hline
+Zapisivanje podataka        & Kafka                         & BookKeeper                                     \\ \hline
+Umotvorine                  & tema, pretinac                & tema, pretinac, segment                        \\ \hline
+Teme                        & memorijske                    & memorijske, bezmemorijske                      \\ \hline
+Identifikator poruke        & odmak                         & logički                                        \\ \hline
+Odmak                       & cijeli broj                   & Pulsar pokazivač                               \\ \hline
+Zapis odmaka                & Kafka tema & zapisničar                                     \\ \hline
+Pretplate                   & skup pretplatnika             & isključiva, zajednička, sigurnosna             \\ \hline
+Potvrđivanje poruka         & skupno                        & pojedinačno ili skupno                         \\ \hline
+Garancija objave            & barem jednom                  & "kao jednom"                                   \\ \hline
+Garancija pretplate         & barem jednom                  & "kao jednom"                                   \\ \hline
+Umnožavanje poruka          & vođa-sljedbenici              & zapisničari                                    \\ \hline
+Jedinica paralelizma        & pretinac                      & pretplata                                      \\ \hline
+Izolirano pisanje i čitanje & ne                            & da                                             \\ \hline
+Ograničenje pretinca        & manje od broja posrednika     & nema                                           \\ \hline
+Ograničenje pretplatnika    & manje od broja pretinaca      & nema                                           \\ \hline
+Gubitak poruka              & ispad N od N posrednika       & ispad N od N zapisničara                       \\ \hline
+Brisanje poruka             & istek vremena                 & složeno \\ \hline
+Geo-umnožavanje             & MirrorMaker                   & podržano                                       \\ \hline
+Posredničko spajanje        & name                          & podržano                                       \\ \hline
+Sažimanje                   & podržano                      & podržano                                       \\ \hline
+Razine administracije teme  & nema                          & stanar, područje imena                         \\ \hline
+Usmjeravanje poruka         & ne                            & ne                                             \\ \hline
 \end{tabular}
 
-\caption{Text below table}
-\label{table:sample_table_label}
+\caption{Usporedba Apache Kafka i Apache Pulsar}
+\label{table:kafka_pulsar}
 
 \end{table}
 
@@ -388,8 +409,7 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
 
 \chapter{Izvedba sakupljača vrijednosti}
 
-
-\section{Izvedba rješenja}
+Rješenje je izvedeno u programskom jeziku Java uz pomoć razvojnog okruženje Eclipse. Apache Maven je sustav za upravljanje Java projektima: izgradnja, upravljanje ovisnosti i izrada dokumentacije. Apache Kafka je nadzirani sustav za kojeg je izgrađen sakupljač vrijednosti, dok je Apache ZooKeeper pomoćni sustav kojim se Kafka koristi za nadzor Kafka grozda.
 
 \begin{itemize}
     \item Java, inačica 1.8, openjdk 10.0.2
@@ -399,9 +419,10 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
     \item Apache ZooKeeper, inačica 3.14
 \end{itemize}
 
-Rješenje je izvedeno u programskom jeziku Java uz pomoć razvojnog okruženje Eclipse. Apache Maven je sustav za upravljanje Java projektima: izgradnja, upravljanje ovisnosti i izrada dokumentacije. Apache Kafka je nadzirani sustav za kojeg je izgrađen sakupljač vrijednosti, dok je Apache ZooKeeper pomoćni sustav kojim se Kafka koristi za nadzor Kafka grozda.
 
-Projekti koriste Apache Maven dodatke. Izvršni projekt mjerača koristi "Maven Shade Plugin" za pakiranje rješenja u "debelu" JAR datoteku: rješenje koje sa sobom nosi strane biblioteke, ovisnosti. Dodatku se navodi koje inačice stranih biblioteka treba pakirati s rješenjem. Izabrane biblioteke i inačice su one koje koristi Kafka. Ako se koriste pogrešne biblioteke ili inačice sakupljač vrijednosti izazvat će grešku prilikom pokretanja Kafka. Svi projekti, ZK, JMX i mjerač, koriste "Maven Compiler Plugin" za ograničavanje Java inačice. Ako se Java inačica ne ograniči može nastati greška prilikom izgradnje ili pokretanja projekta.
+\section{Izvedba rješenja}
+
+Rješenje koristi Apache Maven dodatke. Izvršni projekt mjerača koristi "Maven Shade Plugin" za pakiranje rješenja u "debelu" JAR datoteku: rješenje koje sa sobom nosi strane biblioteke, ovisnosti. Dodatku se navodi koje inačice stranih biblioteka treba pakirati s rješenjem. Izabrane biblioteke i inačice su one koje koristi Kafka. Ako se koriste pogrešne biblioteke ili inačice sakupljač vrijednosti izazvat će grešku prilikom pokretanja Kafka. Svi projekti, ZK, JMX i mjerač, koriste "Maven Compiler Plugin" za ograničavanje Java inačice. Ako se Java inačica ne ograniči može nastati greška prilikom izgradnje ili pokretanja projekta.
 
 Stil pisanja Java projekata prati "Google Java Style Guide" osim ako nije drugačije navedeno.
 
@@ -555,6 +576,8 @@ public List<String> getNodeChildren(String node_path) {
 \chapter{Zaključak}
 Zaključak.
 
+Raspodijeljeni sustavi mogu se napraviti pouzdaniji. Sakupljac vrijednosti je prvi orak. Apache Kaka izabrana je kao primjer popularnog raspodijeljenog sustava. Trenutna rijesenja za Apache Kafku su ili preopcenita ili nisu namijenjena promijenjivoj okolini. Izvedeno rješenje 
+Sakuplajč vrijednosti je lako prenosivo rješenje koje se može usmjeriti prema bilo kojem vanjskom sustavu. 
 
 
 \chapter{Dodaci}
@@ -878,6 +901,43 @@ Visit {machine_ip_host}:8080/swagger-ui.html or {machine_ip_host}:8080/kafka/{br
 |    \--- :topic2
 \--- :users
 \end{lstlisting}
+
+
+\section{Kafka nadzirane vrijednosti}
+
+\begin{lstlisting}[breaklines]
+{"identifier":"localhost:2181/0",
+"name":"kafka.network:type=RequestMetrics,name=ThrottleTimeMs,request=Produce",
+"values":{"Mean":"0.04786324786324787",
+          "StdDev":"1.7931803358139955",
+          "75thPercentile":"0.0",
+          "98thPercentile":"0.0",
+          "Min":"0.0",
+          "95thPercentile":"0.0",
+          "99thPercentile":"0.0",
+          "Max":"75.0",
+          "999thPercentile":"0.0",
+          "Count":"1755",
+          "50thPercentile":"0.0"
+         }
+}
+
+...
+
+{"identifier":"localhost:2181/0",
+"name":"kafka.network:type=RequestMetrics,name=ErrorsPerSec,request=LeaderAndIsr,error=NONE",
+"values":{"RateUnit":"SECONDS",
+          "OneMinuteRate":"0.8441818857364531",
+          "EventType":"requests",
+          "Count":"51",
+          "FifteenMinuteRate":"0.2363690035582246",
+          "FiveMinuteRate":"0.3134491059201686",
+          "MeanRate":"0.5163893250564741"
+         }
+}
+\end{lstlisting}
+
+
 
 \bibliography{literatura}
 \bibliographystyle{fer}
