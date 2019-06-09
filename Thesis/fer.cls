@@ -74,7 +74,7 @@
 \RequirePackage{graphicx} % Uključeno jer je često korišteno
 \RequirePackage{amssymb} % Uključeno jer je često korišteno
 \RequirePackage{amsmath} % Uključeno jer je često korišteno
-\RequirePackage{fixltx2e}
+% \RequirePackage{fixltx2e}
 \RequirePackage{caption}
 \RequirePackage{ifthen}
 \RequirePackage{url} % Potrebno radi natbiba

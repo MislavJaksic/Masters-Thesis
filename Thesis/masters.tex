@@ -1,7 +1,10 @@
-\documentclass[times, utf8, diplomski, numeric]{fer}
+\documentclass[utf8, diplomski, lmodern, numeric]{fer}
+
 \usepackage{booktabs}
 
 \usepackage{float} % "place table exactly here" package
+
+\usepackage{chngpage}
 
 \usepackage[export]{adjustbox}
 
@@ -9,6 +12,10 @@
 
 \usepackage[dvipsnames]{xcolor}
 \definecolor{backcolour}{rgb}{0.90,0.90,0.90}
+
+\usepackage{indentfirst}
+\setlength{\parindent}{10mm}
+\setlength{\parskip}{2mm}
 
 
 
@@ -24,7 +31,7 @@
 
 \izvornik
 
-\zahvala{Hvala svima!}
+\zahvala{}
 
 \tableofcontents
 
@@ -208,19 +215,19 @@ Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje
 
 \begin{table}[H]
 
-\centering
+\begin{adjustwidth}{-15mm}{15mm}
 
 \begin{tabular}{|l|l|l|}
 \hline
-                            & Kafka                         & Pulsar                                         \\ \hline
-Jezik                       & Scala/Java                    & Java                                           \\ \hline
+                            & \textbf{Kafka}                & \textbf{Pulsar}                                \\ \hline
+Programski jezik            & Scala/Java                    & Java                                           \\ \hline
 Nadziranje grozda           & ZooKeeper                     & ZooKeeper                                      \\ \hline
 Zapisivanje podataka        & Kafka                         & BookKeeper                                     \\ \hline
 Umotvorine                  & tema, pretinac                & tema, pretinac, segment                        \\ \hline
 Teme                        & memorijske                    & memorijske, bezmemorijske                      \\ \hline
 Identifikator poruke        & odmak                         & logički                                        \\ \hline
 Odmak                       & cijeli broj                   & Pulsar pokazivač                               \\ \hline
-Zapis odmaka                & Kafka tema & zapisničar                                     \\ \hline
+Zapis odmaka                & Kafka tema                    & zapisničar                                     \\ \hline
 Pretplate                   & skup pretplatnika             & isključiva, zajednička, sigurnosna             \\ \hline
 Potvrđivanje poruka         & skupno                        & pojedinačno ili skupno                         \\ \hline
 Garancija objave            & barem jednom                  & "kao jednom"                                   \\ \hline
@@ -231,7 +238,7 @@ Izolirano pisanje i čitanje & ne                            & da               
 Ograničenje pretinca        & manje od broja posrednika     & nema                                           \\ \hline
 Ograničenje pretplatnika    & manje od broja pretinaca      & nema                                           \\ \hline
 Gubitak poruka              & ispad N od N posrednika       & ispad N od N zapisničara                       \\ \hline
-Brisanje poruka             & istek vremena                 & složeno \\ \hline
+Brisanje poruka             & istek vremena                 & složeno                                        \\ \hline
 Geo-umnožavanje             & MirrorMaker                   & podržano                                       \\ \hline
 Posredničko spajanje        & name                          & podržano                                       \\ \hline
 Sažimanje                   & podržano                      & podržano                                       \\ \hline
@@ -239,6 +246,8 @@ Razine administracije teme  & nema                          & stanar, područje 
 Usmjeravanje poruka         & ne                            & ne                                             \\ \hline
 \end{tabular}
 
+\end{adjustwidth}
+ 
 \caption{Usporedba Apache Kafka i Apache Pulsar}
 \label{table:kafka_pulsar}
 
@@ -574,10 +583,13 @@ public List<String> getNodeChildren(String node_path) {
 
 
 \chapter{Zaključak}
-Zaključak.
 
-Raspodijeljeni sustavi mogu se napraviti pouzdaniji. Sakupljac vrijednosti je prvi orak. Apache Kaka izabrana je kao primjer popularnog raspodijeljenog sustava. Trenutna rijesenja za Apache Kafku su ili preopcenita ili nisu namijenjena promijenjivoj okolini. Izvedeno rješenje 
-Sakuplajč vrijednosti je lako prenosivo rješenje koje se može usmjeriti prema bilo kojem vanjskom sustavu. 
+Raspodijeljeni sustavi su nepouzdani i zahtijevaju nadzor. Prvi korak u izgradnji programskog nadzora je sakupljač vrijednosti. Apache Kafka je popularni sustav za raspodijeljenu obradu tokova podataka nad kojim je izgrađen sakupljač vrijednosti. Prije izvedbe uspoređeni su postojeći alati za nadzora i sakupljanje vrijednosti. Postojeća rješenja su ili općenita i vrlo složena ili loše prilagođena za Kafka okolinu u kojoj se nadzirani posrednici često pale i gase.
+
+Sakupljač vrijednosti izveden je kao dodatak na Apache Kafka posrednika. Svaki posrednik ima svojeg sakupljača vrijednosti. Kada se posrednik upali, sakupljač se upali. Kada se posrednik ugasi, posrednik se ugasi. Sakupljač se izvrsno skalira jer povećanje broja nadziranih posrednika ne utječe na brzinu rada programa. Sakupljač je sastavljen od tri projekta: Zook koji upravlja Apache ZooKeeperom, JMXMan koji izvršava JMX naredbe i KaSta koji čita i šalje nadzirane vrijednosti u udaljeni sustav na obradu. Pri izvedbi rješenja promjenjivost i jednostavnost su bile glavne ideje vodilje.
+
+Sakupljača se može jednostavno nadograditi ili izmijeniti. U budućnosti moguće je nadograditi sakupljača tako da filtrira i memoizira nadzirane vrijednosti. Trenutno se nadzirane vrijednosti šalju u udaljeni Kafka grozd ali moguće je razviti rješenje tako da podržava druge sustave. Projekti Zook i JMXMan mogu se također nadograditi bez utjecaja na sakupljača vrijednosti.
+
 
 
 \chapter{Dodaci}
@@ -945,18 +957,20 @@ Visit {machine_ip_host}:8080/swagger-ui.html or {machine_ip_host}:8080/kafka/{br
 
 
 \begin{sazetak}
-Sažetak na hrvatskom jeziku.
 
-\kljucnerijeci{Ključne riječi, odvojene zarezima.}
+Raspodijeljeni sustavi su nepouzdani. Apache Kafka je primjer popularnog sustava za raspodijeljenu obradu tokova podataka. Sakupljač vrijednosti izgrađen je od tri projekta: Zook koji upravlja Apache ZooKeeperom, JMXMan koji izvršava JMX naredbe i KaSta koji čita i šalje nadzirane vrijednosti u udaljeni sustav na obradu. Sakupljač se izvrsno skalira jer povećanje broja nadziranih Kafka posrednika ne utječe na brzinu rada programa. Rješenje je lako nadograditi jer je jednostavno i modularno.
+
+\kljucnerijeci{raspodijeljeni sustav, nadzor, Apache Kafka, nadzirana vrijednost}
 \end{sazetak}
 
 
 
 \engtitle{Real-Time Health Monitoring in Distributed Data Stream Processing System}
 \begin{abstract}
-Abstract.
 
-\keywords{Keywords.}
+Distributed system are unreliable. Apache Kafka is an example of a popular distributed streaming system. A metrics reporter was constructed from three projects: Zook which manages Apache ZooKeeper, JMXMan which executes JMX queries and KaSta which polls and sends metrics to a remote monitoring system. The reporter scales very well because the increase in the number of Kafka brokers has no impact on the reporter's performance. The reporter can be easily extended because of its simplicity and modularity.
+
+\keywords{distributed system, monitoring, Apache Kafka, metric}
 \end{abstract}
 
 \end{document}
