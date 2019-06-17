@@ -2,7 +2,7 @@
 
 \usepackage{booktabs}
 
-\usepackage{float} % "place table exactly here" package
+\usepackage{float}
 
 \usepackage{chngpage}
 
@@ -28,8 +28,6 @@
 \author{Mislav Jakšić}
 
 \maketitle
-
-\izvornik
 
 \zahvala{}
 
@@ -67,7 +65,7 @@ Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za 
     \label{fig:publish-subscribe}
 \end{figure}
 
-Apache Kafka, Apache Pulsar i RabbitMQ koriste model objavi/pretplati za razmjenu podataka između procesa. \ref{fig:publish-subscribe} prikazuje nužne dijelove modela objavi/pretplati. Model objavi/pretplati sastoji od objavljivača koji šalju poruke, pretplatnika koji čitaju poruke i posrednika koji razmjenjuje poruke između njih \citep{rassus-manual}. Posrednik zapisuje objavljene poruke i dopušta pretplatnicima da ih čitaju. Prednost modela objavi/pretplati nad izravnim razgovorom među procesima je što objavljivači i pretplatnici ne trebaju znati jedan za drugoga.
+Apache Kafka i Apache Pulsar koriste model objavi/pretplati za razmjenu podataka između procesa. \ref{fig:publish-subscribe} prikazuje nužne dijelove modela objavi/pretplati. Model objavi/pretplati sastoji od objavljivača koji šalju poruke, pretplatnika koji čitaju poruke i posrednika koji razmjenjuje poruke između njih \citep{rassus-manual}. Posrednik zapisuje objavljene poruke i dopušta pretplatnicima da ih čitaju. Prednost modela objavi/pretplati nad izravnim razgovorom među procesima je što objavljivači i pretplatnici ne trebaju znati jedan za drugoga.
 
 
 \section{Apache Kafka}
@@ -958,7 +956,7 @@ Visit {machine_ip_host}:8080/swagger-ui.html or {machine_ip_host}:8080/kafka/{br
 
 \begin{sazetak}
 
-Raspodijeljeni sustavi su nepouzdani. Apache Kafka je primjer popularnog sustava za raspodijeljenu obradu tokova podataka. Sakupljač vrijednosti izgrađen je od tri projekta: Zook koji upravlja Apache ZooKeeperom, JMXMan koji izvršava JMX naredbe i KaSta koji čita i šalje nadzirane vrijednosti u udaljeni sustav na obradu. Sakupljač se izvrsno skalira jer povećanje broja nadziranih Kafka posrednika ne utječe na brzinu rada programa. Rješenje je lako nadograditi jer je jednostavno i modularno.
+Raspodijeljeni sustavi su nepouzdani. Apache Kafka je primjer popularnog sustava za raspodijeljenu obradu tokova podataka. Postojeći sakupljači vrijednosti nisu primjereni za raspodijeljeni nadzor. Novi sakupljač vrijednosti izgrađen je od tri projekta: Zook koji upravlja Apache ZooKeeperom, JMXMan koji izvršava JMX naredbe i KaSta koji čita i šalje nadzirane vrijednosti u udaljeni sustav na obradu. Sakupljač se izvrsno skalira jer povećanje broja nadziranih Kafka posrednika ne utječe na brzinu rada programa. Rješenje je lako nadograditi jer je jednostavno i modularno.
 
 \kljucnerijeci{raspodijeljeni sustav, nadzor, Apache Kafka, nadzirana vrijednost}
 \end{sazetak}
@@ -968,7 +966,7 @@ Raspodijeljeni sustavi su nepouzdani. Apache Kafka je primjer popularnog sustava
 \engtitle{Real-Time Health Monitoring in Distributed Data Stream Processing System}
 \begin{abstract}
 
-Distributed system are unreliable. Apache Kafka is an example of a popular distributed streaming system. A metrics reporter was constructed from three projects: Zook which manages Apache ZooKeeper, JMXMan which executes JMX queries and KaSta which polls and sends metrics to a remote monitoring system. The reporter scales very well because the increase in the number of Kafka brokers has no impact on the reporter's performance. The reporter can be easily extended because of its simplicity and modularity.
+Distributed system are unreliable. Apache Kafka is an example of a popular distributed streaming system. Existing monitoring solutions are not well suited for distributed monitoring. A new metrics reporter was constructed from three projects: Zook which manages Apache ZooKeeper, JMXMan which executes JMX queries and KaSta which polls and sends metrics to a remote monitoring system. The reporter scales very well because the increase in the number of Kafka brokers has no impact on the reporter's performance. The reporter can be easily extended because of its simplicity and modularity.
 
 \keywords{distributed system, monitoring, Apache Kafka, metric}
 \end{abstract}
