@@ -29,6 +29,12 @@
 
 \maketitle
 
+\begin{figure}[H]
+    \centering
+    \hspace*{-35mm}
+    \includegraphics{task.pdf}
+\end{figure}
+
 \zahvala{}
 
 \tableofcontents
@@ -37,19 +43,19 @@
 
 \chapter{Uvod}
 
-Raspodijeljeni sustavi su nepouzdani. Pogreška u sklopovlju, operacijskom sustavu, programu ili mreži može izazvati ispad bilo kojeg dijela sustava. Ispadi u raspodijeljenom sustavu mogu pokrenuti lanac ispada. Ako ispad ne uzrokuje lanac ispada sustav će i dalje patiti jer će program i dalje zahtijevati računalno vrijeme i memoriju, a s njima neće obavljati koristan posao. U najgorem slučaju ispad može izazvati potpuno zatajenje sustava gdje je jedini lijek iznova pokrenuti sve njegove dijelove. U najboljem slučaju ispad će samo smanjiti učinkovitost sustava. Bez pažljivog nadzora raspodijeljenog sustava teško je otkriti ispad, a još teze otkloniti izvor ispada.
+Raspodijeljeni sustavi su nepouzdani. Pogreška u sklopovlju, operacijskom sustavu, programu ili mreži može izazvati ispad bilo kojeg dijela sustava. Ispadi u raspodijeljenom sustavu mogu pokrenuti lanac ispada. Ako ispad ne uzrokuje lanac ispada sustav će i dalje patiti jer će program i dalje zahtijevati računalno vrijeme i memoriju, a s njima neće obavljati koristan posao. U najgorem slučaju ispad može izazvati potpuno zatajenje sustava gdje je jedini lijek iznova pokrenuti sve njegove dijelove. U najboljem slučaju ispad će samo smanjiti učinkovitost sustava. Bez pažljivog nadzora raspodijeljenog sustava ispad je teško otkriti te još teže otkloniti izvor ispada.
 
 Zadatak nadzora je otkriti ispad i njegov uzrok. Ispadi se dijele na ispad procesa, pogreške u komunikaciji, vremenske pogreške, pogrešan odgovor i bizantske pogreške \citep{rassus-manual}. Ako se ispad želi otkriti potrebno je pratiti vrijednosti koje ukazuju da se ispad dogodio. Korisne vrijednosti mogu biti zauzeće memorije, brzina obrade zahtjeva, sadržaj poruke ili duljina uspostave komunikacijskog kanala. Nadzirani program vrijednosti predaje nadzorniku koji je čovjek ili program. Ako nadzor obavlja program on treba biti pouzdaniji od nadziranog programa inače je problem nadzora udvostručen, a ne riješen.
 
-Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije same izrade u poglavlju 2 uspoređeni su predstavnici sustava za raspodijeljenu obradu podataka. Nakon usporedbe slijedi opis pretpostavka i zahtjeva u poglavlju 3, dok poglavlje 4 sukobljuje postojeće sakupljače vrijednosti sa specifikacijom problema. U poglavlju 5 opisana je arhitektura, a u poglavlju 6 programska izvedba sakupljača vrijednosti za programski alat Apache Kafka koji potiskuje pročitane vrijednosti prema udaljenom nadzornom sustavu.
+Prvi korak u izradi pouzdanog sustava nadzora je izrada pouzdanog sakupljača vrijednosti. Prije izrade sakupljača u poglavlju 2 uspoređeni su predstavnici sustava za raspodijeljenu obradu podataka. Nakon usporedbe u poglavlju 3 opisane su pretpostavke i zahtjevi, dok poglavlje 4 uspoređuje postojeće sakupljače vrijednosti sa specifikacijom problema. U poglavlju 5 opisana je arhitektura, a u poglavlju 6 programska izvedba sakupljača vrijednosti za programski alat Apache Kafka koji potiskuje pročitane vrijednosti prema udaljenom nadzornom sustavu.
 
 
 
 \chapter{Sustavi za raspodijeljenu obradu tokova podataka}
 
-Tok podataka nije isto što i skup podataka \citep{ilprints535}. Toku podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestati i bit će odbačeni nakon što su pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Primjer problema toka podatka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Svi navedeni problemi imaju mnogo izvora i ponora podataka. Kako sakupiti, zabilježiti, te dostaviti podatke na ponor gdje će se obraditi su problemi za koje sustavi za raspodijeljenu obradu tokova podataka nude rješenje. Zato što su tokovi podatka raznovrsni razvijeno je mnoštvo alata za njihovu obradu. Alate razlikujemo po načinu sakupljanja podataka, po mogućnostima toka, po arhitekturi i načinu zapisivanja podataka.
+Tok podataka \engl{data stream} nije isto što i skup podataka \citep{ilprints535}. Toku podataka podaci dolaze stalno, u nepoznatom redoslijedu, bez znaka kada će prestati i bit će odbačeni nakon što su pročitani. Ovi sustavi su raspodijeljeni jer se tok mora obraditi brzo. Primjer problema toka podataka su kartično plaćanje, praćenje korisnika mrežnih stranica, posluživanje reklama i preporuka. Svi navedeni problemi imaju mnogo izvora i ponora podataka. Kako sakupiti, zabilježiti, te dostaviti podatke u ponor gdje će se obraditi su problemi za koje sustavi za raspodijeljenu obradu tokova podataka nude rješenje. Zato što su tokovi podatka raznovrsni razvijeno je mnogo alata za njihovu obradu. Alate razlikujemo po načinu sakupljanja podataka, po mogućnostima obrade toka podataka, po arhitekturi i načinu zapisivanja podataka.
 
-Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za raspodijeljenu obradu podataka. Kako bi usporedba alata i izvedba sakupljača bila jednostavnija u obzir su uzeti samo javno dostupni alati. Većina takvih alata koristi model objavi/pretplati. Umjesto da se usporede svi javno dostupni alati izabran je predstavnik iz svakog važnog skupa alata:
+Prije izvedbe sakupljača vrijednosti potrebno je usporediti i izabrati alat za raspodijeljenu obradu podataka. Kako bi usporedba alata i izvedba sakupljača bila jednostavnija u obzir su uzeti samo javno dostupni alati. Većina takvih alata koristi model objavi/pretplati. Umjesto da se usporede svi javno dostupni alati izabran je predstavnik iz svakog važnog skupa alata:
 \begin{itemize}
     \item Apache Kafka je predstavnik popularnih alata za raspodijeljenu obradu tokova podataka
     \item Apache Pulsar \citep{yahoo-blogpost} je predstavnik modernih alata objavljen 2016. dok je Kafka \citep{kafka-whitepaper} objavljena 2011. godine
@@ -65,7 +71,7 @@ Prije razvoja sakupljača vrijednosti potrebno je usporediti i izabrati alat za 
     \label{fig:publish-subscribe}
 \end{figure}
 
-Apache Kafka i Apache Pulsar koriste model objavi/pretplati za razmjenu podataka između procesa. \ref{fig:publish-subscribe} prikazuje nužne dijelove modela objavi/pretplati. Model objavi/pretplati sastoji od objavljivača koji šalju poruke, pretplatnika koji čitaju poruke i posrednika koji razmjenjuje poruke između njih \citep{rassus-manual}. Posrednik zapisuje objavljene poruke i dopušta pretplatnicima da ih čitaju. Prednost modela objavi/pretplati nad izravnim razgovorom među procesima je što objavljivači i pretplatnici ne trebaju znati jedan za drugoga.
+Apache Kafka i Apache Pulsar koriste model objavi/pretplati \engl{publish/subscribe} za razmjenu podataka između procesa. Slika \ref{fig:publish-subscribe} prikazuje dijelove modela objavi/pretplati. Model objavi/pretplati sastoji od objavljivača \engl{publisher} koji šalju poruke, pretplatnika \engl{subscriber} koji čitaju poruke i posrednika \engl{broker} koji razmjenjuje poruke između njih \citep{rassus-manual}. Posrednik zapisuje objavljene poruke i dopušta pretplatnicima čitanje poruka. Prednost modela objavi/pretplati nad izravnim razgovorom među procesima je što objavljivači i pretplatnici ne trebaju znati jedan za drugoga.
 
 
 \section{Apache Kafka}
@@ -77,24 +83,24 @@ Apache Kafka i Apache Pulsar koriste model objavi/pretplati za razmjenu podataka
     \label{fig:kafka-cluster}
 \end{figure}
 
-Apache Kafka je popularni alat za raspodijeljenu obradu tokova podataka. \ref{fig:kafka-cluster} prikazuje Kafka grozd. Svaki grozd sastoji se od ZooKeeper nadzornika i barem jednog posrednika. Nadzornik usklađuje posrednike. Objavljivači šalju poruke u temu grozda. Posrednici zapisuju poruke u pretinac teme. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. Primjena, arhitektura i izvedba Kafka pretplatnika, pretinca, posrednika, teme i objavljivača opisana je u sljedećim poglavljima \citep{kafka-whitepaper} \citep{kafka-docs}.
+Apache Kafka je popularni alat za raspodijeljenu obradu tokova podataka. Slika \ref{fig:kafka-cluster} prikazuje Kafka grozd. Svaki grozd sastoji se od ZooKeeper nadzornika i barem jednog posrednika. Nadzornik usklađuje posrednike. Objavljivači šalju poruke u temu grozda. Posrednici zapisuju poruke u pretinac teme. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. Primjena, arhitektura i izvedba Kafka pretplatnika, pretinca, posrednika, teme i objavljivača opisana je u sljedećim poglavljima \citep{kafka-whitepaper} \citep{kafka-docs}.
 
 \subsection{Objavljivač}
-Objavljivač je korisnički program koji šalje poruke u temu grozda. Poruka se nužno sastoji od sadržaja, teme na koju se objavljuje, oznake pretinca, odmaka u pretincu i vremena objave. Poruke se šalju u skupini nakon sto prođe određeno vrijeme ili se nakupi dovoljno poruka. Poruke se mogu sažeti prije slanja \citep{kafka-compression}. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je poslužitelj koji zapisuje poruke u pretinac. Objavljivač ili ključem izabere pretinac u koji želi zapisati poruke ili se poruke šalju u svaki pretinac jednoliko. Posrednik će poslati potvrdu kada se poruke zapišu u pretinac vođe i izabrani broj usklađenih sljedbenika. Prije slanja sljedećeg skupa poruka objavljivač može pričekati potvrdu posrednika.
+Objavljivač \engl{producer} je korisnički program koji šalje poruke u temu grozda. Poruka se obvezno sastoji od sadržaja, teme na koju se objavljuje, oznake pretinca, odmaka u pretincu i vremena objave. Poruke se šalju u skupini nakon što prođe određeno vrijeme ili se nakupi dovoljno poruka. Poruke se mogu sažeti prije slanja \citep{kafka-compression}. Tema je podijeljena na pretince. Pretinac je dnevnik u koji posrednik zapisuje poruke. Posrednik je poslužitelj koji zapisuje poruke u pretinac. Objavljivač ključem izabere pretinac u koji želi zapisati poruke ili poruke šalje u svaki pretinac jednoliko. Posrednik će poslati potvrdu kada se poruke zapišu u pretinac vođe i izabrani broj usklađenih sljedbenika. Prije slanja sljedećeg skupa poruka objavljivač može pričekati potvrdu posrednika.
 
-Ako se dogodi ispad objavljivača ili posrednika, objavljivač će ponovno poslati poruke. Objavljene poruke bit će dostavljene posredniku barem jednom. Ako je uvišestručavanje poruka nedopustivo, objavljivač može koristiti transakcijski način rada.
+Ako se dogodi ispad objavljivača ili posrednika, objavljivač će ponovno poslati poruke. Objavljene poruke bit će dostavljene posredniku barem jednom. Ako je uvišestručavanje poruka nedopustivo, objavljivač mora koristiti transakcijski način rada.
 
 \subsection{Tema}
-Tema je tok poruka, apstraktna umotvorina u koju objavljivači šalju poruke, a iz koje pretplatnici čitaju poruke. Posrednici se brinu da poruke budu zapisane. Biti pretplaćen na temu znači napraviti podtok poruka. Poruke objavljene u temu se ravnomjerno raspoređuju u podtokove. Svaki podtok ima pokazivač kojim pretplatnik čita poruke. Ako pokazivač dođe do kraja podtoka, pretplatnik se blokira dok se ne objavi nova poruka. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruke u temi se brišu tek nakon određenog vremena. Tema je podijeljena na pretince s kojih posrednici čitaju i u koje pišu poruke. Kako bi poruke u pretincu bile dostupne nakon ispad posrednika, pretinac je moguće umnožiti.
+Tema \engl{topic} je tok poruka, apstraktna umotvorina u koju objavljivači šalju poruke, a iz koje pretplatnici čitaju poruke. Posrednici se brinu da poruke budu zapisane. Biti pretplaćen na temu znači napraviti podtok poruka. Poruke objavljene u temi se ravnomjerno raspoređuju u podtokove. Svaki podtok ima pokazivač kojim pretplatnik čita poruke. Ako pokazivač dođe do kraja podtoka, pretplatnik se blokira dok se ne objavi nova poruka. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruke u temi se brišu tek nakon određenog vremena. Tema je podijeljena na pretince iz kojih posrednici čitaju i u koje zapisuju poruke. Kako bi poruke u pretincu bile dostupne nakon ispad posrednika, pretinac je moguće umnožiti.
 
 \subsection{Posrednik}
-Posrednik je poslužiteljski program koji zapisuje poruke objavljivača i poslužuje poruke pretplatnicima. Svaki posrednik dio je samo jednog Kafka grozda. Posrednici koriste Apache ZooKeeper za izvršavanje sporazumnog algoritma, pamćenje tema, njihovih pretinaca i usklađenih posrednika. Posrednik će poruke zapisati u pretinac onim redoslijedom kojim je objavljivač poslao poruke, ne redoslijedom kojim je posrednik primio poruke. Pretplatnici će s posrednika čitati poruke onim redoslijedom kojim su zapisane u pretinac.
+Posrednik \engl{broker} je poslužiteljski program koji zapisuje poruke objavljivača i poslužuje poruke pretplatnicima. Svaki posrednik dio je samo jednog Kafka grozda. Posrednici koriste Apache ZooKeeper za izvršavanje sporazumnog algoritma, pamćenje tema, njihovih pretinaca i usklađenih posrednika. Posrednik će poruke zapisati u pretinac onim redoslijedom kojim je objavljivač poslao poruke, ne redoslijedom kojim je posrednik primio poruke. Pretplatnici će s posrednika čitati poruke onim redoslijedom kojim su zapisane u pretinac.
 
-Kada objavljivač objavi poruke na temu posrednik će zapisati poruke u određeni pretinac. Posrednik koristi sustav straničenja i tvrdi disk za zapisivanje poruka \citep{kafka-paging}. Umjesto da posrednik koristi memoriju procesa za priručnu memoriju posrednik poruke predaje sustavu straničenja operacijskog sustava. Operacijski sustav će poruke zapisati u stranice i pohraniti u nedodijeljene dijelove radne memorije. Poruke se zapisuju na tvrdi disk samo kada operacijski sustav želi osloboditi memoriju sustava straničenja. Opisano gospodarenje memorijom dopusta posredniku da čuva veliku količinu poruka bez gubitka učinkovitosti.
+Kada objavljivač objavi poruke na temu posrednik će zapisati poruke u određeni pretinac. Posrednik koristi sustav straničenja \engl{memory paging} i tvrdi disk za zapisivanje poruka \citep{kafka-paging}. Umjesto da posrednik koristi memoriju procesa za priručnu memoriju posrednik poruke predaje sustavu straničenja operacijskog sustava. Operacijski sustav će poruke zapisati u stranice i pohraniti u nedodijeljene dijelove radne memorije. Poruke se zapisuju na tvrdi disk samo kada operacijski sustav želi osloboditi memoriju sustava straničenja. Opisano gospodarenje memorijom dopušta posredniku da čuva veliku količinu poruka bez gubitka učinkovitosti.
 
-Pretplatnici često dohvaćaju uzastopne poruke pa se one čitaju iz priručne memorije umjesto iz tvrdog diska. Zahvaljujući sustavu straničenja priručna memorija sa zapisanim porukama će postojati neko vrijeme nakon ispada posrednika. Korištenjem sustava straničenja za zapisivanje poruka izbjegava se korištenje sakupljača smeća Java virtualnog stroja. Umjesto da se poruke zapisu dva puta, jednom u dodijeljenu memoriju procesa i jednom u sustav straničenja poruke se zapisu samo jednom u sustav straničenja.
+Pretplatnici često dohvaćaju uzastopne poruke pa se one čitaju iz priručne memorije umjesto s tvrdog diska. Zahvaljujući sustavu straničenja priručna memorija sa zapisanim porukama će postojati neko vrijeme nakon ispada posrednika. Korištenjem sustava straničenja za zapisivanje poruka izbjegava se korištenje sakupljača smeća Java virtualnog stroja. Umjesto da se poruke zapišu dva puta, jednom u dodijeljenu memoriju procesa i jednom u sustav straničenja poruke se zapisu samo jednom u sustav straničenja.
 
-Kada pretplatnik želi pročitati poruke posrednik će pronaći, pročitati i poslati poruke pretplatniku. Posrednik s sendfile i zero-copy funkcijama čita poruke iz radne memorije i šalje u memoriju mrežne kartice u jednom koraku \citep{linux-sendfile} \citep{java-zero-copy}. Kako bi se dodatno ubrzao rad posrednici, objavljivači i pretplatnici grupe poruka čitaju, zapisuju i šalju u istom binarnom obliku. Prije slanja poruka pretplatnicima posrednik može sažeti poruke.
+Kada pretplatnik želi pročitati poruke posrednik će pronaći, pročitati i poslati poruke pretplatniku. Posrednik s sendfile i zero-copy funkcijama čita poruke iz radne memorije i šalje u memoriju mrežne kartice u jednom koraku \citep{linux-sendfile} \citep{java-zero-copy}. Kako bi se dodatno ubrzao rad posrednici, objavljivači i pretplatnici skupine poruka čitaju, zapisuju i šalju u istom binarnom obliku. Prije slanja poruka pretplatnicima posrednik može sažeti poruke.
 
 \subsection{Pretinac}
 
@@ -105,13 +111,13 @@ Kada pretplatnik želi pročitati poruke posrednik će pronaći, pročitati i po
     \label{fig:kafka-log}
 \end{figure}
 
-Pretinac je logički dnevnik i najmanja gradivna jedinica teme. Kada objavljivač objavi poruku u temu grozda posrednik poruke zapiše u pretinac teme. \ref{fig:kafka-log} prikazuje dnevnik izveden kao skup datoteka iste veličine. Kada posrednik zapiše poruke u pretinac on doda poruke na kraj datoteke. Datoteke se predaju sustavu straničenja operacijskog sustava tek nakon određenog vremena ili broja dodavanja. Svaka poruka ima jedinstvenu oznaku koja je ujedno i odmak unutar datoteke. Odmak sljedeće poruke računa se kao zbroj odmaka i veličine ranije poruke. Zato su oznake poruka jedinstvene i strogo rastuće ali nisu uzastopne.
+Pretinac \engl{partition} je logički dnevnik \engl{log} i najmanja gradivna jedinica teme. Kada objavljivač objavi poruku u temu grozda posrednik poruke zapiše u pretinac teme. Slika \ref{fig:kafka-log} prikazuje dnevnik izveden kao skup datoteka iste veličine. Kada posrednik zapiše poruke u pretinac on doda poruke na kraj datoteke. Datoteke se predaju sustavu straničenja operacijskog sustava tek nakon određenog vremena ili broja dodavanja. Svaka poruka ima jedinstvenu oznaku koja je ujedno i odmak unutar datoteke. Odmak sljedeće poruke računa se kao zbroj odmaka i veličine ranije poruke. Zato su oznake poruka jedinstvene i strogo rastuće ali nisu uzastopne.
 
 Protok poruka kroz temu može biti toliki da izazove preopterećenje posrednika. Zato je temu moguće podijeliti na više pretinaca. Ako je B broj posrednika u Kafka grozdu onda tema može biti podijeljena na najviše B pretinaca. Svaki pretinac teme mora biti dodijeljen različitom posredniku.
 
-Ako se dogodi ispad posrednika, poruke u pretincu postat će nedostupne. Ako poruke moraju biti dostupne čak i tijekom ispada posrednika pretinac se mora umnožiti. Svaki pretinac može biti umnožen najviše B puta ako je B broj posrednika u Kafka grozdu. Svaki umnoženi pretinac bit će dodijeljen različitom posredniku jer dodjela istom ne povećava dostupnost uslijed ispada. Ako se pretinac umnoži B puta onda će poruke u pretincu postati nedostupne tek ako se dogodi strogo vise od B-1 ispada posrednika.
+Ako se dogodi ispad posrednika, poruke u pretincu postat će nedostupne. Ako poruke moraju biti dostupne čak i tijekom ispada posrednika pretinac se mora umnožiti \engl{replicate}. Svaki pretinac može biti umnožen najviše B puta ako je B broj posrednika u Kafka grozdu. Svaki umnoženi pretinac \engl{replica} bit će dodijeljen različitom posredniku jer dodjela istom ne povećava dostupnost uslijed ispada. Ako se pretinac umnoži B puta onda će poruke u pretincu postati nedostupne tek ako se dogodi strogo više od B-1 ispada posrednika.
 
-Kada su pretinci umnoženi potrebno je ujednačiti poruke u svakom umnoženom pretincu. Zato će jedan posrednik biti vođa pretinca, a ostali posrednici će biti pratitelji pretinca. Svaki posrednik može biti vođa najviše jednog pretinca po temi. Vođa pretinca je jedini posrednik koji smije čitati ili pisati poruke u pretinac. Zadaća pratitelja je preusmjeriti korisnike na vođu pretinca i uskladiti svoj pretinac s pretincem vođe. Pratitelji mogu preusmjeriti korisnike na vođu pretinca tako da pitaju ZooKeepera tko je vođa kojeg pretinca. Svaki pratitelj ima pretplatnika koji čita poruke iz pretinca vođe i zapisuje poruke u umnoženi pretinac.
+Kada su pretinci umnoženi potrebno je ujednačiti poruke u svakom umnoženom pretincu. Zato će jedan posrednik biti vođa pretinca \engl{partition leader}, a ostali posrednici će biti pratitelji pretinca \engl{partition follower}. Svaki posrednik može biti vođa najviše jednog pretinca po temi. Vođa pretinca je jedini posrednik koji smije čitati ili pisati poruke u pretinac. Zadaća pratitelja je preusmjeriti korisnike na vođu pretinca i uskladiti svoj pretinac s pretincem vođe. Pratitelji mogu preusmjeriti korisnike na vođu pretinca tako da pitaju ZooKeepera tko je vođa kojeg pretinca. Svaki pratitelj ima pretplatnika koji čita poruke iz pretinca vođe i zapisuje poruke u umnoženi pretinac.
 
 \begin{figure}[H]
     \centering
@@ -120,13 +126,13 @@ Kada su pretinci umnoženi potrebno je ujednačiti poruke u svakom umnoženom pr
     \label{fig:kafka-leader-follower}
 \end{figure}
 
-\ref{fig:kafka-leader-follower} prikazuje tri posrednika u grozdu. Tema "računi" je podijeljena na najveći mogući broj pretinaca: broj posrednika u grozdu. Kako se poruke ne bi izgubile zbog ispada posrednika svaki pretinac teme je umnožen jednom. Vođa žutog pretinca je nasumično posrednik jedan. Vođa crvenog pretinca će biti ili posrednik dva ili tri jer se vodstvo pretinaca mora jednoliko raspodijeliti. Ako vođa crvenog pretinca postane posrednik tri, onda će vođa narančastog pretinca postati posrednik dva. Pretinac pratitelji se ravnomjerno rasporede po posrednicima tako da pratitelji nikad nisu s vođom u istom posredniku.
+Slika \ref{fig:kafka-leader-follower} prikazuje tri posrednika u grozdu. Tema "računi" je podijeljena na najveći mogući broj pretinaca, broj posrednika u grozdu. Kako se poruke ne bi izgubile zbog ispada posrednika svaki pretinac teme je umnožen jednom. Vođa žutog pretinca je nasumično posrednik jedan. Vođa crvenog pretinca će biti ili posrednik dva ili tri jer se vodstvo pretinaca mora jednoliko raspodijeliti. Ako vođa crvenog pretinca postane posrednik tri, onda će vođa narančastog pretinca postati posrednik dva. Pretinci pratitelji rasporede se ravnomjerno po posrednicima tako da pratitelji nikad nisu s vođom u istom posredniku.
 
-Osim sto vođa pretinca je jedini posrednik koji može čitati ili pisati poruke iz pretinca, on se mora brinuti o pratiteljima. Vođa smatra da je pratitelj živ samo ako je prijavljen u Kafka grozd i ako ne zaostaje s čitanjem poruka iz pretinca vode. Ako zaostaje, vođa će pratitelja izbaciti iz skupa usklađenih pratitelja (ISR). Kada vođa primi poruke od objavljivača on će poruke zapisati u svoju particiju i čekat će potvrde pratitelja. Tek kada svi pratitelji pročitaju i zapišu poruke u svoj pretinac će vođa pretinca poslati potvrdu objavljivaču. Pretplatitelji mogu čitati samo one poruke koje su i vođa i pratitelji zapisali u svoje pretince.
+Osim što je vođa pretinca jedini posrednik koji može čitati ili pisati poruke u pretinac, on mora brinuti o pratiteljima. Vođa smatra da pratitelj postoji samo ako je prijavljen u Kafka grozd i ako ne zaostaje s čitanjem poruka iz pretinca vođe. Ako zaostaje, vođa će pratitelja izbaciti iz skupa usklađenih pratitelja \engl{in-sync replica}. Kada vođa primi poruke od objavljivača on će poruke zapisati u svoj pretinac i čekat će potvrde pratitelja. Nakon što svi pratitelji pročitaju i zapišu poruke u svoj pretinac vođa pretinca će poslati potvrdu objavljivaču. Pretplatnici mogu čitati samo one poruke koje su i vođa i pratitelji zapisali u svoje pretince.
 
-Ako se posredniku koji je vođa pretinca dogodi ispad, nitko neće moći čitati ili pisati poruke u pretinac. Zato će pratitelji glasati tko će od pratitelja postati novi vođa pretinca. Samo pratitelji koji su u skupu ukradenih pratitelja mogu postati novi vođa. U iznimnom slučaju kada ne postoji usklađeni pratitelj neusklađeni pratitelj može postati novi vođa pretinca.
+Ako se posredniku koji je vođa pretinca dogodi ispad, nitko neće moći čitati ili pisati poruke u pretinac. Zato će pratitelji glasati tko će od pratitelja postati novi vođa pretinca. Samo pratitelji koji su u skupu usklađenih pratitelja mogu postati novi vođa. U iznimnom slučaju kada ne postoji usklađeni pratitelj neusklađeni pratitelj može postati novi vođa pretinca.
 
-Posrednika, tema, pretinaca i umnoženih pretinaca je puno. Kako posrednici ne bi glasali za novog vođu pretinca za svaki pretinac zasebno jedan od posrednika je zadužen da bude nadglednik glasanja. Ako se dogodi ispad posrednika, nadglednik glasanja će ubrzati glasanje novog vođe pretinca.
+Posrednika, tema, pretinaca i umnoženih pretinaca je puno. Kako posrednici ne bi glasali za novog vođu pretinca za svaki pretinac zasebno jedan od posrednika je zadužen da bude nadglednik glasanja \engl{election controller}. Ako se dogodi ispad posrednika, nadglednik glasanja će ubrzati glasanje novog vođe pretinca.
 
 \subsection{Pretplatnik}
 
@@ -137,15 +143,15 @@ Posrednika, tema, pretinaca i umnoženih pretinaca je puno. Kako posrednici ne b
     \label{fig:kafka-consumer-group}
 \end{figure}
 
-Pretplatnik je korisnički program koji čita poruke iz teme. \ref{fig:kafka-consumer-group} prikazuje odnos pretplatnika i teme. Svaki pretplatnik je član samo jedne skupine pretplatnika. Skupina pretplatnika sastojati se od barem jednog člana. Skupina pretplatnika zajedno čita poruke iz teme. Neki pretplatnici u skupu pretplatnika bit će zaduženi za čitanje poruka iz teme. Svaki zaduženi pretplatnik ima barem jedan pretinac iz kojeg jedino on može čitati poruke. Skupina pretplatnika može istovremeno napraviti najviše P čitanja ako je P broj pretinaca i u skupini pretplatnika je barem P članova. Poruke se mogu pročitati jedino iz pretinca vođe. Ako pretplatnik uputi zahtjev za čitanje pratitelju pretinca on će pretplatnika preusmjeriti na vođu pretinca.
+Pretplatnik \engl{consumer} je korisnički program koji čita poruke iz teme. Slika \ref{fig:kafka-consumer-group} prikazuje odnos pretplatnika i teme. Svaki pretplatnik je član samo jedne skupine pretplatnika \engl{consumer group}. Skupina pretplatnika sastojati se od barem jednog člana. Skupina pretplatnika zajedno čita poruke iz teme. Neki pretplatnici u skupu pretplatnika bit će zaduženi za čitanje poruka iz teme. Svaki zaduženi pretplatnik ima barem jedan pretinac iz kojeg jedino on može čitati poruke. Skupina pretplatnika može istovremeno napraviti najviše P čitanja ako je P broj pretinaca i u skupini pretplatnika je barem P članova. Poruke se mogu pročitati jedino iz pretinca vođe. Ako pretplatnik uputi zahtjev za čitanje pratitelju pretinca on će pretplatnika preusmjeriti na vođu pretinca.
 
 Pretplatnik u zahtjevu za čitanje navodi odmak zadnje pročitane poruke i koliko poruka želi pročitati. Posrednik će dostaviti sve poruke od odmaka do tražene količine ili dok ne dođe do kraja pretinca. Odmak poruke je i jedinstvena oznaka poruke i mjesto u datoteci posrednika gdje se poruka nalazi. Posrednik ne pazi koje je poruke pretplatnik pročitao. Pretplatnik je zadužen za rukovanje odmakom. Odmak zadnje pročitane poruke pretplatnik šalje u posebnu temu posrednika. Ako se dogodi ispad pretplatnika, drugi pretplatnik će pročitati odmak iz teme i nastaviti s čitanjem poruka iz pretinca.
 
 Posrednik će jednom pretplatniku po skupini pretplatnika dostaviti poruku barem jednom. Ako se dogodi ispad pretplatnika ista poruka se može dostaviti više puta. Ako je nedopustivo istu poruku pročitati više puta onda korisnik mora napraviti vlastiti algoritam ili koristiti transakcijskog pretplatnika. Pretplatnik čita poruke onim redoslijedom kojim su poruke zapisne u pretinac. Posrednici vremenski ne uređuju dostavu poruka iz svih pretinaca, ali su poruke vremenski uređene u svakom pretincu pojedinačno. Ako je potrebno vremenski urediti sve poruke u svim pretincima onda je potrebno razviti vlastiti algoritam ili napraviti temu sa samo jednim pretincem.
 
-Više skupina pretplatnika može istovremeno citati poruke iz iste teme i pretinaca. Posrednik će odaslati istu poruku svim pretplaćenim pretplatnicima. Posrednici će skupu pretplatnika omogućiti čitanje poruka samo ako su svi pratitelji u skupu usklađenih pratitelja i vođa pretinca zapisali poruke u pretinac. Nakon što pretplatnik primi poruke on će u temi odmaka ažurirati odmak do kojeg je pročitao poruke.
+Više skupina pretplatnika može istovremeno čitati poruke iz iste teme i pretinaca. Posrednik će odaslati \engl{multicast} istu poruku svim pretplaćenim pretplatnicima. Posrednici će skupu pretplatnika omogućiti čitanje poruka samo ako su svi pratitelji u skupu usklađenih pratitelja i vođa pretinca zapisali poruke u pretinac. Nakon što pretplatnik primi poruke on će u temi odmaka ažurirati odmak do kojeg je pročitao poruke.
 
-Model povlačenja poruka pretplatnicima dopušta čitanje poruka brzinom koja njima odgovara. Model dopušta i učinkovito razašiljanje iste poruke na više pretplatnika. Ako pretplatnik želi ponovno pročitati poruku on samo treba poslati odmak pročitane poruke. Kako pretplatnik ne bi zaglavio u petlji ako u pretincu nema novim poruka on sebe može blokirati dok ne dođu nove poruke. Posrednik nikad ne zna kada su svi pretplatnici pročitali poruke i zato ih ne može obrisati nakon čitanja. Posrednici su zato napravljeni da s povećanjem nepročitanih poruka njihova učinkovitost ne opada. Posrednik će poruke izbrisati nakon zadanog vremena.
+Model povlačenja \engl{pull model} poruka pretplatnicima dopušta čitanje poruka brzinom koja njima odgovara. Model dopušta i učinkovito slanje iste poruke na više pretplatnika. Ako pretplatnik želi ponovno pročitati poruku on samo treba poslati odmak pročitane poruke. Kako pretplatnik ne bi zapeo u petlji ako u pretincu nema novim poruka on sebe može blokirati dok ne dođu nove poruke. Posrednik nikad ne zna kada su svi pretplatnici pročitali poruke i zato ih ne može obrisati nakon čitanja. Posrednici su zato napravljeni da s povećanjem nepročitanih poruka njihova učinkovitost ne opada. Posrednik će poruke izbrisati nakon zadanog vremena.
 
 
 \section{Apache Pulsar}
@@ -157,10 +163,10 @@ Model povlačenja poruka pretplatnicima dopušta čitanje poruka brzinom koja nj
     \label{fig:pulsar-cluster}
 \end{figure}
 
-Apache Pulsar je moderni alat za raspodijeljenu obradu tokova podataka. \ref{fig:pulsar-cluster} prikazuje Pulsar proces koji se sastoji od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog Pulsar posrednika, od barem jednog Apache BookKeeper zapisničara i Apache ZooKeeper nadzornika. Objavljivači šalju poruke u temu grozda. Posrednici primaju i poslužuju poruke, a zapisničari ih zapisuju. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. Primjena, arhitektura i izvedba Pulsar pretplatnika, upravljane knjige, posrednika, teme, pretplate i objavljivača opisana je u sljedećim poglavljima \citep{pulsar-docs} \citep{pulsar-streamlio-1} \citep{pulsar-streamlio-2} \citep{pulsar-streamlio-intro}.
+Apache Pulsar je moderni alat za raspodijeljenu obradu tokova podataka. Slika \ref{fig:pulsar-cluster} prikazuje Pulsar proces koji se sastoji od barem jednog Pulsar grozda. Pulsar grozd sastoji se od barem jednog Pulsar posrednika, od barem jednog Apache BookKeeper zapisničara i Apache ZooKeeper nadzornika. Objavljivači šalju poruke u temu grozda. Posrednici primaju i poslužuju poruke, a zapisničari ih zapisuju. Pretplatnici čitaju poruke iz teme grozda i obrađuju podatke. Primjena, arhitektura i izvedba Pulsar pretplatnika, upravljane knjige, posrednika, teme, pretplate i objavljivača opisana je u sljedećim poglavljima \citep{pulsar-docs} \citep{pulsar-streamlio-1} \citep{pulsar-streamlio-2} \citep{pulsar-streamlio-intro}.
 
 \subsection{Objavljivač}
-Objavljivač je korisnički program koji šalje poruke u temu. Poruke se nužno sastoje od sadržaja, oznake objavljivača, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sažeti. Tema može biti podijeljena na pretince. Objavljivač može usmjeriti poruke u određeni pretinac. Poruke se mogu usmjeriti na jedan nasumični pretinac, na točno određene pretince koristeći ključ ili se mogu slati jednoliko na sve pretince. Objavljivači ili čekaju potvrdu dok posrednik zapisuje poruke ili nastave s radom i naknadno provjere je li su poruke primljene i zapisane.
+Objavljivač je korisnički program koji šalje poruke u temu. Poruke se obvezno sastoje od sadržaja, oznake objavljivača, jedinstvene oznake poruke i vremena objave. Poruke se mogu slati u skupini. Prije slanja, poruke se mogu sažeti. Tema može biti podijeljena na pretince. Objavljivač može usmjeriti poruke u određeni pretinac. Poruke se mogu usmjeriti na jedan nasumični pretinac, na točno određene pretince koristeći ključ ili se mogu slati jednoliko na sve pretince. Objavljivači ili čekaju potvrdu dok posrednik zapisuje poruke ili nastave s radom i naknadno provjere jesu li poruke primljene i zapisane.
 
 \subsection{Tema i pretplata}
 
@@ -171,7 +177,7 @@ Objavljivač je korisnički program koji šalje poruke u temu. Poruke se nužno 
     \label{fig:pulsar-hierarchy}
 \end{figure}
 
-Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnika kroz posrednika. Tema je izgrađena kao poveznica. \ref{fig:pulsar-hierarchy} prikazuje stupnjevanje tema, prostor imena i stanara. Svaka tema pripada jednom prostoru imena. Prostor imena je upravna jedinka kojom se mijenjaju postavke tema. Svaki prostor imena pripada jednom stanaru. Stanar određuje način pristupa, korištenje resursa, brisanje poruka i izolaciju prostora imena. Stanari pripadaju Pulsar grozdu.
+Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnika kroz posrednika. Tema je izgrađena kao poveznica \engl{link}. Slika \ref{fig:pulsar-hierarchy} prikazuje stupnjevanje tema, prostor imena \engl{namespace} i stanara \engl{tenent}. Svaka tema pripada jednom prostoru imena. Prostor imena je upravna jedinka kojom se mijenjaju postavke tema. Svaki prostor imena pripada jednom stanaru. Stanar određuje način pristupa, korištenje resursa, brisanje poruka i izolaciju prostora imena. Stanari pripadaju Pulsar grozdu.
 
 \begin{figure}[H]
     \centering
@@ -180,7 +186,7 @@ Tema je imenovani tok poruka koji prenosi poruke od objavljivača do pretplatnik
     \label{fig:pulsar-partitions}
 \end{figure}
 
-Moguće je napraviti nepostojane teme koje poruke čuvaju do slanja pretplatnicima ili ispada posrednika. Nepostojane teme objavljene poruke potiskuju prema pretplatnicima. Prednost nepostojanih tema je brzina. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruka se briše iz teme kada svi pretplatnici pročitaju poruku ili kada je poruka pročitana i starija od zadane vrijednosti ili kada je nepročitana i starija od zadane vrijednosti. Tema se može podijeliti na više podtema zvanih pretinac. \ref{fig:pulsar-partitions} prikazuje odnos objavljivača i pretplatnika prema temi koja je podijeljena na pretince. Pretinci su ravnomjerno raspodijeljeni po posrednicima. Broj istovremenih pretplatnika odnosno čitanja nije ograničeno brojem pretinaca.
+Moguće je napraviti nepostojane teme \engl{} koje poruke čuvaju do slanja pretplatnicima ili ispada posrednika. Nepostojane teme objavljene poruke potiskuju prema pretplatnicima. Prednost nepostojanih tema je brzina. Količina nepročitanih poruka u temi ne utječe na protok poruka kroz temu. Poruka se briše iz teme kada svi pretplatnici pročitaju poruku ili kada je poruka pročitana i starija od zadane vrijednosti ili kada je nepročitana i starija od zadane vrijednosti. Tema se može podijeliti na više podtema zvanih pretinac. Slika \ref{fig:pulsar-partitions} prikazuje odnos objavljivača i pretplatnika prema temi koja je podijeljena na pretince. Pretinci su ravnomjerno raspodijeljeni po posrednicima. Broj istovremenih pretplatnika odnosno čitanja nije ograničeno brojem pretinaca.
 
 \begin{figure}[H]
     \centering
@@ -189,22 +195,22 @@ Moguće je napraviti nepostojane teme koje poruke čuvaju do slanja pretplatnici
     \label{fig:pulsar-subscription}
 \end{figure}
 
-Kako objavljivači usmjeravaju dostavu poruka na pretince tako pretplatnici čitaju poruka koristeći pretplate. \ref{fig:pulsar-subscription} prikazuje tri vrste pretplata. Isključiva pretplata pravo čitanja poruka daje samo jednom pretplatniku. Ako drugi pretplatnik pokuša čitati iz isključive pretplate on će biti odbijen. Zajednička pretplata jednoliko dostavlja poruke pretplatnicima. Svaka poruka dostavit će se samo jednom pretplatniku. Zajednička pretplata ne podržava skupnu potvrdu dostave poruka niti pazi na vremensko uređenje dostave poruka. Sigurnosna pretplata pravo čitanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad drugotni pretplatnik će nastaviti čitanje poruka od mjesta ispada.
+Kako objavljivači usmjeravaju dostavu poruka na pretince tako pretplatnici čitaju poruke koristeći pretplate \engl{subscription}. Slika \ref{fig:pulsar-subscription} prikazuje tri vrste pretplata. Isključiva pretplata \engl{exclusive subscription} pravo čitanja poruka daje samo jednom pretplatniku. Ako drugi pretplatnik pokuša čitati iz isključive pretplate on će biti odbijen. Zajednička pretplata \engl{shared subscription} jednoliko dostavlja poruke pretplatnicima. Svaka poruka dostavit će se samo jednom pretplatniku. Zajednička pretplata ne podržava skupnu potvrdu dostave poruka niti pazi na vremensko uređenje dostave poruka. Sigurnosna pretplata \engl{} pravo čitanja daje samo jednom pretplatniku dok se pretplatniku ne dogodi ispad. Kada se dogodi ispad drugotni pretplatnik će nastaviti čitanje poruka od mjesta ispada.
 
 \subsection{Posrednik}
-Posrednik je program bez stanja koji se sastoji od dva dijela. Prvi dio je poslužitelj s REST sučeljem za upravljanje i pretraživanje tema, a drugi dio je otpravnik za prijenos podataka. Umjesto da objavljivači i pretplatnici izravno razgovaraju s posrednikom mogu se spojiti na zastupnika koji će preusmjeriti njihove zahtjeve posrednicima. Posrednik može odbaciti udvostručene poruke tako da ih ne proslijedi zapisničarima.
+Posrednik je program bez stanja koji se sastoji od dva dijela. Prvi dio je poslužitelj s REST sučeljem za upravljanje i pretraživanje tema, a drugi dio je otpravnik \engl{dispatcher} za prijenos podataka. Umjesto da objavljivači i pretplatnici izravno razgovaraju s posrednikom mogu se spojiti na zastupnika koji će preusmjeriti njihove zahtjeve posrednicima. Posrednik može odbaciti udvostručene poruke tako da ih ne proslijedi zapisničarima.
 
 Pulsar grozdovi mogu umnožiti poruke ako pripadaju istom procesu. Zadaća posrednik je poslužiti poruke pretplatnicima iz upravljane knjige ili BookKeeper zapisničara, dok je ZooKeeper nadzornik zadužen za čuvanje podata o grozdu. Zapisničar zapisuje poruke koje su poslane posredniku.
 
 \subsection{Upravljana knjiga}
-BookKeeper grozd je raspodijeljeni zapisivač koji se sastoji od barem jednog zapisničara. Zapisničar zapisuju poruke koje mu posrednici pošalju. Poruke se mogu umnožiti i zapisati u više knjiga odjednom. Svaka tema sastoji se od barem jedne knjige. Kapacitet poruka koji može se povećati dodavanjem zapisničara. Zapisničari mogu istovremeno čitati i pisati poruke.
+BookKeeper grozd je raspodijeljeni zapisivač koji se sastoji od barem jednog zapisničara \engl{bookie}. Zapisničar zapisuju poruke koje mu posrednici pošalju. Poruke se mogu umnožiti i zapisati u više knjiga odjednom. Svaka tema sastoji se od barem jedne knjige. Kapacitet poruka može se povećati dodavanjem zapisničara. Zapisničari mogu istovremeno čitati i pisati poruke.
 
 Knjiga je struktura podatka u koju se poruke mogu dodati samo na kraj. Nakon što se knjiga zatvori ona se jedino može čitati. Ako se zapisničaru dogodi ispad, knjiga se zatvori. Kada se ispad otkloni zapisničar će ustanoviti u kojem je stanju knjiga i ustanovljeno stanje poslati ostalim zapisničarima u grozdu.
 
-Upravljana knjiga je skup BookKeeper knjiga u koju se upisuju poruke koje pripadaju jednoj temi. Iako se poruke mogu zapisati u samo jednu knjige više BookKeeper knjiga olakšava brisanje i pisanje poruka. Upravljana knjiga sastoji se skupa tokova podata koji se zapisuju u knjigu s jednim pisaćem i skupa pokazivača koji prate koje poruke su pretplatnici pročitali. Zapisivač prije pisanja poruke u upravljanu knjigu poruke zapisuje u dnevnik.
+Upravljana knjiga \engl{} je skup BookKeeper knjiga u koju se upisuju poruke koje pripadaju jednoj temi. Iako se poruke mogu zapisati u samo jednu knjigu više BookKeeper knjiga olakšava brisanje i pisanje poruka. Upravljana knjiga sastoji se od skupa tokova podataka koji se zapisuju u knjigu s jednim pisačem i skupa pokazivača koji prate koje poruke su pretplatnici pročitali. Zapisivač prije pisanja poruke u upravljanu knjigu poruke zapisuje u dnevnik.
 
 \subsection{Pretplatnik}
-Pretplatnik je korisnički program koji se pretplaćuje na pretplatu teme. Postoje tri vrste pretplate. Svaka pretplata određuje način na koji pretplatnik čita poruke. Pretplatnik može ili biti blokiran dok posrednik ne dobije poruku ili nastaviti s radom i dobiti budućnostnicu kojom će čitati poruke. Pretplatnik može pojedinačno ili skupno potvrditi poruke.
+Pretplatnik je korisnički program koji se pretplaćuje na pretplatu teme. Postoje tri vrste pretplate. Svaka pretplata određuje način na koji pretplatnik čita poruke. Pretplatnik može ili biti blokiran dok posrednik ne dobije poruku ili nastaviti s radom i dobiti budućnostnicu \engl{future} kojom će čitati poruke. Pretplatnik može pojedinačno ili skupno potvrditi poruke \engl{batch}.
 
 Ako korisnik nije zadovoljan izvedenim pretplatnikom on može koristiti sučelje čitača. Sučelje čitača je biblioteka koja omogućuje ručno potvrđivanje poruka, ponovno čitanje poruke i odbacivanje umnoženih poruka.
 
@@ -238,7 +244,7 @@ Ograničenje pretplatnika    & manje od broja pretinaca      & nema             
 Gubitak poruka              & ispad N od N posrednika       & ispad N od N zapisničara                       \\ \hline
 Brisanje poruka             & istek vremena                 & složeno                                        \\ \hline
 Geo-umnožavanje             & MirrorMaker                   & podržano                                       \\ \hline
-Posredničko spajanje        & name                          & podržano                                       \\ \hline
+Posredničko spajanje        & nema                          & podržano                                       \\ \hline
 Sažimanje                   & podržano                      & podržano                                       \\ \hline
 Razine administracije teme  & nema                          & stanar, područje imena                         \\ \hline
 Usmjeravanje poruka         & ne                            & ne                                             \\ \hline
@@ -255,7 +261,7 @@ Usmjeravanje poruka         & ne                            & ne                
 
 \chapter{Specifikacija sakupljača vrijednosti}
 
-Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su svojstva i mogućnosti programa koje je poželjno ali nije potrebno ispuniti.
+Apache Kafka radi u okruženju s drugim sustavima. Okruženje je opisano pretpostavkama koje su nepromjenjive i uvijek vrijede. Zahtjevi su svojstva i mogućnosti programa koje je poželjno ali nije potrebno ispuniti.
 
 
 \section{Pretpostavke}
@@ -264,15 +270,15 @@ Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpo
     \item Nadzirani sustav i sakupljač vrijednosti koriste siguran intranet
     \item Postoji više od deset Kafka grozdova i više od sto Kafka posrednika
     \item Kafka posrednici raspodijeljeni su na velik broj računala
-    \item Kafka grozdovi i posrednici mogu se upaliti i ugasiti u bilo kojem trenutku
-    \item Može se dogoditi ispad, ali ne i bizantski
+    \item Kafka grozdovi i posrednici mogu se pokrenuti i završiti s radom u bilo kojem trenutku
+    \item Može se dogoditi ispad, ali ne i bizantski \citep{kafka-docs}
 \end{itemize}
 
 
 \section{Zahtjevi}
 
 \begin{itemize}
-    \item Sakupljač vrijednosti se lako umnoži i nije pozadinski proces
+    \item Sakupljač vrijednosti se jednostavno umnoži i nije pozadinski proces
     \item Sakupljač vrijednosti samostalno pronalazi nove Kafka grozdove i posrednike
     \item Sakupljač vrijednosti šalje nadzirane vrijednosti s malim zakašnjenjem od trenutka očitavanja
     \item Sakupljač vrijednosti očitava nadzirane vrijednosti svake sekunde ili češće
@@ -286,7 +292,7 @@ Apache Kafka živi u okruženju s drugim sustavima. Okruženje je opisano pretpo
 
 \chapter{Postojeći sakupljači vrijednosti}
 
-Istraživanje postojećih rješenja ima višestruku ulogu: usporediti mane i prednosti izvedenog rješenja; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje za rješavanje novog problema. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliku sustavi.
+Istraživanje postojećih rješenja ima višestruku ulogu: usporediti mane i prednosti izvedenog rješenja; naučiti zašto i kako su drugi riješili problem; ponovno iskoristiti ili unaprijediti postojeće rješenje za rješavanje novog problema. U nadi da postoji rješenje koje zadovoljava većinu ili sve zahtjeve sustava istraženi su mali programi i veliki sustavi.
 
 
 \section{Jolokia}
@@ -298,9 +304,9 @@ Istraživanje postojećih rješenja ima višestruku ulogu: usporediti mane i pre
     \label{fig:jolokia}
 \end{figure}
 
-Jolokia \citep{jolokia} je most između JMX i HTTP. Jolokia se pokreće kao agent u Java VM ili kao samostojeći poslužitelj. \ref{fig:jolokia} prikazuje izvršavanje upita. HTTP upit postavi se Jolokiji koja skriva komplicirano dobavljanje nadziranih vrijednosti iza jednostavne funkcije. Nadzirane vrijednosti Jolokia šalje korisniku u JSON obliku.
+Jolokia \citep{jolokia} je most između JMX i HTTP. Jolokia se pokreće kao agent u Java VM ili kao samostojeći poslužitelj. Slika \ref{fig:jolokia} prikazuje izvršavanje upita. HTTP upit postavi se Jolokiji koja skriva komplicirano dobavljanje nadziranih vrijednosti iza jednostavne funkcije. Nadzirane vrijednosti Jolokia šalje korisniku u JSON obliku.
 
-Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Nažalost, Jolokia krši zahtjeve pozadinskog procesa i samostalnog pronalaženja novih Kafka grozdova i posrednika. Ako se Jolokia pokrene kao agent ona se pokrene kao poseban pozadinski proces na računalu na kojem se nalazi nadzirani sustav. Ako se pokrene kao samostojeći poslužitelj ona neće znati kada se upalio novi Kafka grozd ili posrednik jer nema načina da Jolokiji dojave da postoje.
+Jolokia je vrlo jednostavno i učinkovito rješenje za nadziranje Java programa. Nažalost, Jolokia krši zahtjeve pozadinskog procesa i samostalnog pronalaženja novih Kafka grozdova i posrednika. Ako se Jolokia pokrene kao agent ona se pokrene kao poseban pozadinski proces na računalu na kojem se nalazi nadzirani sustav. Ako se pokrene kao samostojeći poslužitelj ona neće znati kada je novi Kafka grozd ili posrednik pokrenut jer nema načina da Jolokiji dojave pokretanje.
 
 
 \section{Prometheus}
@@ -312,22 +318,22 @@ Jolokia je vrlo jednostavno i krepko rješenje za nadziranje Java programa. Naž
     \label{fig:prometheus}
 \end{figure}
 
-Prometheus \citep{prometheus} je potpuno rješenja za nadziranje proizvoljnih programa. \ref{fig:prometheus} prikazuje dijelove Prometheusa: poslužitelj, vremenska baza podataka i sakupljač nadziranih vrijednosti. Sakupljač mjerače nalazi samostalno ili koristi otkrivatelja. Kada sakupljač pročita vrijednosti one se pohrane u bazu podataka i u stalnu memoriju. Prije prikazivanja ili stvaranja uzbune korisnici mogu izabrati podskup vrijednosti jezikom PromQL koji je nalik SQLu.
+Prometheus \citep{prometheus} je potpuno rješenje za nadziranje proizvoljnih programa. Slika \ref{fig:prometheus} prikazuje dijelove Prometheusa: poslužitelj, vremenska baza podataka i sakupljač nadziranih vrijednosti. Sakupljač mjerače nalazi samostalno ili koristi otkrivatelja. Kada sakupljač pročita vrijednosti one se pohrane u bazu podataka i u stalnu memoriju. Prije prikazivanja ili stvaranja uzbune korisnici mogu izabrati podskup vrijednosti jezikom PromQL koji je nalik SQLu.
 
-Velika prednost i nedostatak Prometheusa je njegov opseg. Problem zahtjeva samo nadzor ne i predočavanje i obradu i zapisivanje podataka. Prometheus također dugo čeka između očitanja nadziranih vrijednosti. Zahtjev traži čitanje svakih sekundu ili manje, a Prometheus čeka par sekundi.
+Velika prednost i nedostatak Prometheusa je njegov opseg. Problem zahtjeva samo nadzor, a ne predočavanje, obradu i zapisivanje podataka. Prometheus također dugo čeka između očitanja nadziranih vrijednosti. Zahtjev traži čitanje svakih sekundu ili manje, a Prometheus čeka par sekundi.
 
 
 \section{Confluent sakupljač vrijednosti}
 
-Confluent sakupljač vrijednosti \citep{confluent-metrics-reporter} je dodatak na Kafka grozd i posrednika. Sakupljač čita i šalje nadzirane vrijednosti u Kafka temu nadziranog ili nekog drugog grozda. Svi novi Kafka posrednici pokreću se s Confluent sakupljačem.
+Confluent sakupljač vrijednosti \citep{confluent-metrics-reporter} je dodatak na Kafka grozd i posrednika. Sakupljač čita i šalje nadzirane vrijednosti u Kafka temu nadziranog ili nekog drugog grozda. Svi novi Kafka posrednik pokreće se s Confluent sakupljačem.
 
-Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces jer dolazi u obliku JAR datoteke koja se veže na, pali se i gasi s Kafka grozdom i posrednikom i šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreno rješenje koje se ne može nadograditi, poboljšati ili proširiti.
+Confluent sakupljač vrijednosti ispunjuje sve zahtjeve. Nije pozadinski proces jer dolazi u obliku JAR datoteke koja se pokreće i prestaje s radom Kafka grozda i posrednika te šalje nadzirane vrijednosti visokom frekvencijom. Nažalost, Confluent sakupljač vrijednosti je zatvoreno rješenje koje se ne može nadograditi, poboljšati ili proširiti.
 
 
 
 \chapter{Arhitektura sakupljača vrijednosti}
 
-Postoji velika rasprava kako oblikovati programski sustav \citep{clean-code} \citep{code-complete}. Sustav se oblikuje na razini okoline, rješenja, projekta, razreda, funkcije i naredbe. Okolina je skup pretpostavka o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Razred je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
+Postoji velika rasprava kako oblikovati programski sustav \citep{clean-code} \citep{code-complete}. Sustav se oblikuje na razini okoline, rješenja, projekta, razreda, funkcije i naredbe. Okolina je skup pretpostavki o računalu, operacijskom sustavu, postojećim sustavima i mreži. Rješenje je skup projekata koji zajedno rješavaju problem. Projekt je program koji ispunjava podskup zahtjeva sustava. Razred je skup podatka i funkcija koje djeluju nad njima u objektno orijentiranoj paradigmi, a skup funkcija u proceduralnoj paradigmi.
 
 
 \section{Okolina}
@@ -339,7 +345,7 @@ Postoji velika rasprava kako oblikovati programski sustav \citep{clean-code} \ci
     \label{fig:kafka-environment}
 \end{figure}
 
-\ref{fig:kafka-environment} prikazuje mali podskup Kafka grozdova. Grozdovi koriste sigurni intranet za međusobni razgovor. Napadač ne postoji i ne može izazvati ispad pogrešnim korištenjem programa. Grozd može iskusiti ispad. Kafka grozdovi se mogu se upaliti i ugasiti u bilo kojem trenutku. Dijelovi grozda raspodijeljeni su na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni grozd je otporan na ispade i fizički odvojen od ostalih grozdova.
+Slika \ref{fig:kafka-environment} prikazuje mali podskup Kafka grozdova. Grozdovi koriste sigurni intranet za međusobni razgovor. Napadač ne postoji i ne može izazvati ispad pogrešnim korištenjem programa. Grozd može iskusiti ispad. Kafka grozdovi mogu se pokrenuti i završiti s radom u bilo kojem trenutku. Dijelovi grozda raspodijeljeni su na više računala. Kafka grozdovi šalju nadzirane vrijednosti u središnji nadzorni Kafka grozd. Nadzorni grozd je otporan na ispade i fizički odvojen od ostalih grozdova.
 
 
 \section{Arhitektura rješenja}
@@ -351,7 +357,7 @@ Postoji velika rasprava kako oblikovati programski sustav \citep{clean-code} \ci
     \label{fig:collectors}
 \end{figure}
 
-\ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grozd sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici šalju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svoj sakupljač vrijednosti. Kada se pokrene posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri projekta: KaSta, Zook i JMXMan. KaSta pita Zook kojeg posrednika treba nadzirati. Zatim KaSta od JMXMan saznaje nadzirane vrijednosti. Svi KaStae šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
+Slika \ref{fig:collectors} prikazuje kako sakupljači vrijednosti nadziru Kafka posrednike. Kafka grozd sastoji se od barem jednog Kafka posrednika i ZooKeeper nadzornika. Posrednici šalju poruke pretplatnicima i zapisuju poruke objavljivača. Nadzornik zapisuje podatke o grozdu. Svaki posrednik ima svoj sakupljač vrijednosti. Kada se pokrene posrednik pokrene se i sakupljač vrijednosti. Sakupljač vrijednosti sastoji se od tri projekta: KaSta, Zook i JMXMan. KaSta pita Zook kojeg posrednika treba nadzirati. Zatim KaSta od JMXMan saznaje nadzirane vrijednosti. Svi KaStae šalju nadzirane vrijednosti u udaljeni nadzorni Kafka grozd.
 
 
 \section{Arhitektura projekt}
@@ -370,9 +376,9 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
 \begin{itemize}
     \item Visualizer - zadužen za predočavanje podataka u ZooKeeper čvorovima
     \item Kafka ZooKeeper - zadužen za pojednostavljenje odnosa između Kafka posrednika i ZooKeeper nadzornika
-    \item ZooKeeper Facade - zadužen za pojednostavljenje razgovor s ZooKeeper nadzornikom
+    \item ZooKeeper Facade - zadužen za pojednostavljenje razgovora s ZooKeeper nadzornikom
     \item Logger - zadužen za ispisivanje događaja
-    \item ZooKeeper - zadužen za izvršavanje ZooKeeper naredba
+    \item ZooKeeper - zadužen za izvršavanje ZooKeeper naredbi
 \end{itemize}
 
 \subsection{Arhitektura JMXMan}
@@ -390,7 +396,7 @@ Rješenje je podijeljeno na projekte gdje svaki ispunjuje disjunktni podskup zah
     \item MBean Connection Facade - zadužen za pojednostavljenje korištenja Managed Beans (MBean)
     \item JMX Connector - zadužen za izvršavanje JMX naredbi
     \item Logger - zadužen za ispisivanje događaja
-    \item MBean Connection - zadužen za izvršavanje MBean naredba
+    \item MBean Connection - zadužen za izvršavanje MBean naredbi
 \end{itemize}
 
 \subsection{Arhitektura KaSta}
