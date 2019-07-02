@@ -19,6 +19,8 @@
         abstract = {In this overview paper we motivate the need for and research issues arising from a new model of data processing.  In this model, data does not take the form of persistent relations, but rather arrives in multiple, continuous, rapid, time-varying data streams.  In addition to reviewing past work relevant to data stream systems and current projects in the area, the paper explores topics in stream query languages, new requirements and challenges in query processing, and algorithmic issues.}
 }
 
+
+
 @misc{yahoo-blogpost,
     author    = {Francis, J. and Merli, M.},
     title     = {Open-sourcing Pulsar, Pub-sub Messaging at Scale},
@@ -36,6 +38,21 @@
     url     = {https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf},
     note     = {ACM 978-1-4503-0652-2/11/06; NetDB workshop 2011},
 }
+
+
+
+@book{kafka-definitive-guide,
+    author    = {Narkhede, N. and Shapira, G. and Palino, T.},
+    title     = {Kafka The Definitive Guide},
+    publisher = {O’Reilly Media},
+    series   = {978-1-491-99065-0},
+    address  = {1005 Gravenstein Highway North, Sebastopol, CA 95472},
+    edition  = {1},
+    year      = {2017},
+    month    = {July},
+}
+
+
 
 @manual{kafka-docs,
 	title		= {Official Kafka Documentation},
@@ -59,8 +76,10 @@
     url     = {https://cwiki.apache.org/confluence/display/KAFKA/Compression},
 }
 
+
+
 @misc{linux-sendfile,
-    author     = {Michael Kerrisk},
+    author     = {Kerrisk, M.},
     title     = {Linux sendfile},
     organization	= {Linux Kernel Organization},
     year     = {2017},
@@ -74,4 +93,119 @@
     year     = {2008},
     month    = {September},
     url     = {https://developer.ibm.com/articles/j-zerocopy/},
+}
+
+
+
+@manual{pulsar-docs,
+	title		= {Official Pulsar Overview},
+	organization	= {Apache Foundation},
+	year		= {2019},
+	url         = {https://pulsar.apache.org/docs/en/concepts-overview/}
+}
+
+@misc{pulsar-streamlio-intro,
+    author    = {Merli, M. and Ramasamy, K.},
+    title     = {Introduction to the Apache Pulsar pub-sub messaging platform},
+    howpublished = {https://streaml.io/blog/intro-to-pulsar},
+    year     = {2017},
+    month    = {August},
+}
+
+@misc{pulsar-streamlio-1,
+    author    = {Merli, M. and Ramasamy, K.},
+    title     = {Why Apache Pulsar? Part 1},
+    howpublished = {https://streaml.io/blog/why-apache-pulsar},
+    year     = {2017},
+    month    = {August},
+}
+
+@misc{pulsar-streamlio-2,
+    author    = {Merli, M. and Ramasamy, K.},
+    title     = {Why Apache Pulsar? Part 2},
+    howpublished = {https://streaml.io/blog/why-apache-pulsar-part-2},
+    year     = {2017},
+    month    = {August},
+}
+
+
+
+@misc{pulsar-vs-kafka-unified,
+    author    = {Guo, S.},
+    title     = {Comparing Pulsar and Kafka: unified queuing and streaming},
+    howpublished = {https://streaml.io/blog/pulsar-streaming-queuing},
+    year     = {2017},
+    month    = {December},
+}
+
+@misc{pulsar-vs-kafka-segments,
+    author    = {Guo, S.},
+    title     = {Comparing Pulsar and Kafka: how a segment-based architecture delivers better performance, scalability, and resilience},
+    howpublished = {https://streaml.io/blog/pulsar-segment-based-architecture},
+    year     = {2017},
+    month    = {December},
+}
+
+@misc{pulsar-vs-kafka-architecture,
+    author    = {Guo, S.},
+    title     = {Apache Pulsar Architecture: Designing for Streaming Performance and Scalability},
+    howpublished = {https://streaml.io/blog/apache-pulsar-architecture-designing-for-streaming-performance-and-scalability},
+    year     = {2017},
+    month    = {December},
+}
+
+
+
+@inproceedings{kafka-vs-rabbitmq,
+    author  = {Dobbelaere, P and Sheykh Esmaili, K.},
+    year    = {2017},
+    month   = {June},
+    pages   = {227-238},
+    title   = {Kafka versus RabbitMQ: A comparative study of two industry reference publish/subscribe implementations: Industry Paper},
+    doi     = {10.1145/3093742.3093908}
+}
+
+
+
+@manual{jolokia,
+	title		= {Jolokia Features},
+	author		= {Huss, R.},
+	year		= {2019},
+	month		= {May},
+	note		= {https://jolokia.org/features-nb.html, https://github.com/rhuss/jolokia},
+}
+
+@manual{prometheus,
+	title		= {Prometheus Overview},
+	organization	= {Linux Foundation},
+	year		= {2019},
+	note		= {https://prometheus.io/docs/introduction/overview/, https://github.com/prometheus},
+}
+
+@manual{confluent-metrics-reporter,
+	title		= {Confluent Metrics Reporter},
+	organization	= {Confluent},
+	year		= {2019},
+    month		= {May},
+	note		= {https://docs.confluent.io/current/kafka/metrics-reporter.html},
+}
+
+
+
+@book{clean-code,
+    author    = {Martin, R. C.},
+    title     = {Clean Code: A Handbook of Agile Software Craftsmanship},
+    publisher = {Prentice Hall},
+    edition  = {1},
+    year      = {2008},
+    month    = {August},
+}
+
+@book{code-complete,
+    author    = {McConnell, S.},
+    title     = {Code Complete},
+    publisher = {Microsoft Press},
+    edition  = {2},
+    year      = {2004},
+    month    = {June},
 }
