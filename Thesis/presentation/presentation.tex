@@ -1,0 +1,108 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+
+\mode<presentation> {
+\usetheme{Madrid}
+}
+
+\usepackage{graphicx} 
+
+\usepackage{booktabs}
+
+\usepackage{float}
+
+\usepackage{chngpage}
+
+\usepackage[export]{adjustbox}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit}
+
+\title[Praćenje parametara ispravnosti]{Stvarnovremensko praćenje parametara ispravnosti rada u sustavu za raspodijeljenu obradu tokova podataka}
+
+\author{Mislav Jakšić}
+\institute[FER]
+{
+Sveučilište u Zagrebu \\ 
+\medskip
+\textit{jaksicmislav@gmail.com} 
+}
+\date{srpanj 2019.}
+
+
+
+\begin{document}
+
+
+
+\begin{frame}
+\begin{figure}[H]
+    \centering
+    \includegraphics[max width=1.0\textwidth]{first.pdf}
+\end{figure}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Pregled}
+
+\tableofcontents
+\end{frame}
+
+
+
+\section{Problem i pozadina}
+
+\begin{frame}
+\frametitle{Model objavi pretplati}
+
+\centering
+\input{pubsub.tex}
+\end{frame}
+
+\begin{frame}
+\frametitle{Apache Kafka}
+
+\centering
+\input{kafkacluster.tex}
+\end{frame}
+
+
+
+\section{Rješenje i način rješavanja}
+
+\begin{frame}
+\frametitle{Kafka grozdovi}
+
+\centering
+\input{kafkaenv.tex}
+\end{frame}
+
+\begin{frame}
+\frametitle{Sakupljač vrijednosti}
+
+\hspace*{-4mm}
+\input{kafkacollectors.tex}
+\end{frame}
+
+\begin{frame}
+\frametitle{Značajke sakupljača rješenja}
+
+\begin{itemize}
+  \item Jednostavno pokretanje i korištenje
+  \item Prilagodeno za elastične Kafka grozdove i posrednike
+  \item Skalabilno
+  \item Nadogradivo
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\centering
+KRAJ
+\end{frame}
+
+
+
+\end{document}
