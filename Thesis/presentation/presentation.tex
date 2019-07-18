@@ -48,7 +48,22 @@ Sveučilište u Zagrebu \\
 \begin{frame}
 \frametitle{Pregled}
 
-\tableofcontents
+\begin{itemize}
+  \item Problem
+  \begin{itemize}
+    \item Telekomunikacijske greške - internet, poziv nije uspostavljen
+  \end{itemize}
+  \item Način rješavanja
+  \begin{itemize}
+    \item Apache Kafka - sustav za raspodijeljenu obradu podataka
+    \item Dobro radi? Potreban nadzor
+  \end{itemize}
+  \item Rješenje
+  \begin{itemize}
+    \item Sakupljač vrijednosti - protočnost, zauzeće memorije
+  \end{itemize}
+\end{itemize}
+% \tableofcontents
 \end{frame}
 
 
@@ -74,7 +89,7 @@ Sveučilište u Zagrebu \\
 \section{Rješenje i način rješavanja}
 
 \begin{frame}
-\frametitle{Kafka grozdovi}
+\frametitle{Arhitektura - Kafka grozdovi}
 
 \centering
 \input{kafkaenv.tex}
@@ -88,19 +103,20 @@ Sveučilište u Zagrebu \\
 \end{frame}
 
 \begin{frame}
-\frametitle{Značajke sakupljača rješenja}
+\frametitle{Zaključak}
 
+\begin{enumerate}
+  \item Nadzor
+  \item Telekomunikacijski problem
+\end{enumerate}
+\begin{block}{Značajke sakupljača vrijednosti}
 \begin{itemize}
   \item Jednostavno pokretanje i korištenje
   \item Prilagodeno za elastične Kafka grozdove i posrednike
   \item Skalabilno
   \item Nadogradivo
 \end{itemize}
-\end{frame}
-
-\begin{frame}
-\centering
-KRAJ
+\end{block}
 \end{frame}
 
 
